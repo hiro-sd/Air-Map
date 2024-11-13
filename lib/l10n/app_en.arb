@@ -1,0 +1,14 @@
+{
+    "@@locale":"en",
+    "title":"Airport Map",
+    "ratethisapp": "Review this app.",
+    "privacypolicy": "Privacy policy",
+    "switch_map": "This map has been switched.",
+    "show_airports": "Airports in Japan are shown on the map.",
+    "show_nearby_airports": "Airports within a 50 km (31 miles) radius are shown on the map.",
+    "close": "Close",
+    "ok": "OK",
+    "search_airport": "Search for the airport you want to go.",
+    "set_destination": "Complete",
+    "complete_set": "Your destination has been setted."
+}

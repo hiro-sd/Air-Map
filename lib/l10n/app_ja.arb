@@ -1,0 +1,14 @@
+{
+    "@@locale":"ja",
+    "title":"空港マップ",
+    "ratethisapp": "このアプリをレビューする",
+    "privacypolicy": "プライバシーポリシー",
+    "switch_map": "表示変更",
+    "show_airports": "全国の空港を表示します。",
+    "show_nearby_airports": "半径50km以内の空港を表示します。",
+    "close": "閉じる",
+    "ok": "OK",
+    "search_airport": "行き先の空港を検索またはピンで指定",
+    "set_destination": "目的地設定",
+    "complete_set": "行き先を設定しました。"
+}
