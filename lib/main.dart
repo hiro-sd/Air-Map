@@ -374,4 +374,4 @@ class MapScreen extends ConsumerWidget {
 // TODO: 出発する空港と行き先を指定したら、適切な経路や値段を表示する。
 // TODO: リファクタリング
 // TODO: devブランチで作業し、終わったらmainブランチにマージする。
-
+// gitの流れが参考になる(https://qiita.com/yukiyoshimura/items/7aa4a8f8db493ab97c2b)
