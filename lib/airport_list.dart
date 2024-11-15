@@ -108,14 +108,12 @@ const LatLng airport88 = LatLng(24.39599, 124.24578); //新石垣空港
 const LatLng airport89 = LatLng(24.06028, 123.80456); //波照間空港
 const LatLng airport90 = LatLng(24.46521, 122.97988); //与那国空港
 
-// TODO: リファクタリング
-
 final airports = {
   const Marker(
     markerId: MarkerId('marker_1'),
     position: airport1,
     infoWindow: InfoWindow(
-      title: '新千歳空港を行き先に設定しますか？',
+      title: '新千歳空港',
       snippet: '北海道千歳市,苫小牧市にある空港',
     ),
   ),
@@ -123,7 +121,7 @@ final airports = {
     markerId: MarkerId('marker_2'),
     position: airport2,
     infoWindow: InfoWindow(
-      title: '函館空港を行き先に設定しますか？',
+      title: '函館空港',
       snippet: '北海道函館市にある空港',
     ),
   ),
@@ -832,3 +830,5 @@ final airports = {
     ),
   ),
 };
+
+// TODO: リファクタリング

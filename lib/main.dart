@@ -18,8 +18,9 @@ class MapScreenStateNotifier extends StateNotifier<Set<Marker>> {
 
   Position? currentPosition;
   GoogleMapController? mapController;
+  LatLng circleCenter = const LatLng(35.6895, 139.6917); // 初期位置（東京）
 
-// GoogleMapのカメラを指定された位置に移動させる関数
+  // GoogleMapのカメラを指定された位置に移動させる関数
   void moveCameraToPosition(LatLng position,
       {String? markerTitle, double zoom = 15}) {
     if (mapController != null) {
@@ -94,9 +95,9 @@ class MapScreenStateNotifier extends StateNotifier<Set<Marker>> {
     } catch (e) {
       mapController!.animateCamera(
         CameraUpdate.newCameraPosition(
-          const CameraPosition(
-            target: LatLng(35.6895, 139.6917),
-            zoom: 10,
+          CameraPosition(
+            target: circleCenter,
+            zoom: 9,
           ),
         ),
       );
@@ -169,6 +170,7 @@ class MapScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final markers = ref.watch(mapScreenProvider);
+    final circleCenter = ref.watch(mapScreenProvider.notifier).circleCenter;
 
     Future<void> openSearchWindow() async {
       final result = await Navigator.push(
@@ -206,9 +208,9 @@ class MapScreen extends ConsumerWidget {
       body: Stack(
         children: <Widget>[
           GoogleMap(
-            initialCameraPosition: const CameraPosition(
-              target: LatLng(35.6895, 139.6917),
-              zoom: 10,
+            initialCameraPosition: CameraPosition(
+              target: circleCenter,
+              zoom: 9,
             ), // 初期位置
             myLocationButtonEnabled: false,
             myLocationEnabled: true,
@@ -223,19 +225,19 @@ class MapScreen extends ConsumerWidget {
           ),
           Center(
             child: Container(
-              width: 300, // 見た目の円の大きさを調整
+              width: 300,
               height: 300,
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
+                color: Colors.blue.withOpacity(0.2),
                 border:
                     Border.all(color: Colors.blue.withOpacity(0.8), width: 3),
-                color: Colors.blue.withOpacity(0.2),
+                shape: BoxShape.circle,
               ),
             ),
           ),
           Center(
               child: Column(children: [
-            const SizedBox(height: 10),
+            const SizedBox(height: 15),
             Container(
               width: MediaQuery.of(context).size.width * 0.8,
               decoration: BoxDecoration(
@@ -276,24 +278,7 @@ class MapScreen extends ConsumerWidget {
             ),
           ])),
           Positioned(
-            bottom: 30,
-            right: 15,
-            child: FloatingActionButton(
-              heroTag: null, // Heroアニメーションを無効にする
-              shape: const CircleBorder(),
-              onPressed: () {
-                ref.read(mapScreenProvider.notifier).getCurrentLocation();
-              },
-              backgroundColor: Colors.white,
-              child: const Icon(
-                Icons.my_location,
-                size: 27.5,
-                color: Color.fromARGB(255, 100, 100, 100),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 100,
+            bottom: 90,
             right: 15,
             child: FloatingActionButton(
               heroTag: null, // Heroアニメーションを無効にする
@@ -358,6 +343,23 @@ class MapScreen extends ConsumerWidget {
               backgroundColor: Colors.white,
               child: const Icon(
                 Icons.local_airport,
+                size: 27.5,
+                color: Color.fromARGB(255, 100, 100, 100),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 20,
+            right: 15,
+            child: FloatingActionButton(
+              heroTag: null, // Heroアニメーションを無効にする
+              shape: const CircleBorder(),
+              onPressed: () {
+                ref.read(mapScreenProvider.notifier).getCurrentLocation();
+              },
+              backgroundColor: Colors.white,
+              child: const Icon(
+                Icons.my_location,
                 size: 27.5,
                 color: Color.fromARGB(255, 100, 100, 100),
               ),

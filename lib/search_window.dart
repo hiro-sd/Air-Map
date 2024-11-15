@@ -90,6 +90,7 @@ class _SearchWindowState extends ConsumerState<SearchWindow> {
     super.initState();
     // 画面遷移後にフォーカスを当てる
     Future.delayed(const Duration(milliseconds: 100), () {
+      // ignore: use_build_context_synchronously
       FocusScope.of(context).requestFocus(_focusNode); // フォーカスを当てる
     });
   }
@@ -209,6 +210,7 @@ class _SearchWindowState extends ConsumerState<SearchWindow> {
                               .fetchSuggestions('');
 
                           // GoogleMapが表示されている画面に戻る
+                          // ignore: use_build_context_synchronously
                           Navigator.pop(context, placeDetails);
                         }
                       },
