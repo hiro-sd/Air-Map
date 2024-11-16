@@ -22,11 +22,11 @@ class MapScreenStateNotifier extends StateNotifier<Set<Marker>> {
   bool showAllAirports = false; // マーカーの状態を管理するフラグ
 
   // GoogleMapのカメラを指定された位置に移動させる関数
-  void moveCameraToPosition(LatLng position,
-      {String? markerTitle, double zoom = 15}) {
+  void moveCameraToPosition(BuildContext context, LatLng position,
+      {String? markerTitle, double? zoom}) {
     if (mapController != null) {
       mapController!.animateCamera(CameraUpdate.newCameraPosition(
-        CameraPosition(target: position, zoom: zoom),
+        CameraPosition(target: position, zoom: 15),
       ));
 
       // その位置にマーカーを追加
@@ -34,7 +34,8 @@ class MapScreenStateNotifier extends StateNotifier<Set<Marker>> {
         markerId: MarkerId(position.toString()), // 一意のIDを位置情報で生成
         position: position,
         infoWindow: InfoWindow(
-          title: markerTitle ?? '選択された場所', // マーカーのタイトル
+          title: markerTitle ??
+              AppLocalizations.of(context)!.selected_location, // マーカーのタイトル
         ),
       );
 
@@ -188,72 +189,77 @@ class MapScreen extends ConsumerWidget {
         ),
       );
 
-      if (placeDetails != null) {
+      if (placeDetails != null && context.mounted) {
         final destination = LatLng(placeDetails['lat'], placeDetails['lng']);
         final placeName = placeDetails['name'];
 
         // GoogleMapをその位置に移動させる
         ref.read(mapScreenProvider.notifier).moveCameraToPosition(
+              context,
               destination,
               markerTitle: placeName, // マーカーに表示するタイトル
             );
 
-        showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          barrierColor: Colors.black.withOpacity(0.2),
-          builder: (context) {
-            return FractionallySizedBox(
-                heightFactor: 0.48,
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context)!.set_destination,
-                        style: const TextStyle(fontSize: 15),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        placeName,
-                        style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 230),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context); // BottomSheetを閉じる
-                            },
-                            child: Text(
-                              AppLocalizations.of(context)!.cancel,
+        if (context.mounted) {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            barrierColor: Colors.black.withOpacity(0.2),
+            builder: (context) {
+              return FractionallySizedBox(
+                  heightFactor: 0.48,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.set_destination,
+                          style: const TextStyle(fontSize: 15),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          placeName,
+                          style: const TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 230),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context); // BottomSheetを閉じる
+                              },
+                              child: Text(
+                                AppLocalizations.of(context)!.cancel,
+                              ),
                             ),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context); // BottomSheetを閉じる
-                              // ここで目的地を確定し、他の処理を実行可能
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content: Text(AppLocalizations.of(context)!
-                                        .set_complete)),
-                              );
-                            },
-                            child: Text(AppLocalizations.of(context)!.confirm),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ));
-          },
-        );
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context); // BottomSheetを閉じる
+                                // ここで目的地を確定し、他の処理を実行可能
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          AppLocalizations.of(context)!
+                                              .set_complete)),
+                                );
+                              },
+                              child:
+                                  Text(AppLocalizations.of(context)!.confirm),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ));
+            },
+          );
+        }
       }
     }
 
@@ -428,7 +434,6 @@ class MapScreen extends ConsumerWidget {
   }
 }
 
-// TODO: ピンからも指定できるようにする。 (将来的には行き先も縁の内部で？？)
 // TODO: 出発する空港をピンor円の内部の空港で指定する。
 // TODO: 出発する空港と行き先を指定したら、適切な経路や値段を表示する。
 // TODO: リファクタリング

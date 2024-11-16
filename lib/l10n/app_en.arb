@@ -13,6 +13,7 @@
     "set_complete": "Your destination has been set!",
     "cancel": "Cancel",
     "confirm": "Confirm",
+    "selected_location": "Selected location",
     "new_chitose_airport": "New Chitose Airport (CTS)",
     "hakodate_airport": "Hakodate Airport (HKD)",
     "kushiro_airport": "Kushiro Airport (KUH)",

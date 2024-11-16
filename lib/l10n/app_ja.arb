@@ -13,6 +13,7 @@
     "set_complete": "目的地が設定されました！",
     "cancel": "キャンセル",
     "confirm": "確認",
+    "selected_location": "選択された場所",
     "new_chitose_airport": "新千歳空港 (CTS)",
     "hakodate_airport": "函館空港 (HKD)",
     "kushiro_airport": "釧路空港 (KUH)",
