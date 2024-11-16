@@ -9,6 +9,8 @@
     "close": "Close",
     "ok": "OK",
     "search_airport": "Search for the airport you want to go.",
-    "set_destination": "Complete",
-    "complete_set": "Your destination has been setted."
+    "set_destination": "Would you like to set this location as your destination?",
+    "set_complete": "Your destination has been set!",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
 }

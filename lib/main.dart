@@ -19,6 +19,7 @@ class MapScreenStateNotifier extends StateNotifier<Set<Marker>> {
   Position? currentPosition;
   GoogleMapController? mapController;
   LatLng circleCenter = const LatLng(35.6895, 139.6917); // 初期位置（東京）
+  bool showAllAirports = false; // マーカーの状態を管理するフラグ
 
   // GoogleMapのカメラを指定された位置に移動させる関数
   void moveCameraToPosition(LatLng position,
@@ -42,9 +43,16 @@ class MapScreenStateNotifier extends StateNotifier<Set<Marker>> {
     }
   }
 
-  // 現在の空港リストに切り替える
-  void switchToAirports(Set<Marker> newAirports) {
-    state = newAirports;
+  // 全国の空港マーカーに切り替える
+  void switchToAllAirports(Set<Marker> allAirports) {
+    state = allAirports;
+    showAllAirports = true;
+  }
+
+  // 現在地周辺の空港マーカーに切り替え
+  Future<void> switchToNearbyAirports() async {
+    await fetchAirports(); // 現在地周辺の空港を取得
+    showAllAirports = false;
   }
 
   // マーカーをクリアする
@@ -173,23 +181,79 @@ class MapScreen extends ConsumerWidget {
     final circleCenter = ref.watch(mapScreenProvider.notifier).circleCenter;
 
     Future<void> openSearchWindow() async {
-      final result = await Navigator.push(
+      final placeDetails = await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => const SearchWindow(),
         ),
       );
 
-      if (result != null) {
-        final lat = result['lat'];
-        final lng = result['lng'];
-        final placeName = result['name'];
+      if (placeDetails != null) {
+        final destination = LatLng(placeDetails['lat'], placeDetails['lng']);
+        final placeName = placeDetails['name'];
 
         // GoogleMapをその位置に移動させる
         ref.read(mapScreenProvider.notifier).moveCameraToPosition(
-              LatLng(lat, lng),
+              destination,
               markerTitle: placeName, // マーカーに表示するタイトル
             );
+
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          barrierColor: Colors.black.withOpacity(0.2),
+          builder: (context) {
+            return FractionallySizedBox(
+                heightFactor: 0.5,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.set_destination,
+                        style: const TextStyle(fontSize: 15),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        placeName,
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 230),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context); // BottomSheetを閉じる
+                            },
+                            child: Text(
+                              AppLocalizations.of(context)!.cancel,
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context); // BottomSheetを閉じる
+                              // ここで目的地を確定し、他の処理を実行可能
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text(AppLocalizations.of(context)!
+                                        .set_complete)),
+                              );
+                            },
+                            child: Text(AppLocalizations.of(context)!.confirm),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ));
+          },
+        );
       }
     }
 
@@ -283,11 +347,12 @@ class MapScreen extends ConsumerWidget {
             child: FloatingActionButton(
               heroTag: null, // Heroアニメーションを無効にする
               shape: const CircleBorder(),
-              onPressed: () {
-                if (markers != airports) {
-                  ref
-                      .read(mapScreenProvider.notifier)
-                      .switchToAirports(airports); // 全国の空港に切り替え
+              onPressed: () async {
+                final notifier = ref.read(mapScreenProvider.notifier);
+
+                if (!notifier.showAllAirports) {
+                  // 全国の空港に切り替え
+                  notifier.switchToAllAirports(generateMarkers(context));
                   showDialog(
                       context: context,
                       builder: (BuildContext context) {
@@ -308,36 +373,28 @@ class MapScreen extends ConsumerWidget {
                         );
                       });
                 } else {
-                  ref
-                      .read(mapScreenProvider.notifier)
-                      .clearMarkers(); // マーカーをクリア
-                  if (ref.read(mapScreenProvider.notifier).currentPosition !=
-                      null) {
-                    ref
-                        .read(mapScreenProvider.notifier)
-                        .fetchAirports(); // 現在地周辺の空港に戻す
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text(
-                                AppLocalizations.of(context)!.switch_map,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold)),
-                            content: Text(AppLocalizations.of(context)!
-                                .show_nearby_airports),
-                            actions: [
-                              TextButton(
-                                child:
-                                    Text(AppLocalizations.of(context)!.close),
-                                onPressed: () {
-                                  Navigator.of(context).pop(); // ダイアログを閉じる
-                                },
-                              ),
-                            ],
-                          );
-                        });
-                  }
+                  // 現在地周辺の空港に切り替え
+                  await notifier.switchToNearbyAirports();
+                  showDialog(
+                      // ignore: use_build_context_synchronously
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text(AppLocalizations.of(context)!.switch_map,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
+                          content: Text(AppLocalizations.of(context)!
+                              .show_nearby_airports),
+                          actions: [
+                            TextButton(
+                              child: Text(AppLocalizations.of(context)!.close),
+                              onPressed: () {
+                                Navigator.of(context).pop(); // ダイアログを閉じる
+                              },
+                            ),
+                          ],
+                        );
+                      });
                 }
               },
               backgroundColor: Colors.white,

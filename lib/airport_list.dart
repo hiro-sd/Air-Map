@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 // 北海道の空港
 const LatLng airport1 = LatLng(42.78042, 141.68610); //新千歳空港
@@ -108,727 +110,619 @@ const LatLng airport88 = LatLng(24.39599, 124.24578); //新石垣空港
 const LatLng airport89 = LatLng(24.06028, 123.80456); //波照間空港
 const LatLng airport90 = LatLng(24.46521, 122.97988); //与那国空港
 
-final airports = {
-  const Marker(
-    markerId: MarkerId('marker_1'),
-    position: airport1,
-    infoWindow: InfoWindow(
-      title: '新千歳空港',
-      snippet: '北海道千歳市,苫小牧市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_2'),
-    position: airport2,
-    infoWindow: InfoWindow(
-      title: '函館空港',
-      snippet: '北海道函館市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_3'),
-    position: airport3,
-    infoWindow: InfoWindow(
-      title: '釧路空港',
-      snippet: '北海道釧路市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_4'),
-    position: airport4,
-    infoWindow: InfoWindow(
-      title: '旭川空港',
-      snippet: '北海道旭川市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_5'),
-    position: airport5,
-    infoWindow: InfoWindow(
-      title: '女満別空港',
-      snippet: '北海道網走郡大空町にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_6'),
-    position: airport6,
-    infoWindow: InfoWindow(
-      title: '丘珠空港',
-      snippet: '北海道札幌市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_7'),
-    position: airport7,
-    infoWindow: InfoWindow(
-      title: '稚内空港',
-      snippet: '北海道稚内市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_8'),
-    position: airport8,
-    infoWindow: InfoWindow(
-      title: '帯広空港',
-      snippet: '北海道帯広市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_9'),
-    position: airport9,
-    infoWindow: InfoWindow(
-      title: '利尻空港',
-      snippet: '北海道利尻郡利尻富士町にある日本最北端の空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_10'),
-    position: airport10,
-    infoWindow: InfoWindow(
-      title: '礼文空港',
-      snippet: '北海道礼文郡礼文町にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_11'),
-    position: airport11,
-    infoWindow: InfoWindow(
-      title: '紋別空港',
-      snippet: '北海道紋別市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_12'),
-    position: airport12,
-    infoWindow: InfoWindow(
-      title: '中標津空港',
-      snippet: '北海道標津郡中標津町にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_13'),
-    position: airport13,
-    infoWindow: InfoWindow(
-      title: '奥尻空港',
-      snippet: '北海道奥尻郡奥尻町にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_14'),
-    position: airport14,
-    infoWindow: InfoWindow(
-      title: '青森空港',
-      snippet: '青森県青森市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_15'),
-    position: airport15,
-    infoWindow: InfoWindow(
-      title: '三沢飛行場',
-      snippet: '青森県三沢市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_16'),
-    position: airport16,
-    infoWindow: InfoWindow(
-      title: '花巻空港',
-      snippet: '岩手県花巻市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_17'),
-    position: airport17,
-    infoWindow: InfoWindow(
-      title: '仙台空港',
-      snippet: '宮城県名取市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_18'),
-    position: airport18,
-    infoWindow: InfoWindow(
-      title: '大館能代空港',
-      snippet: '秋田県北秋田市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_19'),
-    position: airport19,
-    infoWindow: InfoWindow(
-      title: '秋田空港',
-      snippet: '秋田県秋田市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_20'),
-    position: airport20,
-    infoWindow: InfoWindow(
-      title: '庄内空港',
-      snippet: '山形県酒田市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_21'),
-    position: airport21,
-    infoWindow: InfoWindow(
-      title: '山形空港',
-      snippet: '山形県東根市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_22'),
-    position: airport22,
-    infoWindow: InfoWindow(
-      title: '福島空港',
-      snippet: '福島県玉川村にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_23'),
-    position: airport23,
-    infoWindow: InfoWindow(
-      title: '羽田空港',
-      snippet: '東京都大田区にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_24'),
-    position: airport24,
-    infoWindow: InfoWindow(
-      title: '大島空港',
-      snippet: '東京都大島町にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_25'),
-    position: airport25,
-    infoWindow: InfoWindow(
-      title: '新島空港',
-      snippet: '東京都新島村にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_26'),
-    position: airport26,
-    infoWindow: InfoWindow(
-      title: '神津島空港',
-      snippet: '東京都神津島村にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_27'),
-    position: airport27,
-    infoWindow: InfoWindow(
-      title: '三宅島空港',
-      snippet: '東京都三宅村にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_28'),
-    position: airport28,
-    infoWindow: InfoWindow(
-      title: '八丈島空港',
-      snippet: '東京都八丈町にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_29'),
-    position: airport29,
-    infoWindow: InfoWindow(
-      title: '調布飛行場',
-      snippet: '東京都調布市にある飛行場',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_30'),
-    position: airport30,
-    infoWindow: InfoWindow(
-      title: '成田空港',
-      snippet: '千葉県成田市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_31'),
-    position: airport31,
-    infoWindow: InfoWindow(
-      title: '茨城空港',
-      snippet: '茨城県小美玉市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_32'),
-    position: airport32,
-    infoWindow: InfoWindow(
-      title: '中部国際空港',
-      snippet: '愛知県常滑市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_33'),
-    position: airport33,
-    infoWindow: InfoWindow(
-      title: '県営名古屋空港',
-      snippet: '愛知県豊山町にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_34'),
-    position: airport34,
-    infoWindow: InfoWindow(
-      title: '松本空港',
-      snippet: '長野県松本市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_35'),
-    position: airport35,
-    infoWindow: InfoWindow(
-      title: '新潟空港',
-      snippet: '新潟県新潟市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_36'),
-    position: airport36,
-    infoWindow: InfoWindow(
-      title: '佐渡空港',
-      snippet: '新潟県佐渡市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_37'),
-    position: airport37,
-    infoWindow: InfoWindow(
-      title: '富山空港',
-      snippet: '富山県富山市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_38'),
-    position: airport38,
-    infoWindow: InfoWindow(
-      title: '能登空港',
-      snippet: '石川県輪島市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_39'),
-    position: airport39,
-    infoWindow: InfoWindow(
-      title: '小松空港',
-      snippet: '石川県小松市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_40'),
-    position: airport40,
-    infoWindow: InfoWindow(
-      title: '福井空港',
-      snippet: '福井県坂井市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_41'),
-    position: airport41,
-    infoWindow: InfoWindow(
-      title: '静岡空港',
-      snippet: '静岡県牧之原市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_42'),
-    position: airport42,
-    infoWindow: InfoWindow(
-      title: '関西国際空港',
-      snippet: '大阪府泉佐野市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_43'),
-    position: airport43,
-    infoWindow: InfoWindow(
-      title: '伊丹空港',
-      snippet: '兵庫県伊丹市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_44'),
-    position: airport44,
-    infoWindow: InfoWindow(
-      title: '神戸空港',
-      snippet: '兵庫県神戸市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_45'),
-    position: airport45,
-    infoWindow: InfoWindow(
-      title: '但馬飛行場',
-      snippet: '兵庫県豊岡市にある飛行場',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_46'),
-    position: airport46,
-    infoWindow: InfoWindow(
-      title: '南紀白浜空港',
-      snippet: '和歌山県西牟婁郡白浜町にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_47'),
-    position: airport47,
-    infoWindow: InfoWindow(
-      title: '鳥取空港',
-      snippet: '鳥取県鳥取市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_48'),
-    position: airport48,
-    infoWindow: InfoWindow(
-      title: '米子空港',
-      snippet: '鳥取県境港市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_49'),
-    position: airport49,
-    infoWindow: InfoWindow(
-      title: '出雲空港',
-      snippet: '島根県出雲市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_50'),
-    position: airport50,
-    infoWindow: InfoWindow(
-      title: '石見空港',
-      snippet: '島根県益田市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_51'),
-    position: airport51,
-    infoWindow: InfoWindow(
-      title: '隠岐空港',
-      snippet: '島根県隠岐郡隠岐の島町にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_52'),
-    position: airport52,
-    infoWindow: InfoWindow(
-      title: '岡山空港',
-      snippet: '岡山県岡山市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_53'),
-    position: airport53,
-    infoWindow: InfoWindow(
-      title: '広島空港',
-      snippet: '広島県三原市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_54'),
-    position: airport54,
-    infoWindow: InfoWindow(
-      title: '岩国飛行場',
-      snippet: '山口県岩国市にある飛行場',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_55'),
-    position: airport55,
-    infoWindow: InfoWindow(
-      title: '山口宇部空港',
-      snippet: '山口県宇部市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_56'),
-    position: airport56,
-    infoWindow: InfoWindow(
-      title: '徳島飛行場',
-      snippet: '徳島県板野郡松茂町にある飛行場',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_57'),
-    position: airport57,
-    infoWindow: InfoWindow(
-      title: '高松空港',
-      snippet: '香川県高松市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_58'),
-    position: airport58,
-    infoWindow: InfoWindow(
-      title: '松山空港',
-      snippet: '愛媛県松山市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_59'),
-    position: airport59,
-    infoWindow: InfoWindow(
-      title: '高知空港',
-      snippet: '高知県南国市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_60'),
-    position: airport60,
-    infoWindow: InfoWindow(
-      title: '福岡空港',
-      snippet: '福岡県福岡市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_61'),
-    position: airport61,
-    infoWindow: InfoWindow(
-      title: '北九州空港',
-      snippet: '福岡県北九州市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_62'),
-    position: airport62,
-    infoWindow: InfoWindow(
-      title: '佐賀空港',
-      snippet: '佐賀県佐賀市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_63'),
-    position: airport63,
-    infoWindow: InfoWindow(
-      title: '長崎空港',
-      snippet: '長崎県大村市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_64'),
-    position: airport64,
-    infoWindow: InfoWindow(
-      title: '壱岐空港',
-      snippet: '長崎県壱岐市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_65'),
-    position: airport65,
-    infoWindow: InfoWindow(
-      title: '対馬空港',
-      snippet: '長崎県対馬市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_66'),
-    position: airport66,
-    infoWindow: InfoWindow(
-      title: '福江空港',
-      snippet: '長崎県五島市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_67'),
-    position: airport67,
-    infoWindow: InfoWindow(
-      title: '熊本空港',
-      snippet: '熊本県上益城郡益城町にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_68'),
-    position: airport68,
-    infoWindow: InfoWindow(
-      title: '天草空港',
-      snippet: '熊本県天草市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_69'),
-    position: airport69,
-    infoWindow: InfoWindow(
-      title: '大分空港',
-      snippet: '大分県国東市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_70'),
-    position: airport70,
-    infoWindow: InfoWindow(
-      title: '宮崎空港',
-      snippet: '宮崎県宮崎市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_71'),
-    position: airport71,
-    infoWindow: InfoWindow(
-      title: '鹿児島空港',
-      snippet: '鹿児島県霧島市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_72'),
-    position: airport72,
-    infoWindow: InfoWindow(
-      title: '薩摩硫黄島飛行場',
-      snippet: '鹿児島県鹿児島郡三島村にある飛行場',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_73'),
-    position: airport73,
-    infoWindow: InfoWindow(
-      title: '種子島空港',
-      snippet: '鹿児島県熊毛郡中種子町にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_74'),
-    position: airport74,
-    infoWindow: InfoWindow(
-      title: '屋久島空港',
-      snippet: '鹿児島県熊毛郡屋久島町にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_75'),
-    position: airport75,
-    infoWindow: InfoWindow(
-      title: '諏訪之瀬島飛行場',
-      snippet: '鹿児島県鹿児島郡十島村にある飛行場',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_76'),
-    position: airport76,
-    infoWindow: InfoWindow(
-      title: '奄美空港',
-      snippet: '鹿児島県奄美市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_77'),
-    position: airport77,
-    infoWindow: InfoWindow(
-      title: '喜界空港',
-      snippet: '鹿児島県大島郡喜界町にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_78'),
-    position: airport78,
-    infoWindow: InfoWindow(
-      title: '徳之島空港',
-      snippet: '鹿児島県大島郡天城町にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_79'),
-    position: airport79,
-    infoWindow: InfoWindow(
-      title: '沖永良部空港',
-      snippet: '鹿児島県大島郡和泊町にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_80'),
-    position: airport80,
-    infoWindow: InfoWindow(
-      title: '与論空港',
-      snippet: '鹿児島県大島郡与論町にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_81'),
-    position: airport81,
-    infoWindow: InfoWindow(
-      title: '那覇空港',
-      snippet: '沖縄県那覇市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_82'),
-    position: airport82,
-    infoWindow: InfoWindow(
-      title: '久米島空港',
-      snippet: '沖縄県島尻郡久米島町にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_83'),
-    position: airport83,
-    infoWindow: InfoWindow(
-      title: '北大東空港',
-      snippet: '沖縄県島尻郡北大東村にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_84'),
-    position: airport84,
-    infoWindow: InfoWindow(
-      title: '南大東空港',
-      snippet: '沖縄県島尻郡南大東村にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_85'),
-    position: airport85,
-    infoWindow: InfoWindow(
-      title: '宮古空港',
-      snippet: '沖縄県宮古島市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_86'),
-    position: airport86,
-    infoWindow: InfoWindow(
-      title: '下地島空港',
-      snippet: '沖縄県宮古島市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_87'),
-    position: airport87,
-    infoWindow: InfoWindow(
-      title: '多良間空港',
-      snippet: '沖縄県宮古郡多良間村にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_88'),
-    position: airport88,
-    infoWindow: InfoWindow(
-      title: '新石垣空港',
-      snippet: '沖縄県石垣市にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_89'),
-    position: airport89,
-    infoWindow: InfoWindow(
-      title: '波照間空港',
-      snippet: '沖縄県八重山郡竹富町にある空港',
-    ),
-  ),
-  const Marker(
-    markerId: MarkerId('marker_90'),
-    position: airport90,
-    infoWindow: InfoWindow(
-      title: '与那国空港',
-      snippet: '沖縄県八重山郡与那国町にある空港',
-    ),
-  ),
-};
+Set<Marker> generateMarkers(BuildContext context) {
+  final airportData = [
+    {
+      'id': 'marker_1',
+      'position': airport1,
+      'title': '新千歳空港',
+      'snippet': '北海道千歳市,苫小牧市にある空港',
+    },
+    {
+      'id': 'marker_2',
+      'position': airport2,
+      'title': '函館空港',
+      'snippet': '北海道函館市にある空港',
+    },
+    {
+      'id': 'marker_3',
+      'position': airport3,
+      'title': '釧路空港',
+      'snippet': '北海道釧路市にある空港',
+    },
+    {
+      'id': 'marker_4',
+      'position': airport4,
+      'title': '旭川空港',
+      'snippet': '北海道旭川市にある空港',
+    },
+    {
+      'id': 'marker_5',
+      'position': airport5,
+      'title': '女満別空港',
+      'snippet': '北海道網走郡大空町にある空港',
+    },
+    {
+      'id': 'marker_6',
+      'position': airport6,
+      'title': '丘珠空港',
+      'snippet': '北海道札幌市にある空港',
+    },
+    {
+      'id': 'marker_7',
+      'position': airport7,
+      'title': '稚内空港',
+      'snippet': '北海道稚内市にある空港',
+    },
+    {
+      'id': 'marker_8',
+      'position': airport8,
+      'title': '帯広空港',
+      'snippet': '北海道帯広市にある空港',
+    },
+    {
+      'id': 'marker_9',
+      'position': airport9,
+      'title': '利尻空港',
+      'snippet': '北海道利尻郡利尻富士町にある空港',
+    },
+    {
+      'id': 'marker_10',
+      'position': airport10,
+      'title': '礼文空港',
+      'snippet': '北海道礼文郡礼文町にある空港',
+    },
+    {
+      'id': 'marker_11',
+      'position': airport11,
+      'title': '紋別空港',
+      'snippet': '北海道紋別市にある空港',
+    },
+    {
+      'id': 'marker_12',
+      'position': airport12,
+      'title': '中標津空港',
+      'snippet': '北海道標津郡中標津町にある空港',
+    },
+    {
+      'id': 'marker_13',
+      'position': airport13,
+      'title': '奥尻空港',
+      'snippet': '北海道奥尻郡奥尻町にある空港',
+    },
+    {
+      'id': 'marker_14',
+      'position': airport14,
+      'title': '青森空港',
+      'snippet': '青森県青森市にある空港',
+    },
+    {
+      'id': 'marker_15',
+      'position': airport15,
+      'title': '三沢飛行場',
+      'snippet': '青森県三沢市にある空港',
+    },
+    {
+      'id': 'marker_16',
+      'position': airport16,
+      'title': '花巻空港',
+      'snippet': '岩手県花巻市にある空港',
+    },
+    {
+      'id': 'marker_17',
+      'position': airport17,
+      'title': '仙台空港',
+      'snippet': '宮城県名取市にある空港',
+    },
+    {
+      'id': 'marker_18',
+      'position': airport18,
+      'title': '大館能代空港',
+      'snippet': '秋田県北秋田市にある空港',
+    },
+    {
+      'id': 'marker_19',
+      'position': airport19,
+      'title': '秋田空港',
+      'snippet': '秋田県秋田市にある空港',
+    },
+    {
+      'id': 'marker_20',
+      'position': airport20,
+      'title': '庄内空港',
+      'snippet': '山形県酒田市にある空港',
+    },
+    {
+      'id': 'marker_21',
+      'position': airport21,
+      'title': '山形空港',
+      'snippet': '山形県東根市にある空港',
+    },
+    {
+      'id': 'marker_22',
+      'position': airport22,
+      'title': '福島空港',
+      'snippet': '福島県玉川村にある空港',
+    },
+    {
+      'id': 'marker_23',
+      'position': airport23,
+      'title': '羽田空港',
+      'snippet': '東京都大田区にある空港',
+    },
+    {
+      'id': 'marker_24',
+      'position': airport24,
+      'title': '大島空港',
+      'snippet': '東京都大島町にある空港',
+    },
+    {
+      'id': 'marker_25',
+      'position': airport25,
+      'title': '新島空港',
+      'snippet': '東京都新島村にある空港',
+    },
+    {
+      'id': 'marker_26',
+      'position': airport26,
+      'title': '神津島空港',
+      'snippet': '東京都神津島村にある空港',
+    },
+    {
+      'id': 'marker_27',
+      'position': airport27,
+      'title': '三宅島空港',
+      'snippet': '東京都三宅村にある空港',
+    },
+    {
+      'id': 'marker_28',
+      'position': airport28,
+      'title': '八丈島空港',
+      'snippet': '東京都八丈町にある空港',
+    },
+    {
+      'id': 'marker_29',
+      'position': airport29,
+      'title': '調布飛行場',
+      'snippet': '東京都調布市にある飛行場',
+    },
+    {
+      'id': 'marker_30',
+      'position': airport30,
+      'title': '成田空港',
+      'snippet': '千葉県成田市にある空港',
+    },
+    {
+      'id': 'marker_31',
+      'position': airport31,
+      'title': '茨城空港',
+      'snippet': '茨城県小美玉市にある空港',
+    },
+    {
+      'id': 'marker_32',
+      'position': airport32,
+      'title': '中部国際空港',
+      'snippet': '愛知県常滑市にある空港',
+    },
+    {
+      'id': 'marker_33',
+      'position': airport33,
+      'title': '県営名古屋空港',
+      'snippet': '愛知県豊山町にある空港',
+    },
+    {
+      'id': 'marker_34',
+      'position': airport34,
+      'title': '松本空港',
+      'snippet': '長野県松本市にある空港',
+    },
+    {
+      'id': 'marker_35',
+      'position': airport35,
+      'title': '新潟空港',
+      'snippet': '新潟県新潟市にある空港',
+    },
+    {
+      'id': 'marker_36',
+      'position': airport36,
+      'title': '佐渡空港',
+      'snippet': '新潟県佐渡市にある空港',
+    },
+    {
+      'id': 'marker_37',
+      'position': airport37,
+      'title': '富山空港',
+      'snippet': '富山県富山市にある空港',
+    },
+    {
+      'id': 'marker_38',
+      'position': airport38,
+      'title': '能登空港',
+      'snippet': '石川県輪島市にある空港',
+    },
+    {
+      'id': 'marker_39',
+      'position': airport39,
+      'title': '小松空港',
+      'snippet': '石川県小松市にある空港',
+    },
+    {
+      'id': 'marker_40',
+      'position': airport40,
+      'title': '福井空港',
+      'snippet': '福井県坂井市にある空港',
+    },
+    {
+      'id': 'marker_41',
+      'position': airport41,
+      'title': '静岡空港',
+      'snippet': '静岡県牧之原市にある空港',
+    },
+    {
+      'id': 'marker_42',
+      'position': airport42,
+      'title': '関西国際空港',
+      'snippet': '大阪府泉佐野市にある空港',
+    },
+    {
+      'id': 'marker_43',
+      'position': airport43,
+      'title': '伊丹空港',
+      'snippet': '兵庫県伊丹市にある空港',
+    },
+    {
+      'id': 'marker_44',
+      'position': airport44,
+      'title': '神戸空港',
+      'snippet': '兵庫県神戸市にある空港',
+    },
+    {
+      'id': 'marker_45',
+      'position': airport45,
+      'title': '但馬飛行場',
+      'snippet': '兵庫県豊岡市にある飛行場',
+    },
+    {
+      'id': 'marker_46',
+      'position': airport46,
+      'title': '南紀白浜空港',
+      'snippet': '和歌山県西牟婁郡白浜町にある空港',
+    },
+    {
+      'id': 'marker_47',
+      'position': airport47,
+      'title': '鳥取空港',
+      'snippet': '鳥取県鳥取市にある空港',
+    },
+    {
+      'id': 'marker_48',
+      'position': airport48,
+      'title': '米子空港',
+      'snippet': '鳥取県境港市にある空港',
+    },
+    {
+      'id': 'marker_49',
+      'position': airport49,
+      'title': '出雲空港',
+      'snippet': '島根県出雲市にある空港',
+    },
+    {
+      'id': 'marker_50',
+      'position': airport50,
+      'title': '石見空港',
+      'snippet': '島根県益田市にある空港',
+    },
+    {
+      'id': 'marker_51',
+      'position': airport51,
+      'title': '隠岐空港',
+      'snippet': '島根県隠岐郡隠岐の島町にある空港',
+    },
+    {
+      'id': 'marker_52',
+      'position': airport52,
+      'title': '岡山空港',
+      'snippet': '岡山県岡山市にある空港',
+    },
+    {
+      'id': 'marker_53',
+      'position': airport53,
+      'title': '広島空港',
+      'snippet': '広島県三原市にある空港',
+    },
+    {
+      'id': 'marker_54',
+      'position': airport54,
+      'title': '岩国飛行場',
+      'snippet': '山口県岩国市にある飛行場',
+    },
+    {
+      'id': 'marker_55',
+      'position': airport55,
+      'title': '山口宇部空港',
+      'snippet': '山口県宇部市にある空港',
+    },
+    {
+      'id': 'marker_56',
+      'position': airport56,
+      'title': '徳島飛行場',
+      'snippet': '徳島県板野郡松茂町にある飛行場',
+    },
+    {
+      'id': 'marker_57',
+      'position': airport57,
+      'title': '高松空港',
+      'snippet': '香川県高松市にある空港',
+    },
+    {
+      'id': 'marker_58',
+      'position': airport58,
+      'title': '松山空港',
+      'snippet': '愛媛県松山市にある空港',
+    },
+    {
+      'id': 'marker_59',
+      'position': airport59,
+      'title': '高知空港',
+      'snippet': '高知県南国市にある空港',
+    },
+    {
+      'id': 'marker_60',
+      'position': airport60,
+      'title': '福岡空港',
+      'snippet': '福岡県福岡市にある空港',
+    },
+    {
+      'id': 'marker_61',
+      'position': airport61,
+      'title': '北九州空港',
+      'snippet': '福岡県北九州市にある空港',
+    },
+    {
+      'id': 'marker_62',
+      'position': airport62,
+      'title': '佐賀空港',
+      'snippet': '佐賀県佐賀市にある空港',
+    },
+    {
+      'id': 'marker_63',
+      'position': airport63,
+      'title': '長崎空港',
+      'snippet': '長崎県大村市にある空港',
+    },
+    {
+      'id': 'marker_64',
+      'position': airport64,
+      'title': '壱岐空港',
+      'snippet': '長崎県壱岐市にある空港',
+    },
+    {
+      'id': 'marker_65',
+      'position': airport65,
+      'title': '対馬空港',
+      'snippet': '長崎県対馬市にある空港',
+    },
+    {
+      'id': 'marker_66',
+      'position': airport66,
+      'title': '福江空港',
+      'snippet': '長崎県五島市にある空港',
+    },
+    {
+      'id': 'marker_67',
+      'position': airport67,
+      'title': '熊本空港',
+      'snippet': '熊本県上益城郡益城町にある空港',
+    },
+    {
+      'id': 'marker_68',
+      'position': airport68,
+      'title': '天草空港',
+      'snippet': '熊本県天草市にある空港',
+    },
+    {
+      'id': 'marker_69',
+      'position': airport69,
+      'title': '大分空港',
+      'snippet': '大分県国東市にある空港',
+    },
+    {
+      'id': 'marker_70',
+      'position': airport70,
+      'title': '宮崎空港',
+      'snippet': '宮崎県宮崎市にある空港',
+    },
+    {
+      'id': 'marker_71',
+      'position': airport71,
+      'title': '鹿児島空港',
+      'snippet': '鹿児島県霧島市にある空港',
+    },
+    {
+      'id': 'marker_72',
+      'position': airport72,
+      'title': '薩摩硫黄島飛行場',
+      'snippet': '鹿児島県鹿児島郡三島村にある飛行場',
+    },
+    {
+      'id': 'marker_73',
+      'position': airport73,
+      'title': '種子島空港',
+      'snippet': '鹿児島県熊毛郡中種子町にある空港',
+    },
+    {
+      'id': 'marker_74',
+      'position': airport74,
+      'title': '屋久島空港',
+      'snippet': '鹿児島県熊毛郡屋久島町にある空港',
+    },
+    {
+      'id': 'marker_75',
+      'position': airport75,
+      'title': '諏訪之瀬島飛行場',
+      'snippet': '鹿児島県鹿児島郡十島村にある飛行場',
+    },
+    {
+      'id': 'marker_76',
+      'position': airport76,
+      'title': '奄美空港',
+      'snippet': '鹿児島県奄美市にある空港',
+    },
+    {
+      'id': 'marker_77',
+      'position': airport77,
+      'title': '喜界空港',
+      'snippet': '鹿児島県大島郡喜界町にある空港',
+    },
+    {
+      'id': 'marker_78',
+      'position': airport78,
+      'title': '徳之島空港',
+      'snippet': '鹿児島県大島郡天城町にある空港',
+    },
+    {
+      'id': 'marker_79',
+      'position': airport79,
+      'title': '沖永良部空港',
+      'snippet': '鹿児島県大島郡和泊町にある空港',
+    },
+    {
+      'id': 'marker_80',
+      'position': airport80,
+      'title': '与論空港',
+      'snippet': '鹿児島県大島郡与論町にある空港',
+    },
+    {
+      'id': 'marker_81',
+      'position': airport81,
+      'title': '那覇空港',
+      'snippet': '沖縄県那覇市にある空港',
+    },
+    {
+      'id': 'marker_82',
+      'position': airport82,
+      'title': '久米島空港',
+      'snippet': '沖縄県島尻郡久米島町にある空港',
+    },
+    {
+      'id': 'marker_83',
+      'position': airport83,
+      'title': '北大東空港',
+      'snippet': '沖縄県島尻郡北大東村にある空港',
+    },
+    {
+      'id': 'marker_84',
+      'position': airport84,
+      'title': '南大東空港',
+      'snippet': '沖縄県島尻郡南大東村にある空港',
+    },
+    {
+      'id': 'marker_85',
+      'position': airport85,
+      'title': '宮古空港',
+      'snippet': '沖縄県宮古島市にある空港',
+    },
+    {
+      'id': 'marker_86',
+      'position': airport86,
+      'title': '下地島空港',
+      'snippet': '沖縄県宮古島市にある空港',
+    },
+    {
+      'id': 'marker_87',
+      'position': airport87,
+      'title': '多良間空港',
+      'snippet': '沖縄県宮古郡多良間村にある空港',
+    },
+    {
+      'id': 'marker_88',
+      'position': airport88,
+      'title': '新石垣空港',
+      'snippet': '沖縄県石垣市にある空港',
+    },
+    {
+      'id': 'marker_89',
+      'position': airport89,
+      'title': '波照間空港',
+      'snippet': '沖縄県八重山郡竹富町にある空港',
+    },
+    {
+      'id': 'marker_90',
+      'position': airport90,
+      'title': '与那国空港',
+      'snippet': '沖縄県八重山郡与那国町にある空港',
+    }
+  ];
 
+  return airportData.map((airport) {
+    return Marker(
+        markerId: MarkerId(airport['id'] as String),
+        position: airport['position'] as LatLng,
+        infoWindow: InfoWindow(
+          title: airport['title'] as String,
+          snippet: airport['snippet'] as String,
+        ),
+        onTap: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            barrierColor: Colors.black.withOpacity(0.2),
+            builder: (context) {
+              return FractionallySizedBox(
+                  heightFactor: 0.5,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.set_destination,
+                          style: const TextStyle(fontSize: 15),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          airport['title'] as String,
+                          style: const TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 230),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context); // BottomSheetを閉じる
+                              },
+                              child: Text(
+                                AppLocalizations.of(context)!.cancel,
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context); // BottomSheetを閉じる
+                                // ここで目的地を確定し、他の処理を実行可能
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          AppLocalizations.of(context)!
+                                              .set_complete)),
+                                );
+                              },
+                              child:
+                                  Text(AppLocalizations.of(context)!.confirm),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ));
+            },
+          );
+        });
+  }).toSet();
+}
+// TODO: マーカーの文字列l10n化
 // TODO: リファクタリング

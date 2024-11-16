@@ -58,6 +58,7 @@ class SearchWindowStateNotifier
         return {
           'lat': location['lat'],
           'lng': location['lng'],
+          'name': data['result']['name'],
         };
       } else {
         //print('Failed to fetch place details: ${response.statusCode}');
