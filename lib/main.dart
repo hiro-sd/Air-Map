@@ -207,7 +207,7 @@ class MapScreen extends ConsumerWidget {
           barrierColor: Colors.black.withOpacity(0.2),
           builder: (context) {
             return FractionallySizedBox(
-                heightFactor: 0.5,
+                heightFactor: 0.48,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
