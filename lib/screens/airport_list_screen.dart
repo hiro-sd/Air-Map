@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:ticket_app/env/env.dart';
 import 'package:ticket_app/riverpod/map_screen_state_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -560,8 +561,9 @@ Set<Marker> generateMarkers(BuildContext context, WidgetRef ref) {
           snippet: airport['snippet'] as String,
         ),
         onTap: () async {
-          String apiKey = 'AIzaSyDQ35E-oPP-Nkitj5vzXor6bSXQd82qmpU';
+          String apiKey = Env.key;
           final String title = airport['title'] as String;
+          final state = ref.watch(mapScreenProvider);
 
           // Place IDの取得
           final placeSearchUrl =
@@ -679,9 +681,11 @@ Set<Marker> generateMarkers(BuildContext context, WidgetRef ref) {
                                     .updateSelectedDestination(
                                       title,
                                     );
-                                ref
-                                    .read(mapScreenProvider.notifier)
-                                    .toggleTmp();
+                                !state.tmp
+                                    ? ref
+                                        .read(mapScreenProvider.notifier)
+                                        .toggleTmp()
+                                    : null;
                                 Navigator.pop(context); // BottomSheetを閉じる
                               },
                               child:
@@ -697,4 +701,5 @@ Set<Marker> generateMarkers(BuildContext context, WidgetRef ref) {
         });
   }).toSet();
 }
+
 // TODO: リファクタリング

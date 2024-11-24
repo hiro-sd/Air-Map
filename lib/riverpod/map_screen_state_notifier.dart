@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:ticket_app/env/env.dart';
 
 // MapScreenの状態を管理するStateNotifier
 class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
@@ -19,7 +20,7 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
 
   Position? currentPosition;
   GoogleMapController? mapController;
-  String apiKey = 'AIzaSyDQ35E-oPP-Nkitj5vzXor6bSXQd82qmpU';
+  String apiKey = Env.key;
 
   void toggleTmp() {
     state = state.copyWith(tmp: !state.tmp);
@@ -137,6 +138,7 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
                 'https://maps.googleapis.com/maps/api/place/photo?maxheight=400&maxwidth=400&photoreference=$photoRef&key=$apiKey')
             .toList() ??
         [];
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -210,7 +212,7 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
                     ElevatedButton(
                       onPressed: () {
                         updateSelectedDestination(placeName);
-                        toggleTmp();
+                        !state.tmp ? toggleTmp() : null;
                         Navigator.pop(context); // BottomSheetを閉じる
                       },
                       child: Text(AppLocalizations.of(context)!.confirm),
@@ -251,14 +253,24 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
               title: result['name'],
               snippet: result['vicinity'],
             ),
-            onTap: () {
-              final List<String> photoRefs =
-                  (result['photos'] as List<dynamic>?)
-                          ?.map((photo) => photo['photo_reference'] as String)
-                          .toList() ??
-                      [];
+            onTap: () async {
+              //nearbySearchではphoto_referenceが1つしか取得できないため、placeDetailsで写真を取得
+              final placeId = result['place_id'];
+              final detailsUrl =
+                  'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=photos&key=$apiKey';
+              final detailsResponse = await http.get(Uri.parse(detailsUrl));
+              final detailsData = jsonDecode(detailsResponse.body);
+              if (detailsData['status'] != 'OK') {
+                return;
+              }
+              final photos = detailsData['result']['photos'] as List<dynamic>?;
+              final List<String> photoRefs = (photos)
+                      ?.map((photo) => photo['photo_reference'] as String)
+                      .toList() ??
+                  [];
 
               showMarkerDetails(
+                // ignore: use_build_context_synchronously
                 context,
                 result['name'],
                 photoRefs,

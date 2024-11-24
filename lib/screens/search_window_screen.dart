@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:ticket_app/riverpod/map_screen_state_notifier.dart';
 import 'package:ticket_app/riverpod/search_window_state_notifier.dart';
 
 // 検索ウィンドウを表示する画面
@@ -35,6 +36,7 @@ class _SearchWindowState extends ConsumerState<SearchWindow> {
   @override
   Widget build(BuildContext context) {
     final suggestions = ref.watch(searchWindowProvider); // 候補リストの監視
+    final state = ref.watch(mapScreenProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -93,7 +95,9 @@ class _SearchWindowState extends ConsumerState<SearchWindow> {
                   icon: const Icon(Icons.search),
                   onPressed: () {},
                 ),
-                //hintText: AppLocalizations.of(context)!.search_airport,
+                hintText: state.tmp
+                    ? AppLocalizations.of(context)!.search_departing_airport
+                    : AppLocalizations.of(context)!.search_airport,
                 hintStyle: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
@@ -140,9 +144,10 @@ class _SearchWindowState extends ConsumerState<SearchWindow> {
                               .fetchSuggestions('');
 
                           // GoogleMapが表示されている画面に戻る
-                          // ignore: use_build_context_synchronously
                           Navigator.pop(
-                              context, placeDetails); // placeDetailsを渡す
+                              // ignore: use_build_context_synchronously
+                              context,
+                              placeDetails); // placeDetailsを渡す
                         }
                       },
                     ),

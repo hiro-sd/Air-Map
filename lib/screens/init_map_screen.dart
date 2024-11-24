@@ -101,36 +101,36 @@ class MapScreen extends ConsumerWidget {
                       offset: Offset(10, 10))
                 ],
               ),
+              // 検索ウィンドウ
               child: TextButton(
-                // 検索フォーム
                 onPressed: () {
+                  // TODO: 行き先設定の時と出発地設定の時のロジック
                   if (state.tmp) {
-                    // tmpをfalseにしておかないとおかしなことになる
                     ref.read(mapScreenProvider.notifier).toggleTmp();
                   }
                   openSearchWindow();
                 },
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      const Icon(
-                        Icons.search,
-                        color: Color.fromARGB(255, 100, 100, 100),
-                      ),
-                      Flexible(
-                        child: Text(
-                          state.tmp
-                              ? AppLocalizations.of(context)!
-                                  .search_departing_airport
-                              : AppLocalizations.of(context)!.search_airport,
-                          style: const TextStyle(
-                              color: Color.fromARGB(255, 100, 100, 100),
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ]),
+                child: Row(children: [
+                  const SizedBox(width: 7.5),
+                  const Icon(
+                    Icons.search,
+                    color: Color.fromARGB(255, 100, 100, 100),
+                  ),
+                  const SizedBox(width: 17.5),
+                  Flexible(
+                    child: Text(
+                      state.tmp
+                          ? AppLocalizations.of(context)!
+                              .search_departing_airport
+                          : AppLocalizations.of(context)!.search_airport,
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 100, 100, 100),
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ]),
               ),
             ),
             state.tmp ? const SizedBox(height: 15) : const SizedBox(height: 0),
@@ -265,7 +265,7 @@ class MapScreen extends ConsumerWidget {
   }
 }
 
-// TODO: fetchAirportsの時にmarkerで表示される写真が一枚しかない問題。
+// TODO: ダークモード対応
 // TODO: 出発する空港をピンor円の内部の空港で指定する。 (円内部の空港→画面中心の座標から半径300以内に位置する場所？)
 // TODO: 出発する空港と行き先を指定したら、適切な経路や値段を表示する。
 // TODO: GoogleMapを長押しでもピンを指して、目的地設定できるようにする。

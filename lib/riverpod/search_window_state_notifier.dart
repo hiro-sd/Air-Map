@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ticket_app/env/env.dart';
 
 // SearchWindowの状態を管理するStateNotifier
 class SearchWindowStateNotifier
     extends StateNotifier<List<Map<String, dynamic>>> {
   SearchWindowStateNotifier() : super([]);
 
-  String apiKey = 'AIzaSyDQ35E-oPP-Nkitj5vzXor6bSXQd82qmpU';
+  String apiKey = Env.key;
 
   // 検索候補の取得
   Future<void> fetchSuggestions(String input) async {
