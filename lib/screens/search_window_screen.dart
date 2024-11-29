@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:ticket_app/riverpod/map_screen_state_notifier.dart';
 import 'package:ticket_app/riverpod/search_window_state_notifier.dart';
 
 // 検索ウィンドウを表示する画面
 class SearchWindow extends ConsumerStatefulWidget {
-  const SearchWindow({super.key});
+  final String hintText;
+  const SearchWindow({required this.hintText, super.key});
 
   @override
   ConsumerState<SearchWindow> createState() => _SearchWindowState();
@@ -36,15 +36,15 @@ class _SearchWindowState extends ConsumerState<SearchWindow> {
   @override
   Widget build(BuildContext context) {
     final suggestions = ref.watch(searchWindowProvider); // 候補リストの監視
-    final state = ref.watch(mapScreenProvider);
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.teal[100],
+        backgroundColor:
+            Theme.of(context).colorScheme.primary, //Colors.teal[100],
         title: Text(
           AppLocalizations.of(context)!.title,
-          style: const TextStyle(
-            color: Colors.black,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onPrimary, //Colors.black,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -52,7 +52,7 @@ class _SearchWindowState extends ConsumerState<SearchWindow> {
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
-              icon: const Icon(Icons.arrow_back_ios),
+              icon: const Icon(Icons.arrow_back_ios_new),
               onPressed: () {
                 Navigator.pop(context);
               },
@@ -62,7 +62,7 @@ class _SearchWindowState extends ConsumerState<SearchWindow> {
       ),
       body: Column(
         children: [
-          const SizedBox(height: 10),
+          const SizedBox(height: 15),
           Container(
             width: MediaQuery.of(context).size.width * 0.8,
             alignment: Alignment.centerLeft,
@@ -95,9 +95,7 @@ class _SearchWindowState extends ConsumerState<SearchWindow> {
                   icon: const Icon(Icons.search),
                   onPressed: () {},
                 ),
-                hintText: state.tmp
-                    ? AppLocalizations.of(context)!.search_departing_airport
-                    : AppLocalizations.of(context)!.search_airport,
+                hintText: widget.hintText,
                 hintStyle: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
@@ -110,7 +108,7 @@ class _SearchWindowState extends ConsumerState<SearchWindow> {
           const SizedBox(height: 10),
           Expanded(
               child: ListView.builder(
-            shrinkWrap: true,
+            //shrinkWrap: true,
             itemCount: suggestions.length,
             itemBuilder: (context, index) {
               final suggestion = suggestions[index];

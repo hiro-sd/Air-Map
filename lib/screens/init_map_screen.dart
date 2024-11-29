@@ -7,18 +7,24 @@ import 'package:ticket_app/screens/search_window_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 // 初めに表示するmapScreen
-class MapScreen extends ConsumerWidget {
-  const MapScreen({super.key});
+class InitMapScreen extends ConsumerWidget {
+  const InitMapScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(mapScreenProvider);
+    bool? whichTap;
 
-    Future<void> openSearchWindow() async {
+    Future<void> openSearchWindow(String tmp) async {
       final placeDetails = await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const SearchWindow(),
+          builder: (context) => whichTap!
+              ? SearchWindow(
+                  hintText:
+                      AppLocalizations.of(context)!.search_departing_airport)
+              : SearchWindow(
+                  hintText: AppLocalizations.of(context)!.search_airport),
         ),
       );
 
@@ -39,17 +45,19 @@ class MapScreen extends ConsumerWidget {
               context,
               placeName,
               placePhoto,
+              tmp,
             );
       }
     }
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.teal[100],
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        //backgroundColor: Colors.teal[100],
         title: Text(
           AppLocalizations.of(context)!.title,
-          style: const TextStyle(
-            color: Colors.black,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onPrimary, //Colors.black,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -78,9 +86,14 @@ class MapScreen extends ConsumerWidget {
               width: 300,
               height: 300,
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.2),
-                border:
-                    Border.all(color: Colors.blue.withOpacity(0.8), width: 3),
+                color: Theme.of(context)
+                    .colorScheme
+                    .primary
+                    .withOpacity(0.2), //Colors.blue.withOpacity(0.2),
+                border: Border.all(
+                    color:
+                        Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                    width: 3),
                 shape: BoxShape.circle,
               ),
             ),
@@ -104,27 +117,26 @@ class MapScreen extends ConsumerWidget {
               // 検索ウィンドウ
               child: TextButton(
                 onPressed: () {
-                  // TODO: 行き先設定の時と出発地設定の時のロジック
-                  if (state.tmp) {
-                    ref.read(mapScreenProvider.notifier).toggleTmp();
-                  }
-                  openSearchWindow();
+                  whichTap = true;
+                  openSearchWindow('tmpTakeoff');
                 },
                 child: Row(children: [
                   const SizedBox(width: 7.5),
-                  const Icon(
-                    Icons.search,
-                    color: Color.fromARGB(255, 100, 100, 100),
+                  Icon(
+                    state.tmpTakeoff ? Icons.flight_takeoff : Icons.search,
+                    color: const Color.fromARGB(255, 100, 100, 100),
                   ),
                   const SizedBox(width: 17.5),
                   Flexible(
                     child: Text(
-                      state.tmp
-                          ? AppLocalizations.of(context)!
-                              .search_departing_airport
-                          : AppLocalizations.of(context)!.search_airport,
-                      style: const TextStyle(
-                          color: Color.fromARGB(255, 100, 100, 100),
+                      state.tmpTakeoff
+                          ? state.selectedDeparture!
+                          : AppLocalizations.of(context)!
+                              .search_departing_airport,
+                      style: TextStyle(
+                          color: state.tmpTakeoff
+                              ? Colors.black
+                              : const Color.fromARGB(255, 100, 100, 100),
                           fontSize: 13,
                           fontWeight: FontWeight.bold),
                       overflow: TextOverflow.ellipsis,
@@ -133,48 +145,50 @@ class MapScreen extends ConsumerWidget {
                 ]),
               ),
             ),
-            state.tmp ? const SizedBox(height: 15) : const SizedBox(height: 0),
-            state.tmp
-                ? Container(
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(30),
-                      boxShadow: const [
-                        BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 10.0,
-                            spreadRadius: 1.0,
-                            offset: Offset(10, 10))
-                      ],
+            const SizedBox(height: 15),
+            Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: const [
+                  BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 10.0,
+                      spreadRadius: 1.0,
+                      offset: Offset(10, 10))
+                ],
+              ),
+              child: TextButton(
+                // 検索フォーム
+                onPressed: () {
+                  whichTap = false;
+                  openSearchWindow('tmpLand');
+                },
+                child: Row(children: [
+                  const SizedBox(width: 7.5),
+                  Icon(
+                    state.tmpLand ? Icons.flight_land : Icons.search,
+                    color: const Color.fromARGB(255, 100, 100, 100),
+                  ),
+                  const SizedBox(width: 17.5),
+                  Flexible(
+                    child: Text(
+                      state.tmpLand
+                          ? state.selectedDestination!
+                          : AppLocalizations.of(context)!.search_airport,
+                      style: TextStyle(
+                          color: state.tmpLand
+                              ? Colors.black
+                              : const Color.fromARGB(255, 100, 100, 100),
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    child: TextButton(
-                      // 検索フォーム
-                      onPressed: () {
-                        ref.read(mapScreenProvider.notifier).toggleTmp();
-                        openSearchWindow();
-                      },
-                      child: Row(children: [
-                        const SizedBox(width: 7.5),
-                        const Icon(
-                          Icons.pin_drop,
-                          color: Color.fromARGB(255, 100, 100, 100),
-                        ),
-                        const SizedBox(width: 17.5),
-                        Flexible(
-                          child: Text(
-                            state.selectedDestination!,
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ]),
-                    ),
-                  )
-                : const SizedBox(height: 0),
+                  ),
+                ]),
+              ),
+            )
           ])),
           Positioned(
             // 地図に表示されるマーカーを切り替えるボタン
@@ -233,11 +247,11 @@ class MapScreen extends ConsumerWidget {
                       });
                 }
               },
-              backgroundColor: Colors.white,
+              //backgroundColor: Colors.white,
               child: const Icon(
                 Icons.local_airport,
                 size: 27.5,
-                color: Color.fromARGB(255, 100, 100, 100),
+                //color: Color.fromARGB(255, 100, 100, 100),
               ),
             ),
           ),
@@ -251,11 +265,11 @@ class MapScreen extends ConsumerWidget {
               onPressed: () {
                 ref.read(mapScreenProvider.notifier).getCurrentLocation();
               },
-              backgroundColor: Colors.white,
+              //backgroundColor: //Colors.white,
               child: const Icon(
                 Icons.my_location,
                 size: 27.5,
-                color: Color.fromARGB(255, 100, 100, 100),
+                //color: Color.fromARGB(255, 100, 100, 100),
               ),
             ),
           ),
@@ -265,7 +279,6 @@ class MapScreen extends ConsumerWidget {
   }
 }
 
-// TODO: ダークモード対応
 // TODO: 出発する空港をピンor円の内部の空港で指定する。 (円内部の空港→画面中心の座標から半径300以内に位置する場所？)
 // TODO: 出発する空港と行き先を指定したら、適切な経路や値段を表示する。
 // TODO: GoogleMapを長押しでもピンを指して、目的地設定できるようにする。

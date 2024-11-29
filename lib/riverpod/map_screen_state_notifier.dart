@@ -11,19 +11,24 @@ import 'package:ticket_app/env/env.dart';
 class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
   MapScreenStateNotifier()
       : super(MapScreenState(
-          markers: {},
-          circleCenter: const LatLng(35.6895, 139.6917), // 初期位置（東京）
-          showAllAirports: false,
-          selectedDestination: null,
-          tmp: false,
-        ));
+            markers: {},
+            circleCenter: const LatLng(35.6895, 139.6917), // 初期位置（東京）
+            showAllAirports: false,
+            selectedDeparture: null,
+            selectedDestination: null,
+            tmpTakeoff: false,
+            tmpLand: false));
 
   Position? currentPosition;
   GoogleMapController? mapController;
   String apiKey = Env.key;
 
-  void toggleTmp() {
-    state = state.copyWith(tmp: !state.tmp);
+  void toggleTmpTakeoff() {
+    state = state.copyWith(tmpTakeoff: !state.tmpTakeoff);
+  }
+
+  void toggleTmpLand() {
+    state = state.copyWith(tmpLand: !state.tmpLand);
   }
 
   void updateMarkers(Set<Marker> newMarkers) {
@@ -42,6 +47,7 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
     );
   }
 
+// 近くの空港マーカーに切り替える
   Future<void> switchToNearbyAirports(BuildContext context) async {
     await fetchAirports(context);
     state = state.copyWith(showAllAirports: false);
@@ -49,6 +55,10 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
 
   void updateSelectedDestination(String? destination) {
     state = state.copyWith(selectedDestination: destination);
+  }
+
+  void updateselectedDeparture(String? departure) {
+    state = state.copyWith(selectedDeparture: departure);
   }
 
   // GoogleMapのカメラを指定された位置に移動させる関数
@@ -131,8 +141,8 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
     }
   }
 
-  void showMarkerDetails(
-      BuildContext context, dynamic placeName, List<String>? photoRefs) {
+  void showMarkerDetails(BuildContext context, dynamic placeName,
+      List<String>? photoRefs, String tmp) {
     List<String> photoUrls = photoRefs
             ?.map((photoRef) =>
                 'https://maps.googleapis.com/maps/api/place/photo?maxheight=400&maxwidth=400&photoreference=$photoRef&key=$apiKey')
@@ -155,7 +165,11 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  AppLocalizations.of(context)!.set_destination,
+                  tmp == 'tmpTakeoff'
+                      ? AppLocalizations.of(context)!.set_departure
+                      : tmp == 'tmpLand'
+                          ? AppLocalizations.of(context)!.set_destination
+                          : AppLocalizations.of(context)!.set_location,
                   style: const TextStyle(fontSize: 15),
                 ),
                 const SizedBox(height: 10),
@@ -211,8 +225,13 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        updateSelectedDestination(placeName);
-                        !state.tmp ? toggleTmp() : null;
+                        if (tmp == 'tmpTakeoff') {
+                          updateselectedDeparture(placeName);
+                          state.tmpTakeoff ? null : toggleTmpTakeoff();
+                        } else if (tmp == 'tmpLand') {
+                          updateSelectedDestination(placeName);
+                          state.tmpLand ? null : toggleTmpLand();
+                        }
                         Navigator.pop(context); // BottomSheetを閉じる
                       },
                       child: Text(AppLocalizations.of(context)!.confirm),
@@ -268,12 +287,120 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
                       ?.map((photo) => photo['photo_reference'] as String)
                       .toList() ??
                   [];
+              List<String> photoUrls = photoRefs
+                  .map((photoRef) =>
+                      'https://maps.googleapis.com/maps/api/place/photo?maxheight=400&maxwidth=400&photoreference=$photoRef&key=$apiKey')
+                  .toList();
 
-              showMarkerDetails(
+              showModalBottomSheet(
                 // ignore: use_build_context_synchronously
-                context,
-                result['name'],
-                photoRefs,
+                context: context,
+                isScrollControlled: true,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+                barrierColor: Colors.black.withOpacity(0.2),
+                builder: (context) {
+                  return FractionallySizedBox(
+                      heightFactor: 0.7,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)!.set_location,
+                              style: const TextStyle(fontSize: 15),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              result['name'],
+                              style: const TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 10),
+                            if (photoUrls.isNotEmpty)
+                              SizedBox(
+                                height: 400,
+                                child: PageView.builder(
+                                  itemCount: photoUrls.length,
+                                  itemBuilder: (context, index) {
+                                    return Image.network(
+                                      photoUrls[index],
+                                      fit: BoxFit.cover,
+                                      loadingBuilder:
+                                          (context, child, loadingProgress) {
+                                        if (loadingProgress == null)
+                                          return child;
+                                        return Center(
+                                          child: CircularProgressIndicator(
+                                            value: loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null
+                                                ? loadingProgress
+                                                        .cumulativeBytesLoaded /
+                                                    (loadingProgress
+                                                            .expectedTotalBytes ??
+                                                        1)
+                                                : null,
+                                          ),
+                                        );
+                                      },
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return Text(
+                                            AppLocalizations.of(context)!
+                                                .failed_to_load_image);
+                                      },
+                                    );
+                                  },
+                                ),
+                              )
+                            else
+                              Text(AppLocalizations.of(context)!
+                                  .no_photo), // 写真がない場合の表示
+                            const SizedBox(height: 10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                ElevatedButton(
+                                    onPressed: () {
+                                      updateselectedDeparture(
+                                        result['name'],
+                                      );
+                                      if (!state.tmpTakeoff) {
+                                        toggleTmpTakeoff();
+                                      }
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(AppLocalizations.of(context)!
+                                        .departure)),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context); // BottomSheetを閉じる
+                                  },
+                                  child: Text(
+                                    AppLocalizations.of(context)!.cancel,
+                                  ),
+                                ),
+                                ElevatedButton(
+                                    onPressed: () {
+                                      updateSelectedDestination(
+                                        result['name'],
+                                      );
+                                      if (!state.tmpLand) {
+                                        toggleTmpLand();
+                                      }
+                                      Navigator.pop(context); // BottomSheetを閉じる
+                                    },
+                                    child: Text(AppLocalizations.of(context)!
+                                        .destination)),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ));
+                },
               );
             },
           );
@@ -299,15 +426,19 @@ class MapScreenState {
   final Set<Marker> markers;
   final LatLng circleCenter;
   final bool showAllAirports;
+  final String? selectedDeparture;
   final String? selectedDestination;
-  final bool tmp;
+  final bool tmpTakeoff;
+  final bool tmpLand;
 
   MapScreenState({
     required this.markers,
     required this.circleCenter,
     required this.showAllAirports,
+    required this.selectedDeparture,
     this.selectedDestination,
-    required this.tmp,
+    required this.tmpTakeoff,
+    required this.tmpLand,
   });
 
   // 状態を部分的に更新するためのcopyWithメソッド
@@ -315,15 +446,19 @@ class MapScreenState {
     Set<Marker>? markers,
     LatLng? circleCenter,
     bool? showAllAirports,
+    String? selectedDeparture,
     String? selectedDestination,
-    bool? tmp,
+    bool? tmpTakeoff,
+    bool? tmpLand,
   }) {
     return MapScreenState(
       markers: markers ?? this.markers,
       circleCenter: circleCenter ?? this.circleCenter,
       showAllAirports: showAllAirports ?? this.showAllAirports,
+      selectedDeparture: selectedDeparture ?? this.selectedDeparture,
       selectedDestination: selectedDestination ?? this.selectedDestination,
-      tmp: tmp ?? this.tmp,
+      tmpTakeoff: tmpTakeoff ?? this.tmpTakeoff,
+      tmpLand: tmpLand ?? this.tmpLand,
     );
   }
 }

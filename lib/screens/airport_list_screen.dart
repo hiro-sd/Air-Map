@@ -615,7 +615,7 @@ Set<Marker> generateMarkers(BuildContext context, WidgetRef ref) {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          AppLocalizations.of(context)!.set_destination,
+                          AppLocalizations.of(context)!.set_location,
                           style: const TextStyle(fontSize: 15),
                         ),
                         const SizedBox(height: 10),
@@ -667,6 +667,22 @@ Set<Marker> generateMarkers(BuildContext context, WidgetRef ref) {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             ElevatedButton(
+                                onPressed: () {
+                                  ref
+                                      .read(mapScreenProvider.notifier)
+                                      .updateselectedDeparture(
+                                        title,
+                                      );
+                                  if (!state.tmpTakeoff) {
+                                    ref
+                                        .read(mapScreenProvider.notifier)
+                                        .toggleTmpTakeoff();
+                                  }
+                                  Navigator.pop(context);
+                                },
+                                child: Text(
+                                    AppLocalizations.of(context)!.departure)),
+                            ElevatedButton(
                               onPressed: () {
                                 Navigator.pop(context); // BottomSheetを閉じる
                               },
@@ -675,22 +691,21 @@ Set<Marker> generateMarkers(BuildContext context, WidgetRef ref) {
                               ),
                             ),
                             ElevatedButton(
-                              onPressed: () {
-                                ref
-                                    .read(mapScreenProvider.notifier)
-                                    .updateSelectedDestination(
-                                      title,
-                                    );
-                                !state.tmp
-                                    ? ref
+                                onPressed: () {
+                                  ref
+                                      .read(mapScreenProvider.notifier)
+                                      .updateSelectedDestination(
+                                        title,
+                                      );
+                                  if (!state.tmpLand) {
+                                    ref
                                         .read(mapScreenProvider.notifier)
-                                        .toggleTmp()
-                                    : null;
-                                Navigator.pop(context); // BottomSheetを閉じる
-                              },
-                              child:
-                                  Text(AppLocalizations.of(context)!.confirm),
-                            ),
+                                        .toggleTmpLand();
+                                  }
+                                  Navigator.pop(context); // BottomSheetを閉じる
+                                },
+                                child: Text(
+                                    AppLocalizations.of(context)!.destination)),
                           ],
                         ),
                       ],
