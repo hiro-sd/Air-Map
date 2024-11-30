@@ -6,12 +6,15 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:ticket_app/env/env.dart';
+import 'package:ticket_app/repo/modal_sheet.dart';
 
 // MapScreenの状態を管理するStateNotifier
 class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
   MapScreenStateNotifier()
       : super(MapScreenState(
             markers: {},
+            departureMarkers: {},
+            destinationMarkers: {},
             circleCenter: const LatLng(35.6895, 139.6917), // 初期位置（東京）
             showAllAirports: false,
             selectedDeparture: null,
@@ -41,6 +44,7 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
 
 // 全国の空港マーカーに切り替える
   void switchToAllAirports(Set<Marker> allAirports) {
+    clearMarkers();
     state = state.copyWith(
       markers: allAirports,
       showAllAirports: true,
@@ -48,8 +52,9 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
   }
 
 // 近くの空港マーカーに切り替える
-  Future<void> switchToNearbyAirports(BuildContext context) async {
-    await fetchAirports(context);
+  Future<void> switchToNearbyAirports(
+      BuildContext context, WidgetRef ref) async {
+    await fetchAirports(context, ref);
     state = state.copyWith(showAllAirports: false);
   }
 
@@ -63,7 +68,7 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
 
   // GoogleMapのカメラを指定された位置に移動させる関数
   void moveCameraToPosition(
-      BuildContext context, LatLng position, String? markerTitle) {
+      BuildContext context, LatLng position, String? markerTitle, String tmp) {
     if (mapController != null) {
       mapController!.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(target: position, zoom: 15),
@@ -78,9 +83,13 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
               AppLocalizations.of(context)!.selected_location, // マーカーのタイトル
         ),
       );
-
       // 現在のマーカーセットに追加
-      state = state.copyWith(markers: {newMarker}); // Riverpodの状態を更新
+      tmp == 'tmpTakeoff'
+          ? state.departureMarkers = {newMarker}
+          : state.destinationMarkers = {newMarker};
+      final showedMarkers =
+          state.departureMarkers.union(state.destinationMarkers);
+      state = state.copyWith(markers: showedMarkers); // Riverpodの状態を更新
     }
   }
 
@@ -141,113 +150,18 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
     }
   }
 
-  void showMarkerDetails(BuildContext context, dynamic placeName,
+  void showMarkerDetails(BuildContext context, WidgetRef ref, dynamic placeName,
       List<String>? photoRefs, String tmp) {
     List<String> photoUrls = photoRefs
             ?.map((photoRef) =>
                 'https://maps.googleapis.com/maps/api/place/photo?maxheight=400&maxwidth=400&photoreference=$photoRef&key=$apiKey')
             .toList() ??
         [];
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      barrierColor: Colors.black.withOpacity(0.2),
-      builder: (context) {
-        return FractionallySizedBox(
-          heightFactor: 0.70,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  tmp == 'tmpTakeoff'
-                      ? AppLocalizations.of(context)!.set_departure
-                      : tmp == 'tmpLand'
-                          ? AppLocalizations.of(context)!.set_destination
-                          : AppLocalizations.of(context)!.set_location,
-                  style: const TextStyle(fontSize: 15),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  placeName,
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 10),
-                if (photoUrls.isNotEmpty)
-                  SizedBox(
-                    height: 400,
-                    child: PageView.builder(
-                      itemCount: photoUrls.length,
-                      itemBuilder: (context, index) {
-                        return Image.network(
-                          photoUrls[index],
-                          fit: BoxFit.cover,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Center(
-                              child: CircularProgressIndicator(
-                                value: loadingProgress.expectedTotalBytes !=
-                                        null
-                                    ? loadingProgress.cumulativeBytesLoaded /
-                                        (loadingProgress.expectedTotalBytes ??
-                                            1)
-                                    : null,
-                              ),
-                            );
-                          },
-                          errorBuilder: (context, error, stackTrace) {
-                            return Text(AppLocalizations.of(context)!
-                                .failed_to_load_image);
-                          },
-                        );
-                      },
-                    ),
-                  )
-                else
-                  Text(AppLocalizations.of(context)!.no_photo), // 写真がない場合の表示
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context); // BottomSheetを閉じる
-                      },
-                      child: Text(
-                        AppLocalizations.of(context)!.cancel,
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (tmp == 'tmpTakeoff') {
-                          updateselectedDeparture(placeName);
-                          state.tmpTakeoff ? null : toggleTmpTakeoff();
-                        } else if (tmp == 'tmpLand') {
-                          updateSelectedDestination(placeName);
-                          state.tmpLand ? null : toggleTmpLand();
-                        }
-                        Navigator.pop(context); // BottomSheetを閉じる
-                      },
-                      child: Text(AppLocalizations.of(context)!.confirm),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+    showCustomBottomSheet(context, ref, tmp, placeName, photoUrls);
   }
 
   // 半径50km以内の空港データの取得
-  Future<void> fetchAirports(BuildContext context) async {
+  Future<void> fetchAirports(BuildContext context, WidgetRef ref) async {
     if (currentPosition == null) return;
 
     double lat = currentPosition!.latitude;
@@ -292,116 +206,13 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
                       'https://maps.googleapis.com/maps/api/place/photo?maxheight=400&maxwidth=400&photoreference=$photoRef&key=$apiKey')
                   .toList();
 
-              showModalBottomSheet(
-                // ignore: use_build_context_synchronously
-                context: context,
-                isScrollControlled: true,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                ),
-                barrierColor: Colors.black.withOpacity(0.2),
-                builder: (context) {
-                  return FractionallySizedBox(
-                      heightFactor: 0.7,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              AppLocalizations.of(context)!.set_location,
-                              style: const TextStyle(fontSize: 15),
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              result['name'],
-                              style: const TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 10),
-                            if (photoUrls.isNotEmpty)
-                              SizedBox(
-                                height: 400,
-                                child: PageView.builder(
-                                  itemCount: photoUrls.length,
-                                  itemBuilder: (context, index) {
-                                    return Image.network(
-                                      photoUrls[index],
-                                      fit: BoxFit.cover,
-                                      loadingBuilder:
-                                          (context, child, loadingProgress) {
-                                        if (loadingProgress == null)
-                                          return child;
-                                        return Center(
-                                          child: CircularProgressIndicator(
-                                            value: loadingProgress
-                                                        .expectedTotalBytes !=
-                                                    null
-                                                ? loadingProgress
-                                                        .cumulativeBytesLoaded /
-                                                    (loadingProgress
-                                                            .expectedTotalBytes ??
-                                                        1)
-                                                : null,
-                                          ),
-                                        );
-                                      },
-                                      errorBuilder:
-                                          (context, error, stackTrace) {
-                                        return Text(
-                                            AppLocalizations.of(context)!
-                                                .failed_to_load_image);
-                                      },
-                                    );
-                                  },
-                                ),
-                              )
-                            else
-                              Text(AppLocalizations.of(context)!
-                                  .no_photo), // 写真がない場合の表示
-                            const SizedBox(height: 10),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                ElevatedButton(
-                                    onPressed: () {
-                                      updateselectedDeparture(
-                                        result['name'],
-                                      );
-                                      if (!state.tmpTakeoff) {
-                                        toggleTmpTakeoff();
-                                      }
-                                      Navigator.pop(context);
-                                    },
-                                    child: Text(AppLocalizations.of(context)!
-                                        .departure)),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.pop(context); // BottomSheetを閉じる
-                                  },
-                                  child: Text(
-                                    AppLocalizations.of(context)!.cancel,
-                                  ),
-                                ),
-                                ElevatedButton(
-                                    onPressed: () {
-                                      updateSelectedDestination(
-                                        result['name'],
-                                      );
-                                      if (!state.tmpLand) {
-                                        toggleTmpLand();
-                                      }
-                                      Navigator.pop(context); // BottomSheetを閉じる
-                                    },
-                                    child: Text(AppLocalizations.of(context)!
-                                        .destination)),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ));
-                },
-              );
+              showCustomBottomSheet(
+                  // ignore: use_build_context_synchronously
+                  context,
+                  ref,
+                  null,
+                  result['name'],
+                  photoUrls);
             },
           );
           newMarkers.add(marker);
@@ -424,6 +235,8 @@ final mapScreenProvider =
 
 class MapScreenState {
   final Set<Marker> markers;
+  Set<Marker> departureMarkers;
+  Set<Marker> destinationMarkers;
   final LatLng circleCenter;
   final bool showAllAirports;
   final String? selectedDeparture;
@@ -433,6 +246,8 @@ class MapScreenState {
 
   MapScreenState({
     required this.markers,
+    required this.departureMarkers,
+    required this.destinationMarkers,
     required this.circleCenter,
     required this.showAllAirports,
     required this.selectedDeparture,
@@ -453,6 +268,8 @@ class MapScreenState {
   }) {
     return MapScreenState(
       markers: markers ?? this.markers,
+      departureMarkers: departureMarkers,
+      destinationMarkers: destinationMarkers,
       circleCenter: circleCenter ?? this.circleCenter,
       showAllAirports: showAllAirports ?? this.showAllAirports,
       selectedDeparture: selectedDeparture ?? this.selectedDeparture,

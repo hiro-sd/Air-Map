@@ -38,11 +38,13 @@ class InitMapScreen extends ConsumerWidget {
               context,
               destination,
               placeName, // マーカーに表示するタイトル
+              tmp,
             );
 
         // マーカーをタップした時の処理(ModalBottomSheetを表示)
         ref.read(mapScreenProvider.notifier).showMarkerDetails(
               context,
+              ref,
               placeName,
               placePhoto,
               tmp,
@@ -53,7 +55,6 @@ class InitMapScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        //backgroundColor: Colors.teal[100],
         title: Text(
           AppLocalizations.of(context)!.title,
           style: TextStyle(
@@ -224,7 +225,7 @@ class InitMapScreen extends ConsumerWidget {
                       });
                 } else {
                   // 現在地周辺の空港に切り替え
-                  await notifier.switchToNearbyAirports(context);
+                  await notifier.switchToNearbyAirports(context, ref);
                   showDialog(
                       // ignore: use_build_context_synchronously
                       context: context,
@@ -279,6 +280,7 @@ class InitMapScreen extends ConsumerWidget {
   }
 }
 
+// TODO: ウィンドウ埋めた後のロジック
 // TODO: 出発する空港をピンor円の内部の空港で指定する。 (円内部の空港→画面中心の座標から半径300以内に位置する場所？)
 // TODO: 出発する空港と行き先を指定したら、適切な経路や値段を表示する。
 // TODO: GoogleMapを長押しでもピンを指して、目的地設定できるようにする。

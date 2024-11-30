@@ -108,7 +108,6 @@ class _SearchWindowState extends ConsumerState<SearchWindow> {
           const SizedBox(height: 10),
           Expanded(
               child: ListView.builder(
-            //shrinkWrap: true,
             itemCount: suggestions.length,
             itemBuilder: (context, index) {
               final suggestion = suggestions[index];
