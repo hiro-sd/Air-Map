@@ -161,5 +161,4 @@ class _SearchWindowState extends ConsumerState<SearchWindow> {
   }
 }
 
-// TODO: 指定した行き先を検索ウィンドウに表示し、新たに出発地を指定するウィンドウを表示する。
 // TODO: リファクタリング

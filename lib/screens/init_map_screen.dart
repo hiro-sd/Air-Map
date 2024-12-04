@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:ticket_app/repo/geo_shape.dart';
 import 'package:ticket_app/riverpod/map_screen_state_notifier.dart';
 import 'package:ticket_app/screens/airport_list_screen.dart';
 import 'package:ticket_app/screens/search_window_screen.dart';
@@ -63,6 +64,29 @@ class InitMapScreen extends ConsumerWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.list,
+                color: Theme.of(context).colorScheme.onPrimary, size: 35),
+            onPressed: () {
+              // TODO: 地方ごとにpolygonで囲む
+              showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return Container(
+                      height: MediaQuery.of(context).size.height * 0.5,
+                      child: Center(
+                        child: TextButton(
+                            child: Text('地方ごとに最適なルートを探す'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            }),
+                      ),
+                    );
+                  });
+            },
+          ),
+        ],
       ),
       body: Stack(
         children: <Widget>[
@@ -81,23 +105,22 @@ class InitMapScreen extends ConsumerWidget {
               ref.read(mapScreenProvider.notifier).mapController = controller;
               ref.read(mapScreenProvider.notifier).getCurrentLocation();
             },
-          ),
-          Center(
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                color: Theme.of(context)
+            polygons: {
+              // TODO: MapをなぞってPolygonを作成できるようにする。
+              Polygon(
+                polygonId: const PolygonId('polygon'),
+                points: polygonPoints,
+                fillColor: Theme.of(context)
                     .colorScheme
                     .primary
                     .withOpacity(0.2), //Colors.blue.withOpacity(0.2),
-                border: Border.all(
-                    color:
-                        Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                    width: 3),
-                shape: BoxShape.circle,
+                strokeWidth: 3,
+                strokeColor: Theme.of(context)
+                    .colorScheme
+                    .primary
+                    .withOpacity(0.8), //Colors.blue.withOpacity(0.8),
               ),
-            ),
+            },
           ),
           Center(
               child: Column(children: [
@@ -138,7 +161,7 @@ class InitMapScreen extends ConsumerWidget {
                           color: state.tmpTakeoff
                               ? Colors.black
                               : const Color.fromARGB(255, 100, 100, 100),
-                          fontSize: 13,
+                          fontSize: 12.5,
                           fontWeight: FontWeight.bold),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -182,7 +205,7 @@ class InitMapScreen extends ConsumerWidget {
                           color: state.tmpLand
                               ? Colors.black
                               : const Color.fromARGB(255, 100, 100, 100),
-                          fontSize: 13,
+                          fontSize: 12.5,
                           fontWeight: FontWeight.bold),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -191,6 +214,18 @@ class InitMapScreen extends ConsumerWidget {
               ),
             )
           ])),
+          Positioned(
+              // なぞるボタン
+              bottom: 160,
+              right: 15,
+              child: FloatingActionButton(
+                  heroTag: null,
+                  shape: const CircleBorder(),
+                  onPressed: () {},
+                  child: const Icon(
+                    Icons.edit,
+                    size: 27.5,
+                  ))),
           Positioned(
             // 地図に表示されるマーカーを切り替えるボタン
             bottom: 90,
@@ -281,7 +316,8 @@ class InitMapScreen extends ConsumerWidget {
 }
 
 // TODO: ウィンドウ埋めた後のロジック
-// TODO: 出発する空港をピンor円の内部の空港で指定する。 (円内部の空港→画面中心の座標から半径300以内に位置する場所？)
+// TODO: 各地方を選択するとそこがPolygonでなぞられて、その地方の空港が検索される。
+// TODO: 出発する空港をピンor円の内部の空港で指定する。(円内部の空港→画面中心の座標から半径300以内に位置する場所？)
 // TODO: 出発する空港と行き先を指定したら、適切な経路や値段を表示する。
 // TODO: GoogleMapを長押しでもピンを指して、目的地設定できるようにする。
 // TODO: リファクタリング
