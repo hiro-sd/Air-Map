@@ -1,20 +1,30 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:ticket_app/repo/geo_shape.dart';
-import 'package:ticket_app/riverpod/map_screen_state_notifier.dart';
-import 'package:ticket_app/screens/airport_list_screen.dart';
-import 'package:ticket_app/screens/search_window_screen.dart';
+import 'package:ticket_app/state/hooks/use_polygon_drawing.dart';
+import 'package:ticket_app/state/riverpod/map_screen_state_notifier.dart';
+import 'package:ticket_app/ui/screen/airport_list_screen.dart';
+import 'package:ticket_app/ui/screen/search_window_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 // 初めに表示するmapScreen
-class InitMapScreen extends ConsumerWidget {
+class InitMapScreen extends StatefulHookConsumerWidget {
   const InitMapScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  InitMapScreenState createState() => InitMapScreenState();
+}
+
+class InitMapScreenState extends ConsumerState<InitMapScreen> {
+  static final Completer<GoogleMapController> _controller = Completer();
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(mapScreenProvider);
     bool? whichTap;
+    final drawPolygonEnabled = ref.watch(drawPolygonEnabledProvider);
+    final polygonController = usePolygonDrawing(ref, _controller, context);
 
     Future<void> openSearchWindow(String tmp) async {
       final placeDetails = await Navigator.push(
@@ -59,69 +69,104 @@ class InitMapScreen extends ConsumerWidget {
         title: Text(
           AppLocalizations.of(context)!.title,
           style: TextStyle(
-            color: Theme.of(context).colorScheme.onPrimary, //Colors.black,
+            color: Theme.of(context).colorScheme.onPrimary,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.list,
-                color: Theme.of(context).colorScheme.onPrimary, size: 35),
-            onPressed: () {
-              // TODO: 地方ごとにpolygonで囲む
-              showModalBottomSheet(
-                  context: context,
-                  builder: (context) {
-                    return Container(
-                      height: MediaQuery.of(context).size.height * 0.5,
-                      child: Center(
-                        child: TextButton(
-                            child: Text('地方ごとに最適なルートを探す'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            }),
-                      ),
-                    );
-                  });
-            },
-          ),
+              icon: Icon(Icons.list,
+                  color: Theme.of(context).colorScheme.onPrimary, size: 35),
+              onPressed: () {
+                // TODO: 各地方を選択するとそこがPolygonでなぞられて、その地方の空港が検索される。
+                showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (BuildContext context) {
+                      return FractionallySizedBox(
+                          heightFactor: 0.7,
+                          child: Center(
+                              child: TextButton(
+                                  child: const Text('地方を指定する'),
+                                  onPressed: () {
+                                    showModalBottomSheet(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      builder: (BuildContext context) {
+                                        return const FractionallySizedBox(
+                                          heightFactor: 0.7,
+                                          child: Center(
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                TextButton(
+                                                    onPressed: null,
+                                                    child: Text('北海道地方')),
+                                                TextButton(
+                                                    onPressed: null,
+                                                    child: Text('東北地方')),
+                                                TextButton(
+                                                    onPressed: null,
+                                                    child: Text('関東地方')),
+                                                TextButton(
+                                                    onPressed: null,
+                                                    child: Text('中部地方')),
+                                                TextButton(
+                                                    onPressed: null,
+                                                    child: Text('近畿地方')),
+                                                TextButton(
+                                                    onPressed: null,
+                                                    child: Text('中国地方')),
+                                                TextButton(
+                                                    onPressed: null,
+                                                    child: Text('四国地方')),
+                                                TextButton(
+                                                    onPressed: null,
+                                                    child: Text('九州地方')),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  })));
+                    });
+              })
         ],
       ),
       body: Stack(
         children: <Widget>[
-          GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target: state.circleCenter,
-              zoom: 9,
-            ), // 初期位置
-            myLocationButtonEnabled: false,
-            myLocationEnabled: true,
-            mapType: MapType.normal,
-            zoomGesturesEnabled: true,
-            zoomControlsEnabled: false,
-            markers: state.markers, // Riverpodの状態を参照
-            onMapCreated: (GoogleMapController controller) {
-              ref.read(mapScreenProvider.notifier).mapController = controller;
-              ref.read(mapScreenProvider.notifier).getCurrentLocation();
-            },
-            polygons: {
-              // TODO: MapをなぞってPolygonを作成できるようにする。
-              Polygon(
-                polygonId: const PolygonId('polygon'),
-                points: polygonPoints,
-                fillColor: Theme.of(context)
-                    .colorScheme
-                    .primary
-                    .withOpacity(0.2), //Colors.blue.withOpacity(0.2),
-                strokeWidth: 3,
-                strokeColor: Theme.of(context)
-                    .colorScheme
-                    .primary
-                    .withOpacity(0.8), //Colors.blue.withOpacity(0.8),
-              ),
-            },
-          ),
+          GestureDetector(
+              // ドラッグ操作やピンチ操作などを付与する
+              onPanUpdate: (drawPolygonEnabled)
+                  ? polygonController.onPanUpdate
+                  : null, // ドラッグ操作で位置が変化したときにコール
+              onPanEnd: (drawPolygonEnabled)
+                  ? polygonController.onPanEnd
+                  : null, // ドラッグ操作が終了したときにコール
+              child: GoogleMap(
+                initialCameraPosition: CameraPosition(
+                  target: state.circleCenter,
+                  zoom: 9,
+                ), // 初期位置
+                myLocationButtonEnabled: false,
+                myLocationEnabled: true,
+                mapType: MapType.normal,
+                zoomGesturesEnabled: true,
+                zoomControlsEnabled: false,
+                markers: state.markers, // Riverpodの状態を参照
+                onMapCreated: (controller) {
+                  ref.read(mapScreenProvider.notifier).mapController =
+                      controller;
+                  ref.read(mapScreenProvider.notifier).getCurrentLocation();
+                  _controller.complete(controller);
+                },
+                polygons:
+                    ref.watch(polygonSetProvider), // マップ上に座標で囲まれた領域を多角形で表すもの
+                polylines: polygonController.polylineSet, // マップ上に線を描くためのもの
+              )),
           Center(
               child: Column(children: [
             const SizedBox(height: 15),
@@ -215,15 +260,45 @@ class InitMapScreen extends ConsumerWidget {
             )
           ])),
           Positioned(
-              // なぞるボタン
+              // polygon描画ボタン
               bottom: 160,
               right: 15,
               child: FloatingActionButton(
                   heroTag: null,
                   shape: const CircleBorder(),
-                  onPressed: () {},
-                  child: const Icon(
-                    Icons.edit,
+                  onPressed: () {
+                    showDialog(
+                        // ignore: use_build_context_synchronously
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text(
+                                drawPolygonEnabled
+                                    ? ''
+                                    : AppLocalizations.of(context)!
+                                        .polygon_drawing,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold)),
+                            content: Text(drawPolygonEnabled
+                                ? AppLocalizations.of(context)!
+                                    .cancel_polygon_drawing
+                                : AppLocalizations.of(context)!
+                                    .polygon_drawing_description),
+                            actions: [
+                              TextButton(
+                                child:
+                                    Text(AppLocalizations.of(context)!.close),
+                                onPressed: () {
+                                  Navigator.of(context).pop(); // ダイアログを閉じる
+                                },
+                              ),
+                            ],
+                          );
+                        });
+                    polygonController.toggleDrawing();
+                  },
+                  child: Icon(
+                    drawPolygonEnabled ? Icons.cancel : Icons.edit,
                     size: 27.5,
                   ))),
           Positioned(
@@ -283,7 +358,6 @@ class InitMapScreen extends ConsumerWidget {
                       });
                 }
               },
-              //backgroundColor: Colors.white,
               child: const Icon(
                 Icons.local_airport,
                 size: 27.5,
@@ -301,7 +375,6 @@ class InitMapScreen extends ConsumerWidget {
               onPressed: () {
                 ref.read(mapScreenProvider.notifier).getCurrentLocation();
               },
-              //backgroundColor: //Colors.white,
               child: const Icon(
                 Icons.my_location,
                 size: 27.5,
@@ -315,8 +388,8 @@ class InitMapScreen extends ConsumerWidget {
   }
 }
 
+
 // TODO: ウィンドウ埋めた後のロジック
-// TODO: 各地方を選択するとそこがPolygonでなぞられて、その地方の空港が検索される。
 // TODO: 出発する空港をピンor円の内部の空港で指定する。(円内部の空港→画面中心の座標から半径300以内に位置する場所？)
 // TODO: 出発する空港と行き先を指定したら、適切な経路や値段を表示する。
 // TODO: GoogleMapを長押しでもピンを指して、目的地設定できるようにする。

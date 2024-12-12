@@ -6,7 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:ticket_app/env/env.dart';
-import 'package:ticket_app/repo/modal_sheet.dart';
+import 'package:ticket_app/foundation/modal_sheet.dart';
 
 // MapScreenの状態を管理するStateNotifier
 class MapScreenStateNotifier extends StateNotifier<MapScreenState> {

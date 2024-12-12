@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:ticket_app/riverpod/search_window_state_notifier.dart';
+import 'package:ticket_app/state/riverpod/search_window_state_notifier.dart';
 
 // 検索ウィンドウを表示する画面
 class SearchWindow extends ConsumerStatefulWidget {

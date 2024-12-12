@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ticket_app/riverpod/map_screen_state_notifier.dart';
+import 'package:ticket_app/state/riverpod/map_screen_state_notifier.dart';
 
 // BottomSheetを表示する関数
 void showCustomBottomSheet(BuildContext context, WidgetRef ref, String? tmp,
