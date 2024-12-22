@@ -65,7 +65,7 @@ class _SearchWindowState extends ConsumerState<SearchWindow> {
           const SizedBox(height: 15),
           Container(
             width: MediaQuery.of(context).size.width * 0.8,
-            alignment: Alignment.centerLeft,
+            height: 50,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(30),
@@ -93,15 +93,19 @@ class _SearchWindowState extends ConsumerState<SearchWindow> {
                 prefixIcon: IconButton(
                   color: const Color.fromARGB(255, 100, 100, 100),
                   icon: const Icon(Icons.search),
+                  padding: const EdgeInsets.only(left: 7.5, top: 2.5),
                   onPressed: () {},
                 ),
                 hintText: widget.hintText,
                 hintStyle: const TextStyle(
-                  fontSize: 13,
+                  fontSize: 12.5,
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 100, 100, 100),
+                  overflow: TextOverflow.ellipsis,
                 ),
                 border: InputBorder.none,
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 12.5), // 縦方向のパディングを設定
               ),
             ),
           ),

@@ -7,6 +7,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:ticket_app/env/env.dart';
 import 'package:ticket_app/foundation/modal_sheet.dart';
+import 'package:ticket_app/state/riverpod/polygon_drawing_notifier.dart';
+import 'package:ticket_app/ui/screen/search_window_screen.dart';
 
 // MapScreenの状態を管理するStateNotifier
 class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
@@ -25,6 +27,48 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
   Position? currentPosition;
   GoogleMapController? mapController;
   String apiKey = Env.key;
+
+  // 検索画面を開き、結果を取得する関数
+  Future<void> openSearchWindow(
+      BuildContext context, WidgetRef ref, String tmp, bool whichTap) async {
+    final placeDetails = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => whichTap
+            ? SearchWindow(
+                hintText:
+                    AppLocalizations.of(context)!.search_departing_airport)
+            : SearchWindow(
+                hintText: AppLocalizations.of(context)!.search_airport),
+      ),
+    );
+
+    if (placeDetails != null && context.mounted) {
+      final destination = LatLng(placeDetails['lat'], placeDetails['lng']);
+      final placeName = placeDetails['name'];
+      final placePhoto = placeDetails['photo_reference'];
+      ref.read(polygonSetProvider).clear();
+      ref.read(polylineSetProvider).clear();
+      ref.read(mapScreenProvider.notifier).clearMarkers();
+
+      // GoogleMapをその位置に移動させる
+      moveCameraToPosition(
+        context,
+        destination,
+        placeName, // マーカーに表示するタイトル
+        tmp,
+      );
+
+      // マーカーをタップした時の処理(ModalBottomSheetを表示)
+      showMarkerDetails(
+        context,
+        ref,
+        placeName,
+        placePhoto,
+        tmp,
+      );
+    }
+  }
 
   void toggleTmpTakeoff() {
     state = state.copyWith(tmpTakeoff: !state.tmpTakeoff);
@@ -64,6 +108,14 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
 
   void updateselectedDeparture(String? departure) {
     state = state.copyWith(selectedDeparture: departure);
+  }
+
+  void clearSelectedDestination() {
+    state = state.copyWith(selectedDestination: null);
+  }
+
+  void clearSelectedDeparture() {
+    state = state.copyWith(selectedDeparture: null);
   }
 
   // GoogleMapのカメラを指定された位置に移動させる関数

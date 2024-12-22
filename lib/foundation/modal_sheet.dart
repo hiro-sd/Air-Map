@@ -73,8 +73,7 @@ void showCustomBottomSheet(BuildContext context, WidgetRef ref, String? tmp,
                 else
                   Text(AppLocalizations.of(context)!.no_photo), // 写真がない場合の表示
                 tmp == 'tmpTakeoff' ||
-                        tmp ==
-                            'tmpLand' // tmpTakeoffかtmpLandの場合(ウィンドウをから検索した場合)
+                        tmp == 'tmpLand' // tmpTakeoffかtmpLandの場合(ウィンドウから検索した場合)
                     ? Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [

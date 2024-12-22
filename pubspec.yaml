@@ -13,6 +13,7 @@ dependencies:
   flutter:
     sdk: flutter
   google_maps_flutter: ^2.10.0
+  geojson_vi: ^2.2.5
   geolocator: ^13.0.1
   geocoding: ^3.0.0
   http: ^1.2.2
@@ -51,6 +52,17 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   generate: true
+  assets:
+    - lib/assets/geodata/prefectures.geojson
+    - lib/assets/geodata/hokkaido.geojson
+    - lib/assets/geodata/tohoku.geojson
+    - lib/assets/geodata/kanto.geojson
+    - lib/assets/geodata/chubu.geojson
+    - lib/assets/geodata/kinki.geojson
+    - lib/assets/geodata/chugoku.geojson
+    - lib/assets/geodata/shikoku.geojson
+    - lib/assets/geodata/kyushu.geojson
+    - lib/assets/geodata/okinawa.geojson
 
   # To add assets to your application, add an assets section, like this:
   # assets:
