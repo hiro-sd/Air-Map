@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ticket_app/foundation/geo_data_scan.dart';
 import 'package:ticket_app/state/riverpod/polygon_drawing_notifier.dart';
@@ -33,131 +34,130 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.list,
-                  color: Theme.of(context).colorScheme.onPrimary, size: 35),
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  builder: (BuildContext context) {
-                    // リストに表示する地方名と対応する識別子
-                    final List<Map<String, String>> areas = [
-                      {
-                        'name': AppLocalizations.of(context)!.hokkaido,
-                        'key': 'hokkaido'
-                      },
-                      {
-                        'name': AppLocalizations.of(context)!.tohoku,
-                        'key': 'tohoku'
-                      },
-                      {
-                        'name': AppLocalizations.of(context)!.kanto,
-                        'key': 'kanto'
-                      },
-                      {
-                        'name': AppLocalizations.of(context)!.chubu,
-                        'key': 'chubu'
-                      },
-                      {
-                        'name': AppLocalizations.of(context)!.kinki,
-                        'key': 'kinki'
-                      },
-                      {
-                        'name': AppLocalizations.of(context)!.chugoku,
-                        'key': 'chugoku'
-                      },
-                      {
-                        'name': AppLocalizations.of(context)!.shikoku,
-                        'key': 'shikoku'
-                      },
-                      {
-                        'name': AppLocalizations.of(context)!.kyushu,
-                        'key': 'kyushu'
-                      },
-                      {
-                        'name': AppLocalizations.of(context)!.okinawa,
-                        'key': 'okinawa'
-                      },
-                    ];
+          leading: IconButton(
+            icon: Icon(Icons.menu,
+                color: Theme.of(context).colorScheme.onPrimary, size: 30),
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (BuildContext context) {
+                  // リストに表示する地方名と対応する識別子
+                  final List<Map<String, String>> areas = [
+                    {
+                      'name': AppLocalizations.of(context)!.hokkaido,
+                      'key': 'hokkaido'
+                    },
+                    {
+                      'name': AppLocalizations.of(context)!.tohoku,
+                      'key': 'tohoku'
+                    },
+                    {
+                      'name': AppLocalizations.of(context)!.kanto,
+                      'key': 'kanto'
+                    },
+                    {
+                      'name': AppLocalizations.of(context)!.chubu,
+                      'key': 'chubu'
+                    },
+                    {
+                      'name': AppLocalizations.of(context)!.kinki,
+                      'key': 'kinki'
+                    },
+                    {
+                      'name': AppLocalizations.of(context)!.chugoku,
+                      'key': 'chugoku'
+                    },
+                    {
+                      'name': AppLocalizations.of(context)!.shikoku,
+                      'key': 'shikoku'
+                    },
+                    {
+                      'name': AppLocalizations.of(context)!.kyushu,
+                      'key': 'kyushu'
+                    },
+                    {
+                      'name': AppLocalizations.of(context)!.okinawa,
+                      'key': 'okinawa'
+                    },
+                  ];
 
-                    int selectedIndex = 0; // Pickerの初期選択インデックス
+                  int selectedIndex = 0; // Pickerの初期選択インデックス
 
-                    return FractionallySizedBox(
-                      heightFactor: 0.5,
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 20),
-                          Text(
-                            AppLocalizations.of(context)!.select_area,
-                            style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                          Expanded(
-                            child: CupertinoPicker(
-                              itemExtent: 45, // 各項目の高さ
-                              onSelectedItemChanged: (index) {
-                                selectedIndex = index;
-                              },
-                              children: areas
-                                  .map((area) => Center(
-                                        child: Text(
-                                          area['name']!,
-                                          style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ))
-                                  .toList(),
-                            ),
-                          ),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                SizedBox(
-                                    width: 100,
-                                    height: 45,
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop(); // モーダルを閉じる
-                                      },
+                  return FractionallySizedBox(
+                    heightFactor: 0.5,
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        Text(
+                          AppLocalizations.of(context)!.select_area,
+                          style: const TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        Expanded(
+                          child: CupertinoPicker(
+                            itemExtent: 45, // 各項目の高さ
+                            onSelectedItemChanged: (index) {
+                              selectedIndex = index;
+                              HapticFeedback.heavyImpact();
+                            },
+                            children: areas
+                                .map((area) => Center(
                                       child: Text(
-                                        AppLocalizations.of(context)!.close,
+                                        area['name']!,
                                         style: const TextStyle(
-                                          fontSize: 15,
-                                        ),
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold),
                                       ),
-                                    )),
-                                SizedBox(
-                                    width: 100,
-                                    height: 45,
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        // 選択された地方に基づいてポリゴンを描画
-                                        loadAndDisplayAreaPolygon(
-                                            areas[selectedIndex]['key']!,
-                                            ref,
-                                            context);
-                                        Navigator.of(context).pop(); // モーダルを閉じる
-                                      },
-                                      child: Text(
-                                        AppLocalizations.of(context)!.ok,
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                        ),
+                                    ))
+                                .toList(),
+                          ),
+                        ),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              SizedBox(
+                                  width: 100,
+                                  height: 45,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop(); // モーダルを閉じる
+                                    },
+                                    child: Text(
+                                      AppLocalizations.of(context)!.close,
+                                      style: const TextStyle(
+                                        fontSize: 15,
                                       ),
-                                    )),
-                              ]),
-                          const SizedBox(height: 30),
-                        ],
-                      ),
-                    );
-                  },
-                );
-              },
-            )
-          ]),
+                                    ),
+                                  )),
+                              SizedBox(
+                                  width: 100,
+                                  height: 45,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      // 選択された地方に基づいてポリゴンを描画
+                                      loadAndDisplayAreaPolygon(
+                                          areas[selectedIndex]['key']!,
+                                          ref,
+                                          context);
+                                      Navigator.of(context).pop(); // モーダルを閉じる
+                                    },
+                                    child: Text(
+                                      AppLocalizations.of(context)!.ok,
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  )),
+                            ]),
+                        const SizedBox(height: 30),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+          )),
       body: Stack(
         children: <Widget>[
           GestureDetector(
@@ -401,11 +401,31 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
               heroTag: null, // Heroアニメーションを無効にする
               shape: const CircleBorder(),
               onPressed: () async {
-                final notifier = ref.read(mapScreenProvider.notifier);
-
+                ref.read(polygonSetProvider).clear();
+                ref.read(polylineSetProvider).clear();
+                state.tmpLand
+                    ? {
+                        ref.read(mapScreenProvider.notifier).toggleTmpLand(),
+                        ref
+                            .read(mapScreenProvider.notifier)
+                            .clearSelectedDestination(),
+                        ref.read(mapScreenProvider.notifier).clearMarkers()
+                      }
+                    : null;
+                state.tmpTakeoff
+                    ? {
+                        ref.read(mapScreenProvider.notifier).toggleTmpTakeoff(),
+                        ref
+                            .read(mapScreenProvider.notifier)
+                            .clearSelectedDeparture(),
+                        ref.read(mapScreenProvider.notifier).clearMarkers()
+                      }
+                    : null;
                 if (!state.showAllAirports) {
                   // 全国の空港に切り替え
-                  notifier.switchToAllAirports(generateMarkers(context, ref));
+                  ref
+                      .read(mapScreenProvider.notifier)
+                      .switchToAllAirports(generateMarkers(context, ref));
                   showDialog(
                       context: context,
                       builder: (BuildContext context) {
@@ -427,7 +447,9 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                       });
                 } else {
                   // 現在地周辺の空港に切り替え
-                  await notifier.switchToNearbyAirports(context, ref);
+                  await ref
+                      .read(mapScreenProvider.notifier)
+                      .switchToNearbyAirports(context, ref);
                   showDialog(
                       // ignore: use_build_context_synchronously
                       context: context,
@@ -467,7 +489,7 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                 ref.read(mapScreenProvider.notifier).getCurrentLocation();
               },
               child: const Icon(
-                Icons.my_location,
+                Icons.near_me,
                 size: 27.5,
               ),
             ),

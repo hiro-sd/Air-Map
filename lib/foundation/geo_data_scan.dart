@@ -44,7 +44,21 @@ Future<List<List<LatLng>>> loadAreaGeoJson(String area) async {
 // 読み込んだ座標をもとにポリゴンを描画する
 Future<void> loadAndDisplayAreaPolygon(
     String area, WidgetRef ref, BuildContext context) async {
-  ref.read(polygonDrawingProvider.notifier).clearPolygons(ref);
+  //ref.read(polygonDrawingProvider.notifier).clearPolygons(ref);
+  ref.read(polygonSetProvider).clear();
+  ref.read(polylineSetProvider).clear();
+  ref.read(mapScreenProvider).tmpLand
+      ? {
+          ref.read(mapScreenProvider.notifier).toggleTmpLand(),
+          ref.read(mapScreenProvider.notifier).clearMarkers()
+        }
+      : null;
+  ref.read(mapScreenProvider).tmpTakeoff
+      ? {
+          ref.read(mapScreenProvider.notifier).toggleTmpTakeoff(),
+          ref.read(mapScreenProvider.notifier).clearMarkers()
+        }
+      : null;
   final List<List<LatLng>> polygons = await loadAreaGeoJson(area);
 
   final Set<Polygon> polygonSet = {};
