@@ -12,12 +12,12 @@ import 'package:ticket_app/ui/screen/airport_list_screen.dart';
 import 'package:http/http.dart' as http;
 
 // geojsonファイルを読み込む
-Future<List<LatLng>> loadAreaGeoJson(String area) async {
+Future<List<List<LatLng>>> loadAreaGeoJson(String area) async {
   final String geojsonString =
-      await rootBundle.loadString('lib/assets/geodata/$area.geojson');
+      await rootBundle.loadString('assets/geodata/$area.geojson');
   final Map<String, dynamic> geojson = json.decode(geojsonString);
 
-  final List<LatLng> points = [];
+  final List<List<LatLng>> polygons = [];
 
   final List<dynamic> features = geojson['features'];
   for (var feature in features) {
@@ -25,6 +25,7 @@ Future<List<LatLng>> loadAreaGeoJson(String area) async {
       final List<dynamic> coordinates = feature['geometry']['coordinates'];
 
       for (var polygon in coordinates) {
+        final List<LatLng> points = [];
         for (var ring in polygon) {
           for (var coord in ring) {
             final double lat = coord[1];
@@ -32,42 +33,55 @@ Future<List<LatLng>> loadAreaGeoJson(String area) async {
             points.add(LatLng(lat, lng));
           }
         }
+        polygons.add(points);
       }
     }
   }
 
-  return points;
+  return polygons;
 }
 
 // 読み込んだ座標をもとにポリゴンを描画する
 Future<void> loadAndDisplayAreaPolygon(
     String area, WidgetRef ref, BuildContext context) async {
   ref.read(polygonDrawingProvider.notifier).clearPolygons(ref);
-  final List<LatLng> points = await loadAreaGeoJson(area);
-  final polygon = Polygon(
-    polygonId: PolygonId(area),
-    points: points,
-    strokeWidth: 3,
-    strokeColor: Colors.blue.withOpacity(0.8),
-    fillColor: Colors.blue.withOpacity(0.2),
-  );
+  final List<List<LatLng>> polygons = await loadAreaGeoJson(area);
 
-  ref.read(polygonSetProvider.notifier).state = {polygon};
+  final Set<Polygon> polygonSet = {};
+  for (var points in polygons) {
+    final polygon = Polygon(
+      polygonId: PolygonId(area + polygons.indexOf(points).toString()),
+      points: points,
+      strokeWidth: 3,
+      strokeColor: Colors.blue.withOpacity(0.8),
+      fillColor: Colors.blue.withOpacity(0.2),
+    );
+    polygonSet.add(polygon);
+  }
+
+  ref.read(polygonSetProvider.notifier).state = polygonSet;
   final airportMarkers = airportData;
-  final markersInsidePolygon = getMarkersInsidePolygon(points, airportMarkers);
+  final markersInsidePolygon = polygons
+      .map((polygonPoints) =>
+          getMarkersInsidePolygon(polygonPoints, airportMarkers))
+      .expand((markers) => markers)
+      .toList();
   // マーカーをGoogleMap上に反映
   final newMarkers = markersInsidePolygon.map((marker) {
+    final title = marker['title'](context);
+    final snippet = marker['snippet'](context);
     return Marker(
         markerId: MarkerId(marker['id']),
         position: marker['position'],
         infoWindow: InfoWindow(
-          title: marker['title'](context),
-          snippet: marker['snippet'](context),
+          title: title,
+          snippet: snippet,
         ),
         onTap: () async {
           String apiKey = Env.key;
-          final String title = marker['title'](context);
+          //final String title = marker['title'](context);
 
+          // TODO: markerタップでbottomSheetを表示できるようにする
           // Place IDの取得
           final placeSearchUrl =
               'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=$title&inputtype=textquery&fields=place_id&key=$apiKey';

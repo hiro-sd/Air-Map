@@ -53,16 +53,16 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
-    - lib/assets/geodata/prefectures.geojson
-    - lib/assets/geodata/hokkaido.geojson
-    - lib/assets/geodata/tohoku.geojson
-    - lib/assets/geodata/kanto.geojson
-    - lib/assets/geodata/chubu.geojson
-    - lib/assets/geodata/kinki.geojson
-    - lib/assets/geodata/chugoku.geojson
-    - lib/assets/geodata/shikoku.geojson
-    - lib/assets/geodata/kyushu.geojson
-    - lib/assets/geodata/okinawa.geojson
+    - assets/geodata/prefectures.geojson
+    - assets/geodata/hokkaido.geojson
+    - assets/geodata/tohoku.geojson
+    - assets/geodata/kanto.geojson
+    - assets/geodata/chubu.geojson
+    - assets/geodata/kinki.geojson
+    - assets/geodata/chugoku.geojson
+    - assets/geodata/shikoku.geojson
+    - assets/geodata/kyushu.geojson
+    - assets/geodata/okinawa.geojson
 
   # To add assets to your application, add an assets section, like this:
   # assets:

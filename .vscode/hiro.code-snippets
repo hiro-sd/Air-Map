@@ -1,0 +1,9 @@
+{
+    "abc": {
+        "prefix": "abc",
+        "scope": "dart",
+        "body": [
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        ],
+    },
+}
