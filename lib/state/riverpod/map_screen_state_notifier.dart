@@ -86,6 +86,18 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
     state = state.copyWith(circleCenter: newCenter);
   }
 
+  // 出発地と目的地を入れ替える
+  void swapDepartureAndDestination() {
+    state = state.copyWith(
+      selectedDeparture: state.selectedDestination,
+      selectedDestination: state.selectedDeparture,
+      departureMarkers: state.destinationMarkers,
+      destinationMarkers: state.departureMarkers,
+      tmpTakeoff: state.tmpLand,
+      tmpLand: state.tmpTakeoff,
+    );
+  }
+
 // 全国の空港マーカーに切り替える
   void switchToAllAirports(Set<Marker> allAirports) {
     clearMarkers();
@@ -315,13 +327,15 @@ class MapScreenState {
     bool? showAllAirports,
     String? selectedDeparture,
     String? selectedDestination,
+    Set<Marker>? departureMarkers,
+    Set<Marker>? destinationMarkers,
     bool? tmpTakeoff,
     bool? tmpLand,
   }) {
     return MapScreenState(
       markers: markers ?? this.markers,
-      departureMarkers: departureMarkers,
-      destinationMarkers: destinationMarkers,
+      departureMarkers: departureMarkers ?? this.departureMarkers,
+      destinationMarkers: destinationMarkers ?? this.destinationMarkers,
       circleCenter: circleCenter ?? this.circleCenter,
       showAllAirports: showAllAirports ?? this.showAllAirports,
       selectedDeparture: selectedDeparture ?? this.selectedDeparture,

@@ -25,15 +25,151 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
 
     return Scaffold(
       appBar: AppBar(
+          // TODO: AppBarのUI整理
+          toolbarHeight: 140,
           backgroundColor: Theme.of(context).colorScheme.primary,
-          title: Text(
-            AppLocalizations.of(context)!.title,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onPrimary,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+          leadingWidth: 30,
+          title: Column(children: [
+            Container(
+              width: MediaQuery.of(context).size.width * 0.7,
+              height: 50,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: const [
+                  BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 10.0,
+                      spreadRadius: 1.0,
+                      offset: Offset(10, 10))
+                ],
+              ),
+              // 検索ウィンドウ
+              child: TextButton(
+                onPressed: () {
+                  ref
+                      .read(mapScreenProvider.notifier)
+                      .openSearchWindow(context, ref, 'tmpTakeoff', true);
+                },
+                child: Row(children: [
+                  const SizedBox(width: 7.5),
+                  Icon(
+                    state.tmpTakeoff ? Icons.flight_takeoff : Icons.search,
+                    color: const Color.fromARGB(255, 100, 100, 100),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      state.tmpTakeoff
+                          ? state.selectedDeparture != null
+                              ? state.selectedDeparture!
+                              : AppLocalizations.of(context)!
+                                  .search_departing_airport
+                          : AppLocalizations.of(context)!
+                              .search_departing_airport,
+                      style: TextStyle(
+                          color: state.tmpTakeoff
+                              ? state.selectedDeparture != null
+                                  ? Colors.black
+                                  : const Color.fromARGB(255, 100, 100, 100)
+                              : const Color.fromARGB(255, 100, 100, 100),
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.bold),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  state.tmpTakeoff
+                      ? IconButton(
+                          icon: const Icon(Icons.close),
+                          color: const Color.fromARGB(255, 100, 100, 100),
+                          padding: EdgeInsets.zero, // 中央に配置されるようにする
+                          onPressed: () {
+                            ref
+                                .read(mapScreenProvider.notifier)
+                                .clearSelectedDeparture();
+                            state.departureMarkers.clear();
+                            ref
+                                .read(mapScreenProvider.notifier)
+                                .updateMarkers(state.destinationMarkers);
+                            ref
+                                .read(mapScreenProvider.notifier)
+                                .toggleTmpTakeoff();
+                          },
+                        )
+                      : const SizedBox(width: 0),
+                ]),
+              ),
             ),
-          ),
+            const SizedBox(height: 15),
+            Container(
+              width: MediaQuery.of(context).size.width * 0.7,
+              height: 50,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: const [
+                  BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 10.0,
+                      spreadRadius: 1.0,
+                      offset: Offset(10, 10))
+                ],
+              ),
+              child: TextButton(
+                // 検索フォーム
+                onPressed: () {
+                  ref
+                      .read(mapScreenProvider.notifier)
+                      .openSearchWindow(context, ref, 'tmpLand', false);
+                },
+                child: Row(children: [
+                  const SizedBox(width: 7.5),
+                  Icon(
+                    state.tmpLand ? Icons.flight_land : Icons.search,
+                    color: const Color.fromARGB(255, 100, 100, 100),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      state.tmpLand
+                          ? state.selectedDestination != null
+                              ? state.selectedDestination!
+                              : AppLocalizations.of(context)!.search_airport
+                          : AppLocalizations.of(context)!.search_airport,
+                      style: TextStyle(
+                          color: state.tmpLand
+                              ? state.selectedDestination != null
+                                  ? Colors.black
+                                  : const Color.fromARGB(255, 100, 100, 100)
+                              : const Color.fromARGB(255, 100, 100, 100),
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.bold),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  state.tmpLand
+                      ? IconButton(
+                          icon: const Icon(Icons.close),
+                          color: const Color.fromARGB(255, 100, 100, 100),
+                          padding: EdgeInsets.zero, // 中央に配置されるようにする
+                          onPressed: () {
+                            ref
+                                .read(mapScreenProvider.notifier)
+                                .clearSelectedDestination();
+                            state.destinationMarkers.clear();
+                            ref
+                                .read(mapScreenProvider.notifier)
+                                .updateMarkers(state.departureMarkers);
+                            ref
+                                .read(mapScreenProvider.notifier)
+                                .toggleTmpLand();
+                          },
+                        )
+                      : const SizedBox(width: 0),
+                ]),
+              ),
+            ),
+          ]),
           leading: IconButton(
             icon: Icon(Icons.menu,
                 color: Theme.of(context).colorScheme.onPrimary, size: 30),
@@ -157,7 +293,20 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                 },
               );
             },
-          )),
+          ),
+          actions: [
+            (state.tmpTakeoff || state.tmpLand)
+                ? IconButton(
+                    icon: const Icon(Icons.swap_vert),
+                    iconSize: 30,
+                    color: Colors.white,
+                    onPressed: () {
+                      ref
+                          .read(mapScreenProvider.notifier)
+                          .swapDepartureAndDestination();
+                    })
+                : const SizedBox(height: 0),
+          ]),
       body: Stack(
         children: <Widget>[
           GestureDetector(
@@ -196,159 +345,6 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                     ref.watch(polygonSetProvider), // マップ上に座標で囲まれた領域を多角形で表すもの
                 polylines: ref.watch(polylineSetProvider), // マップ上に線を描くためのもの
               )),
-          Center(
-              child: Column(children: [
-            const SizedBox(height: 15),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.8,
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
-                boxShadow: const [
-                  BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 10.0,
-                      spreadRadius: 1.0,
-                      offset: Offset(10, 10))
-                ],
-              ),
-              // 検索ウィンドウ
-              child: TextButton(
-                onPressed: () {
-                  ref
-                      .read(mapScreenProvider.notifier)
-                      .openSearchWindow(context, ref, 'tmpTakeoff', true);
-                },
-                child: Row(children: [
-                  const SizedBox(width: 7.5),
-                  Icon(
-                    state.tmpTakeoff ? Icons.flight_takeoff : Icons.search,
-                    color: const Color.fromARGB(255, 100, 100, 100),
-                  ),
-                  const SizedBox(width: 17.5),
-                  Expanded(
-                    child: Text(
-                      state.tmpTakeoff
-                          ? state.selectedDeparture != null
-                              ? state.selectedDeparture!
-                              : AppLocalizations.of(context)!
-                                  .search_departing_airport
-                          : AppLocalizations.of(context)!
-                              .search_departing_airport,
-                      style: TextStyle(
-                          color: state.tmpTakeoff
-                              ? state.selectedDeparture != null
-                                  ? Colors.black
-                                  : const Color.fromARGB(255, 100, 100, 100)
-                              : const Color.fromARGB(255, 100, 100, 100),
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.bold),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  state.tmpTakeoff
-                      ? IconButton(
-                          icon: const Icon(Icons.close),
-                          color: const Color.fromARGB(255, 100, 100, 100),
-                          padding: EdgeInsets.zero, // 中央に配置されるようにする
-                          onPressed: () {
-                            ref
-                                .read(mapScreenProvider.notifier)
-                                .clearSelectedDeparture();
-                            state.departureMarkers.clear();
-                            ref
-                                .read(mapScreenProvider.notifier)
-                                .updateMarkers(state.destinationMarkers);
-                            ref
-                                .read(mapScreenProvider.notifier)
-                                .toggleTmpTakeoff();
-                          },
-                        )
-                      : const SizedBox(width: 0),
-                ]),
-              ),
-            ),
-            const SizedBox(height: 15),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.8,
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
-                boxShadow: const [
-                  BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 10.0,
-                      spreadRadius: 1.0,
-                      offset: Offset(10, 10))
-                ],
-              ),
-              child: TextButton(
-                // 検索フォーム
-                onPressed: () {
-                  ref
-                      .read(mapScreenProvider.notifier)
-                      .openSearchWindow(context, ref, 'tmpLand', false);
-                },
-                child: Row(children: [
-                  const SizedBox(width: 7.5),
-                  Icon(
-                    state.tmpLand ? Icons.flight_land : Icons.search,
-                    color: const Color.fromARGB(255, 100, 100, 100),
-                  ),
-                  const SizedBox(width: 17.5),
-                  Expanded(
-                    child: Text(
-                      state.tmpLand
-                          ? state.selectedDestination != null
-                              ? state.selectedDestination!
-                              : AppLocalizations.of(context)!.search_airport
-                          : AppLocalizations.of(context)!.search_airport,
-                      style: TextStyle(
-                          color: state.tmpLand
-                              ? state.selectedDestination != null
-                                  ? Colors.black
-                                  : const Color.fromARGB(255, 100, 100, 100)
-                              : const Color.fromARGB(255, 100, 100, 100),
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.bold),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  state.tmpLand
-                      ? IconButton(
-                          icon: const Icon(Icons.close),
-                          color: const Color.fromARGB(255, 100, 100, 100),
-                          padding: EdgeInsets.zero, // 中央に配置されるようにする
-                          onPressed: () {
-                            ref
-                                .read(mapScreenProvider.notifier)
-                                .clearSelectedDestination();
-                            state.destinationMarkers.clear();
-                            ref
-                                .read(mapScreenProvider.notifier)
-                                .updateMarkers(state.departureMarkers);
-                            ref
-                                .read(mapScreenProvider.notifier)
-                                .toggleTmpLand();
-                          },
-                        )
-                      : const SizedBox(width: 0),
-                ]),
-              ),
-            )
-          ])),
-          state.tmpTakeoff || state.tmpLand
-              ? Positioned(
-                  top: 50,
-                  right: 0,
-                  child: IconButton(
-                      icon: const Icon(Icons.swap_vert),
-                      iconSize: 30,
-                      color: const Color.fromARGB(255, 100, 100, 100),
-                      onPressed: () {})) // TODO: 出発地と目的地を入れ替えるロジック
-              : const SizedBox(height: 0),
           Positioned(
               bottom: 160,
               right: 15,
