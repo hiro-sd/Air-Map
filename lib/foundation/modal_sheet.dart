@@ -81,9 +81,9 @@ void showCustomBottomSheet(BuildContext context, WidgetRef ref, String? tmp,
                               onPressed: () {
                                 Navigator.pop(context); // BottomSheetを閉じる
                               },
-                              child: Text(
-                                AppLocalizations.of(context)!.cancel,
-                              ),
+                              child: Text(AppLocalizations.of(context)!.cancel,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold)),
                             ),
                             ElevatedButton(
                               onPressed: () {
@@ -108,8 +108,9 @@ void showCustomBottomSheet(BuildContext context, WidgetRef ref, String? tmp,
                                 }
                                 Navigator.pop(context); // BottomSheetを閉じる
                               },
-                              child:
-                                  Text(AppLocalizations.of(context)!.confirm),
+                              child: Text(AppLocalizations.of(context)!.confirm,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold)),
                             ),
                           ])
                     : Row(
@@ -134,7 +135,9 @@ void showCustomBottomSheet(BuildContext context, WidgetRef ref, String? tmp,
                                 Navigator.pop(context);
                               },
                               child: Text(
-                                  AppLocalizations.of(context)!.departure)),
+                                  AppLocalizations.of(context)!.departure,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold))),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                                 padding:
@@ -142,9 +145,9 @@ void showCustomBottomSheet(BuildContext context, WidgetRef ref, String? tmp,
                             onPressed: () {
                               Navigator.pop(context); // BottomSheetを閉じる
                             },
-                            child: Text(
-                              AppLocalizations.of(context)!.cancel,
-                            ),
+                            child: Text(AppLocalizations.of(context)!.cancel,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold)),
                           ),
                           ElevatedButton(
                               style: ElevatedButton.styleFrom(
@@ -164,7 +167,9 @@ void showCustomBottomSheet(BuildContext context, WidgetRef ref, String? tmp,
                                 Navigator.pop(context); // BottomSheetを閉じる
                               },
                               child: Text(
-                                  AppLocalizations.of(context)!.destination)),
+                                  AppLocalizations.of(context)!.destination,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold))),
                         ],
                       ),
               ],

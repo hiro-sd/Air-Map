@@ -8,6 +8,7 @@ import 'package:ticket_app/state/riverpod/map_screen_state_notifier.dart';
 import 'package:ticket_app/ui/screen/airport_list_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+//import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // 初めに表示するmapScreen
 class InitMapScreen extends StatefulHookConsumerWidget {
@@ -18,6 +19,9 @@ class InitMapScreen extends StatefulHookConsumerWidget {
 }
 
 class InitMapScreenState extends ConsumerState<InitMapScreen> {
+  double _iconRotation = 0.0;
+  final sliderValueProvider = StateProvider<double>((ref) => 50.0);
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(mapScreenProvider);
@@ -84,6 +88,7 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                           color: const Color.fromARGB(255, 100, 100, 100),
                           padding: EdgeInsets.zero, // 中央に配置されるようにする
                           onPressed: () {
+                            // TODO: 押した時にボタンなどで取得した全てのマーカーが消えてしまう
                             ref
                                 .read(mapScreenProvider.notifier)
                                 .clearSelectedDeparture();
@@ -263,6 +268,7 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                                       AppLocalizations.of(context)!.close,
                                       style: const TextStyle(
                                         fontSize: 15,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                   )),
@@ -296,15 +302,21 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
           ),
           actions: [
             (state.tmpTakeoff || state.tmpLand)
-                ? IconButton(
-                    icon: const Icon(Icons.swap_vert),
-                    iconSize: 30,
-                    color: Colors.white,
-                    onPressed: () {
-                      ref
-                          .read(mapScreenProvider.notifier)
-                          .swapDepartureAndDestination();
-                    })
+                ? AnimatedRotation(
+                    turns: _iconRotation,
+                    duration: const Duration(milliseconds: 200),
+                    child: IconButton(
+                        icon: const Icon(Icons.swap_vert),
+                        iconSize: 30,
+                        color: Colors.white,
+                        onPressed: () {
+                          setState(() {
+                            _iconRotation += 0.5; // 180度回転
+                          });
+                          ref
+                              .read(mapScreenProvider.notifier)
+                              .swapDepartureAndDestination();
+                        }))
                 : const SizedBox(height: 0),
           ]),
       body: Stack(
@@ -386,7 +398,7 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                         .toggleDrawing(ref);
                   },
                   child: Icon(
-                    drawPolygonEnabled ? Icons.cancel : Icons.edit,
+                    drawPolygonEnabled ? Icons.pause : Icons.draw,
                     size: 27.5,
                   ))),
           Positioned(
@@ -405,7 +417,6 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                         ref
                             .read(mapScreenProvider.notifier)
                             .clearSelectedDestination(),
-                        ref.read(mapScreenProvider.notifier).clearMarkers()
                       }
                     : null;
                 state.tmpTakeoff
@@ -414,7 +425,6 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                         ref
                             .read(mapScreenProvider.notifier)
                             .clearSelectedDeparture(),
-                        ref.read(mapScreenProvider.notifier).clearMarkers()
                       }
                     : null;
                 if (!state.showAllAirports) {
@@ -422,49 +432,78 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                   ref
                       .read(mapScreenProvider.notifier)
                       .switchToAllAirports(generateMarkers(context, ref));
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text(AppLocalizations.of(context)!.switch_map,
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold)),
-                          content:
-                              Text(AppLocalizations.of(context)!.show_airports),
-                          actions: [
-                            TextButton(
-                              child: Text(AppLocalizations.of(context)!.close),
-                              onPressed: () {
-                                Navigator.of(context).pop(); // ダイアログを閉じる
-                              },
-                            ),
-                          ],
-                        );
-                      });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      backgroundColor: Colors.white,
+                      content: Text(
+                        AppLocalizations.of(context)!.show_airports,
+                        style: const TextStyle(
+                            color: Colors.black, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  );
                 } else {
                   // 現在地周辺の空港に切り替え
-                  await ref
-                      .read(mapScreenProvider.notifier)
-                      .switchToNearbyAirports(context, ref);
                   showDialog(
-                      // ignore: use_build_context_synchronously
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text(AppLocalizations.of(context)!.switch_map,
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold)),
-                          content: Text(AppLocalizations.of(context)!
-                              .show_nearby_airports),
-                          actions: [
-                            TextButton(
-                              child: Text(AppLocalizations.of(context)!.close),
-                              onPressed: () {
-                                Navigator.of(context).pop(); // ダイアログを閉じる
-                              },
-                            ),
-                          ],
-                        );
+                            title: Text(
+                                AppLocalizations.of(context)!.switch_map,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold)),
+                            content: Consumer(builder: (context, ref, child) {
+                              final sliderValue =
+                                  ref.watch(sliderValueProvider);
+                              return Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      AppLocalizations.of(context)!
+                                          .designate_radius,
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Slider(
+                                      value: sliderValue,
+                                      min: 50,
+                                      max: 1000,
+                                      divisions: 10,
+                                      label: sliderValue.round().toString(),
+                                      onChanged: (double value) {
+                                        ref
+                                            .read(sliderValueProvider.notifier)
+                                            .state = value;
+                                      },
+                                    )
+                                  ]);
+                            }),
+                            actions: [
+                              ElevatedButton(
+                                onPressed: () async {
+                                  final sliderValue =
+                                      ref.read(sliderValueProvider);
+                                  Navigator.of(context).pop(); // モーダルを閉じる
+                                  await ref
+                                      .read(mapScreenProvider.notifier)
+                                      .fetchAirports(
+                                          context, ref, sliderValue.toInt());
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      backgroundColor: Colors.white,
+                                      content: Text(
+                                        AppLocalizations.of(context)!
+                                            .show_nearby_airports(
+                                                sliderValue.toInt()),
+                                        style: const TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Text(AppLocalizations.of(context)!.ok),
+                              )
+                            ]);
                       });
                 }
               },
@@ -485,7 +524,7 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                 ref.read(mapScreenProvider.notifier).getCurrentLocation();
               },
               child: const Icon(
-                Icons.near_me,
+                Icons.my_location,
                 size: 27.5,
               ),
             ),
@@ -500,5 +539,4 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
 // TODO: 出発する空港と行き先を指定したら、適切な経路や値段を表示する。
 // TODO: GoogleMapを長押しでもピンを指して、目的地設定できるようにする。
 // TODO: リファクタリング
-// TODO: devブランチで作業し、終わったらmainブランチにマージする。
 // gitの流れが参考になる(https://qiita.com/yukiyoshimura/items/7aa4a8f8db493ab97c2b)

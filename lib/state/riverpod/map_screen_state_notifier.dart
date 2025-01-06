@@ -8,6 +8,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:ticket_app/env/env.dart';
 import 'package:ticket_app/foundation/modal_sheet.dart';
 import 'package:ticket_app/state/riverpod/polygon_drawing_notifier.dart';
+import 'package:ticket_app/ui/screen/airport_list_screen.dart';
 import 'package:ticket_app/ui/screen/search_window_screen.dart';
 
 // MapScreenの状態を管理するStateNotifier
@@ -22,7 +23,8 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
             selectedDeparture: null,
             selectedDestination: null,
             tmpTakeoff: false,
-            tmpLand: false));
+            tmpLand: false,
+            searchRadius: 50.0));
 
   Position? currentPosition;
   GoogleMapController? mapController;
@@ -100,18 +102,10 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
 
 // 全国の空港マーカーに切り替える
   void switchToAllAirports(Set<Marker> allAirports) {
-    clearMarkers();
     state = state.copyWith(
       markers: allAirports,
       showAllAirports: true,
     );
-  }
-
-// 近くの空港マーカーに切り替える
-  Future<void> switchToNearbyAirports(
-      BuildContext context, WidgetRef ref) async {
-    await fetchAirports(context, ref);
-    state = state.copyWith(showAllAirports: false);
   }
 
   void updateSelectedDestination(String? destination) {
@@ -128,6 +122,10 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
 
   void clearSelectedDeparture() {
     state = state.copyWith(selectedDeparture: null);
+  }
+
+  void updateSearchRadius(double radius) {
+    state = state.copyWith(searchRadius: radius);
   }
 
   // GoogleMapのカメラを指定された位置に移動させる関数
@@ -225,69 +223,72 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
   }
 
   // 半径50km以内の空港データの取得
-  Future<void> fetchAirports(BuildContext context, WidgetRef ref) async {
+  Future<void> fetchAirports(
+      BuildContext context, WidgetRef ref, int searchRadius) async {
     if (currentPosition == null) return;
-
     double lat = currentPosition!.latitude;
     double lng = currentPosition!.longitude;
-    double radius = 500000; // 検索範囲(最大半径50km)
-    final String url =
-        'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$lat,$lng&radius=$radius&type=airport&key=$apiKey';
 
-    try {
-      final response = await http.get(Uri.parse(url));
+    Set<Marker> newMarkers = {};
+    for (var airport in airportData) {
+      double airpoortLat = airport['position'].latitude;
+      double airpoortLng = airport['position'].longitude;
+      double distance =
+          Geolocator.distanceBetween(lat, lng, airpoortLat, airpoortLng);
+      if (distance <= (searchRadius * 1000) /*検索範囲*/) {
+        final Marker marker = Marker(
+          markerId: MarkerId(airport['id']),
+          position: airport['position'],
+          infoWindow: InfoWindow(
+            title: airport['title'](context),
+            snippet: airport['snippet'](context),
+          ),
+          onTap: () async {
+            // TODO: generateMarkersとの共通化する
+            // TODO: タップした際のエラー解消
+            final String title = airport['title'](context);
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
-        final List<dynamic> results = data['results'];
-        Set<Marker> newMarkers = {};
-        for (var result in results) {
-          final Marker marker = Marker(
-            markerId: MarkerId(result['place_id']),
-            position: LatLng(result['geometry']['location']['lat'],
-                result['geometry']['location']['lng']),
-            infoWindow: InfoWindow(
-              title: result['name'],
-              snippet: result['vicinity'],
-            ),
-            onTap: () async {
-              //nearbySearchではphoto_referenceが1つしか取得できないため、placeDetailsで写真を取得
-              final placeId = result['place_id'];
-              final detailsUrl =
-                  'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=photos&key=$apiKey';
-              final detailsResponse = await http.get(Uri.parse(detailsUrl));
-              final detailsData = jsonDecode(detailsResponse.body);
-              if (detailsData['status'] != 'OK') {
-                return;
-              }
-              final photos = detailsData['result']['photos'] as List<dynamic>?;
-              final List<String> photoRefs = (photos)
-                      ?.map((photo) => photo['photo_reference'] as String)
-                      .toList() ??
-                  [];
-              List<String> photoUrls = photoRefs
-                  .map((photoRef) =>
-                      'https://maps.googleapis.com/maps/api/place/photo?maxheight=400&maxwidth=400&photoreference=$photoRef&key=$apiKey')
-                  .toList();
+            // Place IDの取得
+            final placeSearchUrl =
+                'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=$title&inputtype=textquery&fields=place_id&key=$apiKey';
 
-              showCustomBottomSheet(
-                  // ignore: use_build_context_synchronously
-                  context,
-                  ref,
-                  null,
-                  result['name'],
-                  photoUrls);
-            },
-          );
-          newMarkers.add(marker);
-        }
-        state = state.copyWith(markers: newMarkers);
-      } else {
-        //print('Failed to load airports: ${response.statusCode}');
+            final placeSearchResponse =
+                await http.get(Uri.parse(placeSearchUrl));
+            final placeSearchData = jsonDecode(placeSearchResponse.body);
+
+            if (placeSearchData['status'] != 'OK') {
+              return;
+            }
+
+            final placeId = placeSearchData['candidates'][0]['place_id'];
+
+            // Photo Referencesの取得
+            final detailsUrl =
+                'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=photos&key=$apiKey';
+
+            final detailsResponse = await http.get(Uri.parse(detailsUrl));
+            final detailsData = jsonDecode(detailsResponse.body);
+
+            if (detailsData['status'] != 'OK') {
+              return;
+            }
+
+            final photos = detailsData['result']['photos'] as List<dynamic>?;
+
+            // Photo URLsを生成
+            final List<String> photoUrls = photos?.map((photo) {
+                  final photoRef = photo['photo_reference'];
+                  return 'https://maps.googleapis.com/maps/api/place/photo?maxheight=400&maxwidth=400&photoreference=$photoRef&key=$apiKey';
+                }).toList() ??
+                [];
+            // ignore: use_build_context_synchronously
+            showCustomBottomSheet(context, ref, null, title, photoUrls);
+          },
+        );
+        newMarkers.add(marker);
       }
-    } catch (e) {
-      //print('Failed to fetch airports: $e');
     }
+    state = state.copyWith(markers: newMarkers, showAllAirports: false);
   }
 }
 
@@ -307,6 +308,7 @@ class MapScreenState {
   final String? selectedDestination;
   final bool tmpTakeoff;
   final bool tmpLand;
+  double searchRadius;
 
   MapScreenState({
     required this.markers,
@@ -315,9 +317,10 @@ class MapScreenState {
     required this.circleCenter,
     required this.showAllAirports,
     required this.selectedDeparture,
-    this.selectedDestination,
+    required this.selectedDestination,
     required this.tmpTakeoff,
     required this.tmpLand,
+    required this.searchRadius,
   });
 
   // 状態を部分的に更新するためのcopyWithメソッド
@@ -331,6 +334,7 @@ class MapScreenState {
     Set<Marker>? destinationMarkers,
     bool? tmpTakeoff,
     bool? tmpLand,
+    double? searchRadius,
   }) {
     return MapScreenState(
       markers: markers ?? this.markers,
@@ -342,6 +346,7 @@ class MapScreenState {
       selectedDestination: selectedDestination ?? this.selectedDestination,
       tmpTakeoff: tmpTakeoff ?? this.tmpTakeoff,
       tmpLand: tmpLand ?? this.tmpLand,
+      searchRadius: searchRadius ?? this.searchRadius,
     );
   }
 }

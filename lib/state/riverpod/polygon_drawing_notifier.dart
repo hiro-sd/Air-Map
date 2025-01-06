@@ -152,9 +152,8 @@ class PolygonDrawingNotifier extends StateNotifier<PolygonDrawingState> {
             return AlertDialog(
               title: Text(AppLocalizations.of(context)!.search_result,
                   style: const TextStyle(fontWeight: FontWeight.bold)),
-              content: Text(AppLocalizations.of(context)!.airport_in_the_area +
-                  markersInsidePolygon.length.toString() +
-                  AppLocalizations.of(context)!.exist_airport +
+              content: Text(AppLocalizations.of(context)!.airport_in_the_area(
+                      markersInsidePolygon.length.toString()) +
                   AppLocalizations.of(context)!.tap_marker),
               actions: [
                 TextButton(
