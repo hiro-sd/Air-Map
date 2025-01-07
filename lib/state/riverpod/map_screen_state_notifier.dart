@@ -11,6 +11,9 @@ import 'package:ticket_app/state/riverpod/polygon_drawing_notifier.dart';
 import 'package:ticket_app/ui/screen/airport_list_screen.dart';
 import 'package:ticket_app/ui/screen/search_window_screen.dart';
 
+final sliderValueProvider = StateProvider<double>((ref) => 50.0);
+final circleProvider = StateProvider<Set<Circle>>((ref) => {});
+
 // MapScreenの状態を管理するStateNotifier
 class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
   MapScreenStateNotifier()
@@ -23,8 +26,7 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
             selectedDeparture: null,
             selectedDestination: null,
             tmpTakeoff: false,
-            tmpLand: false,
-            searchRadius: 50.0));
+            tmpLand: false));
 
   Position? currentPosition;
   GoogleMapController? mapController;
@@ -52,6 +54,7 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
       ref.read(polygonSetProvider).clear();
       ref.read(polylineSetProvider).clear();
       ref.read(mapScreenProvider.notifier).clearMarkers();
+      ref.read(circleProvider.notifier).state.clear();
 
       // GoogleMapをその位置に移動させる
       moveCameraToPosition(
@@ -122,10 +125,6 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
 
   void clearSelectedDeparture() {
     state = state.copyWith(selectedDeparture: null);
-  }
-
-  void updateSearchRadius(double radius) {
-    state = state.copyWith(searchRadius: radius);
   }
 
   // GoogleMapのカメラを指定された位置に移動させる関数
@@ -308,7 +307,6 @@ class MapScreenState {
   final String? selectedDestination;
   final bool tmpTakeoff;
   final bool tmpLand;
-  double searchRadius;
 
   MapScreenState({
     required this.markers,
@@ -320,7 +318,6 @@ class MapScreenState {
     required this.selectedDestination,
     required this.tmpTakeoff,
     required this.tmpLand,
-    required this.searchRadius,
   });
 
   // 状態を部分的に更新するためのcopyWithメソッド
@@ -334,7 +331,6 @@ class MapScreenState {
     Set<Marker>? destinationMarkers,
     bool? tmpTakeoff,
     bool? tmpLand,
-    double? searchRadius,
   }) {
     return MapScreenState(
       markers: markers ?? this.markers,
@@ -346,7 +342,6 @@ class MapScreenState {
       selectedDestination: selectedDestination ?? this.selectedDestination,
       tmpTakeoff: tmpTakeoff ?? this.tmpTakeoff,
       tmpLand: tmpLand ?? this.tmpLand,
-      searchRadius: searchRadius ?? this.searchRadius,
     );
   }
 }

@@ -1,17 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ticket_app/foundation/geo_data_scan.dart';
 import 'package:ticket_app/state/riverpod/polygon_drawing_notifier.dart';
 import 'package:ticket_app/state/riverpod/map_screen_state_notifier.dart';
 import 'package:ticket_app/ui/screen/airport_list_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-//import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // 初めに表示するmapScreen
-class InitMapScreen extends StatefulHookConsumerWidget {
+class InitMapScreen extends ConsumerStatefulWidget {
   const InitMapScreen({super.key});
 
   @override
@@ -20,305 +20,297 @@ class InitMapScreen extends StatefulHookConsumerWidget {
 
 class InitMapScreenState extends ConsumerState<InitMapScreen> {
   double _iconRotation = 0.0;
-  final sliderValueProvider = StateProvider<double>((ref) => 50.0);
+  // final sliderValueProvider = StateProvider<double>((ref) => 50.0);
+  //final circleProvider = StateProvider<Set<Circle>>((ref) => {});
 
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(mapScreenProvider);
     final drawPolygonEnabled = ref.watch(drawPolygonEnabledProvider);
+    final circles = ref.watch(circleProvider);
 
     return Scaffold(
       appBar: AppBar(
-          // TODO: AppBarのUI整理
-          toolbarHeight: 140,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          leadingWidth: 30,
-          title: Column(children: [
-            Container(
-              width: MediaQuery.of(context).size.width * 0.7,
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
-                boxShadow: const [
-                  BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 10.0,
-                      spreadRadius: 1.0,
-                      offset: Offset(10, 10))
-                ],
-              ),
-              // 検索ウィンドウ
-              child: TextButton(
-                onPressed: () {
-                  ref
-                      .read(mapScreenProvider.notifier)
-                      .openSearchWindow(context, ref, 'tmpTakeoff', true);
-                },
-                child: Row(children: [
-                  const SizedBox(width: 7.5),
-                  Icon(
-                    state.tmpTakeoff ? Icons.flight_takeoff : Icons.search,
-                    color: const Color.fromARGB(255, 100, 100, 100),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      state.tmpTakeoff
-                          ? state.selectedDeparture != null
-                              ? state.selectedDeparture!
-                              : AppLocalizations.of(context)!
-                                  .search_departing_airport
-                          : AppLocalizations.of(context)!
-                              .search_departing_airport,
-                      style: TextStyle(
-                          color: state.tmpTakeoff
-                              ? state.selectedDeparture != null
-                                  ? Colors.black
-                                  : const Color.fromARGB(255, 100, 100, 100)
-                              : const Color.fromARGB(255, 100, 100, 100),
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.bold),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  state.tmpTakeoff
-                      ? IconButton(
-                          icon: const Icon(Icons.close),
-                          color: const Color.fromARGB(255, 100, 100, 100),
-                          padding: EdgeInsets.zero, // 中央に配置されるようにする
-                          onPressed: () {
-                            // TODO: 押した時にボタンなどで取得した全てのマーカーが消えてしまう
-                            ref
-                                .read(mapScreenProvider.notifier)
-                                .clearSelectedDeparture();
-                            state.departureMarkers.clear();
-                            ref
-                                .read(mapScreenProvider.notifier)
-                                .updateMarkers(state.destinationMarkers);
-                            ref
-                                .read(mapScreenProvider.notifier)
-                                .toggleTmpTakeoff();
-                          },
-                        )
-                      : const SizedBox(width: 0),
-                ]),
-              ),
+        // TODO: AppBarのUI整理
+        toolbarHeight: 140,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        leadingWidth: 30,
+        title: Column(children: [
+          Container(
+            width: MediaQuery.of(context).size.width * 0.7,
+            height: 50,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: const [
+                BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10.0,
+                    spreadRadius: 1.0,
+                    offset: Offset(10, 10))
+              ],
             ),
-            const SizedBox(height: 15),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.7,
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
-                boxShadow: const [
-                  BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 10.0,
-                      spreadRadius: 1.0,
-                      offset: Offset(10, 10))
-                ],
-              ),
-              child: TextButton(
-                // 検索フォーム
-                onPressed: () {
-                  ref
-                      .read(mapScreenProvider.notifier)
-                      .openSearchWindow(context, ref, 'tmpLand', false);
-                },
-                child: Row(children: [
-                  const SizedBox(width: 7.5),
-                  Icon(
-                    state.tmpLand ? Icons.flight_land : Icons.search,
-                    color: const Color.fromARGB(255, 100, 100, 100),
+            // 検索ウィンドウ
+            child: TextButton(
+              onPressed: () {
+                ref
+                    .read(mapScreenProvider.notifier)
+                    .openSearchWindow(context, ref, 'tmpTakeoff', true);
+              },
+              child: Row(children: [
+                const SizedBox(width: 7.5),
+                Icon(
+                  state.tmpTakeoff ? Icons.flight_takeoff : Icons.search,
+                  color: const Color.fromARGB(255, 100, 100, 100),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    state.tmpTakeoff
+                        ? state.selectedDeparture != null
+                            ? state.selectedDeparture!
+                            : AppLocalizations.of(context)!
+                                .search_departing_airport
+                        : AppLocalizations.of(context)!
+                            .search_departing_airport,
+                    style: TextStyle(
+                        color: state.tmpTakeoff
+                            ? state.selectedDeparture != null
+                                ? Colors.black
+                                : const Color.fromARGB(255, 100, 100, 100)
+                            : const Color.fromARGB(255, 100, 100, 100),
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      state.tmpLand
-                          ? state.selectedDestination != null
-                              ? state.selectedDestination!
-                              : AppLocalizations.of(context)!.search_airport
-                          : AppLocalizations.of(context)!.search_airport,
-                      style: TextStyle(
-                          color: state.tmpLand
-                              ? state.selectedDestination != null
-                                  ? Colors.black
-                                  : const Color.fromARGB(255, 100, 100, 100)
-                              : const Color.fromARGB(255, 100, 100, 100),
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.bold),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  state.tmpLand
-                      ? IconButton(
-                          icon: const Icon(Icons.close),
-                          color: const Color.fromARGB(255, 100, 100, 100),
-                          padding: EdgeInsets.zero, // 中央に配置されるようにする
-                          onPressed: () {
-                            ref
-                                .read(mapScreenProvider.notifier)
-                                .clearSelectedDestination();
-                            state.destinationMarkers.clear();
-                            ref
-                                .read(mapScreenProvider.notifier)
-                                .updateMarkers(state.departureMarkers);
-                            ref
-                                .read(mapScreenProvider.notifier)
-                                .toggleTmpLand();
-                          },
-                        )
-                      : const SizedBox(width: 0),
-                ]),
-              ),
-            ),
-          ]),
-          leading: IconButton(
-            icon: Icon(Icons.menu,
-                color: Theme.of(context).colorScheme.onPrimary, size: 30),
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                builder: (BuildContext context) {
-                  // リストに表示する地方名と対応する識別子
-                  final List<Map<String, String>> areas = [
-                    {
-                      'name': AppLocalizations.of(context)!.hokkaido,
-                      'key': 'hokkaido'
-                    },
-                    {
-                      'name': AppLocalizations.of(context)!.tohoku,
-                      'key': 'tohoku'
-                    },
-                    {
-                      'name': AppLocalizations.of(context)!.kanto,
-                      'key': 'kanto'
-                    },
-                    {
-                      'name': AppLocalizations.of(context)!.chubu,
-                      'key': 'chubu'
-                    },
-                    {
-                      'name': AppLocalizations.of(context)!.kinki,
-                      'key': 'kinki'
-                    },
-                    {
-                      'name': AppLocalizations.of(context)!.chugoku,
-                      'key': 'chugoku'
-                    },
-                    {
-                      'name': AppLocalizations.of(context)!.shikoku,
-                      'key': 'shikoku'
-                    },
-                    {
-                      'name': AppLocalizations.of(context)!.kyushu,
-                      'key': 'kyushu'
-                    },
-                    {
-                      'name': AppLocalizations.of(context)!.okinawa,
-                      'key': 'okinawa'
-                    },
-                  ];
-
-                  int selectedIndex = 0; // Pickerの初期選択インデックス
-
-                  return FractionallySizedBox(
-                    heightFactor: 0.5,
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 20),
-                        Text(
-                          AppLocalizations.of(context)!.select_area,
-                          style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        Expanded(
-                          child: CupertinoPicker(
-                            itemExtent: 45, // 各項目の高さ
-                            onSelectedItemChanged: (index) {
-                              selectedIndex = index;
-                              HapticFeedback.heavyImpact();
-                            },
-                            children: areas
-                                .map((area) => Center(
-                                      child: Text(
-                                        area['name']!,
-                                        style: const TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ))
-                                .toList(),
-                          ),
-                        ),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              SizedBox(
-                                  width: 100,
-                                  height: 45,
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop(); // モーダルを閉じる
-                                    },
-                                    child: Text(
-                                      AppLocalizations.of(context)!.close,
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  )),
-                              SizedBox(
-                                  width: 100,
-                                  height: 45,
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      // 選択された地方に基づいてポリゴンを描画
-                                      loadAndDisplayAreaPolygon(
-                                          areas[selectedIndex]['key']!,
-                                          ref,
-                                          context);
-                                      Navigator.of(context).pop(); // モーダルを閉じる
-                                    },
-                                    child: Text(
-                                      AppLocalizations.of(context)!.ok,
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  )),
-                            ]),
-                        const SizedBox(height: 30),
-                      ],
-                    ),
-                  );
-                },
-              );
-            },
-          ),
-          actions: [
-            (state.tmpTakeoff || state.tmpLand)
-                ? AnimatedRotation(
-                    turns: _iconRotation,
-                    duration: const Duration(milliseconds: 200),
-                    child: IconButton(
-                        icon: const Icon(Icons.swap_vert),
-                        iconSize: 30,
-                        color: Colors.white,
+                ),
+                state.tmpTakeoff
+                    ? IconButton(
+                        icon: const Icon(Icons.close),
+                        color: const Color.fromARGB(255, 100, 100, 100),
+                        padding: EdgeInsets.zero, // 中央に配置されるようにする
                         onPressed: () {
-                          setState(() {
-                            _iconRotation += 0.5; // 180度回転
-                          });
+                          // TODO: 押した時にボタンなどで取得した全てのマーカーが消えてしまう
                           ref
                               .read(mapScreenProvider.notifier)
-                              .swapDepartureAndDestination();
-                        }))
-                : const SizedBox(height: 0),
-          ]),
+                              .clearSelectedDeparture();
+                          state.departureMarkers.clear();
+                          ref
+                              .read(mapScreenProvider.notifier)
+                              .updateMarkers(state.destinationMarkers);
+                          ref
+                              .read(mapScreenProvider.notifier)
+                              .toggleTmpTakeoff();
+                        },
+                      )
+                    : const SizedBox(width: 0),
+              ]),
+            ),
+          ),
+          const SizedBox(height: 15),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.7,
+            height: 50,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: const [
+                BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10.0,
+                    spreadRadius: 1.0,
+                    offset: Offset(10, 10))
+              ],
+            ),
+            child: TextButton(
+              // 検索フォーム
+              onPressed: () {
+                ref
+                    .read(mapScreenProvider.notifier)
+                    .openSearchWindow(context, ref, 'tmpLand', false);
+              },
+              child: Row(children: [
+                const SizedBox(width: 7.5),
+                Icon(
+                  state.tmpLand ? Icons.flight_land : Icons.search,
+                  color: const Color.fromARGB(255, 100, 100, 100),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    state.tmpLand
+                        ? state.selectedDestination != null
+                            ? state.selectedDestination!
+                            : AppLocalizations.of(context)!.search_airport
+                        : AppLocalizations.of(context)!.search_airport,
+                    style: TextStyle(
+                        color: state.tmpLand
+                            ? state.selectedDestination != null
+                                ? Colors.black
+                                : const Color.fromARGB(255, 100, 100, 100)
+                            : const Color.fromARGB(255, 100, 100, 100),
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                state.tmpLand
+                    ? IconButton(
+                        icon: const Icon(Icons.close),
+                        color: const Color.fromARGB(255, 100, 100, 100),
+                        padding: EdgeInsets.zero, // 中央に配置されるようにする
+                        onPressed: () {
+                          ref
+                              .read(mapScreenProvider.notifier)
+                              .clearSelectedDestination();
+                          state.destinationMarkers.clear();
+                          ref
+                              .read(mapScreenProvider.notifier)
+                              .updateMarkers(state.departureMarkers);
+                          ref.read(mapScreenProvider.notifier).toggleTmpLand();
+                        },
+                      )
+                    : const SizedBox(width: 0),
+              ]),
+            ),
+          ),
+        ]),
+        leading: IconButton(
+          icon: Icon(Icons.menu,
+              color: Theme.of(context).colorScheme.onPrimary, size: 30),
+          onPressed: () {
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              builder: (BuildContext context) {
+                // リストに表示する地方名と対応する識別子
+                final List<Map<String, String>> areas = [
+                  {
+                    'name': AppLocalizations.of(context)!.hokkaido,
+                    'key': 'hokkaido'
+                  },
+                  {
+                    'name': AppLocalizations.of(context)!.tohoku,
+                    'key': 'tohoku'
+                  },
+                  {'name': AppLocalizations.of(context)!.kanto, 'key': 'kanto'},
+                  {'name': AppLocalizations.of(context)!.chubu, 'key': 'chubu'},
+                  {'name': AppLocalizations.of(context)!.kinki, 'key': 'kinki'},
+                  {
+                    'name': AppLocalizations.of(context)!.chugoku,
+                    'key': 'chugoku'
+                  },
+                  {
+                    'name': AppLocalizations.of(context)!.shikoku,
+                    'key': 'shikoku'
+                  },
+                  {
+                    'name': AppLocalizations.of(context)!.kyushu,
+                    'key': 'kyushu'
+                  },
+                  {
+                    'name': AppLocalizations.of(context)!.okinawa,
+                    'key': 'okinawa'
+                  },
+                ];
+
+                int selectedIndex = 0; // Pickerの初期選択インデックス
+
+                return FractionallySizedBox(
+                  heightFactor: 0.5,
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 20),
+                      Text(
+                        AppLocalizations.of(context)!.select_area,
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      Expanded(
+                        child: CupertinoPicker(
+                          itemExtent: 45, // 各項目の高さ
+                          onSelectedItemChanged: (index) {
+                            selectedIndex = index;
+                            HapticFeedback.heavyImpact();
+                          },
+                          children: areas
+                              .map((area) => Center(
+                                    child: Text(
+                                      area['name']!,
+                                      style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ))
+                              .toList(),
+                        ),
+                      ),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            SizedBox(
+                                width: 100,
+                                height: 45,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop(); // モーダルを閉じる
+                                  },
+                                  child: Text(
+                                    AppLocalizations.of(context)!.close,
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                )),
+                            SizedBox(
+                                width: 100,
+                                height: 45,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    // 選択された地方に基づいてポリゴンを描画
+                                    loadAndDisplayAreaPolygon(
+                                        areas[selectedIndex]['key']!,
+                                        ref,
+                                        context);
+                                    Navigator.of(context).pop(); // モーダルを閉じる
+                                  },
+                                  child: Text(
+                                    AppLocalizations.of(context)!.ok,
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                )),
+                          ]),
+                      const SizedBox(height: 30),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
+        ),
+        actions: [
+          (state.tmpTakeoff || state.tmpLand)
+              ? AnimatedRotation(
+                  turns: _iconRotation,
+                  duration: const Duration(milliseconds: 200),
+                  child: IconButton(
+                      icon: const Icon(Icons.swap_vert),
+                      iconSize: 30,
+                      color: Colors.white,
+                      onPressed: () {
+                        setState(() {
+                          _iconRotation += 0.5; // 180度回転
+                        });
+                        ref
+                            .read(mapScreenProvider.notifier)
+                            .swapDepartureAndDestination();
+                      }))
+              : const SizedBox(height: 0),
+        ],
+      ),
       body: Stack(
         children: <Widget>[
           GestureDetector(
@@ -341,6 +333,7 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                 myLocationButtonEnabled: false,
                 myLocationEnabled: true,
                 mapType: MapType.normal,
+                circles: circles,
                 zoomGesturesEnabled: true,
                 zoomControlsEnabled: false,
                 markers: state.markers, // Riverpodの状態を参照
@@ -428,6 +421,7 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                       }
                     : null;
                 if (!state.showAllAirports) {
+                  ref.read(circleProvider.notifier).state.clear();
                   // 全国の空港に切り替え
                   ref
                       .read(mapScreenProvider.notifier)
@@ -435,6 +429,7 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       backgroundColor: Colors.white,
+                      duration: const Duration(seconds: 1),
                       content: Text(
                         AppLocalizations.of(context)!.show_airports,
                         style: const TextStyle(
@@ -482,14 +477,30 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                                 onPressed: () async {
                                   final sliderValue =
                                       ref.read(sliderValueProvider);
-                                  Navigator.of(context).pop(); // モーダルを閉じる
+                                  final currentPosition =
+                                      await Geolocator.getCurrentPosition();
+                                  final circle = Circle(
+                                    circleId:
+                                        const CircleId('currentLocationCircle'),
+                                    center: LatLng(currentPosition.latitude,
+                                        currentPosition.longitude),
+                                    radius: sliderValue * 1000, // メートル単位
+                                    strokeWidth: 3,
+                                    strokeColor: Colors.blue.withOpacity(0.8),
+                                    fillColor: Colors.blue.withOpacity(0.2),
+                                  );
+                                  ref.read(circleProvider.notifier).state = {
+                                    circle
+                                  };
                                   await ref
                                       .read(mapScreenProvider.notifier)
                                       .fetchAirports(
                                           context, ref, sliderValue.toInt());
+                                  Navigator.of(context).pop(); // モーダルを閉じる
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       backgroundColor: Colors.white,
+                                      duration: const Duration(seconds: 1),
                                       content: Text(
                                         AppLocalizations.of(context)!
                                             .show_nearby_airports(

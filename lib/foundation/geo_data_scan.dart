@@ -41,12 +41,24 @@ Future<List<List<LatLng>>> loadAreaGeoJson(String area) async {
   return polygons;
 }
 
+List<Map<String, LatLng>> centerLatLngs = [
+  {'hokkaido': const LatLng(43.420962, 142.781281)},
+  {'tohoku': const LatLng(38.90753168981692, 140.6605755353413)},
+  {'kanto': const LatLng(36.04032406240875, 139.6575667323126)},
+  {'chubu': const LatLng(35.98531253025876, 137.8869741393959)},
+  {'kinki': const LatLng(34.64280347749818, 135.5739247499291)},
+  {'chugoku': const LatLng(34.840301716025444, 133.00408844111368)},
+  {'shikoku': const LatLng(33.729026776168574, 133.49864327030613)},
+  {'kyushu': const LatLng(32.66080691300808, 130.90413163851798)},
+  {'okinawa': const LatLng(25.28101081859356, 126.46166469419586)},
+];
+
 // 読み込んだ座標をもとにポリゴンを描画する
 Future<void> loadAndDisplayAreaPolygon(
     String area, WidgetRef ref, BuildContext context) async {
-  //ref.read(polygonDrawingProvider.notifier).clearPolygons(ref);
   ref.read(polygonSetProvider).clear();
   ref.read(polylineSetProvider).clear();
+  ref.read(circleProvider.notifier).state.clear();
   ref.read(mapScreenProvider).tmpLand
       ? {
           ref.read(mapScreenProvider.notifier).toggleTmpLand(),
@@ -135,4 +147,14 @@ Future<void> loadAndDisplayAreaPolygon(
 
   // StateNotifierを使用してマーカーを更新
   ref.read(mapScreenProvider.notifier).updateMarkers(newMarkers);
+
+  final GoogleMapController? controller =
+      ref.read(mapScreenProvider.notifier).mapController;
+  if (controller != null) {
+    final centerLatLng =
+        centerLatLngs.firstWhere((element) => element.containsKey(area))[area];
+    controller.animateCamera(CameraUpdate.newCameraPosition(
+      CameraPosition(target: centerLatLng!, zoom: 6),
+    ));
+  }
 }

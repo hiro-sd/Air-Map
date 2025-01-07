@@ -230,6 +230,7 @@ class PolygonDrawingNotifier extends StateNotifier<PolygonDrawingState> {
   void toggleDrawing(WidgetRef ref) {
     clearPolygons(ref);
     ref.read(mapScreenProvider.notifier).clearMarkers();
+    ref.read(circleProvider.notifier).state.clear();
     ref.read(drawPolygonEnabledProvider.notifier).state =
         !ref.read(drawPolygonEnabledProvider);
     ref.read(mapScreenProvider).tmpTakeoff
