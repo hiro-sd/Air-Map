@@ -20,8 +20,6 @@ class InitMapScreen extends ConsumerStatefulWidget {
 
 class InitMapScreenState extends ConsumerState<InitMapScreen> {
   double _iconRotation = 0.0;
-  // final sliderValueProvider = StateProvider<double>((ref) => 50.0);
-  //final circleProvider = StateProvider<Set<Circle>>((ref) => {});
 
   @override
   Widget build(BuildContext context) {
@@ -274,6 +272,21 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                                         ref,
                                         context);
                                     Navigator.of(context).pop(); // モーダルを閉じる
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        backgroundColor: Colors.white,
+                                        duration: const Duration(seconds: 2),
+                                        content: Text(
+                                          AppLocalizations.of(context)!
+                                              .show_polygon_and_area(
+                                                  areas[selectedIndex]
+                                                      ['name']!),
+                                          style: const TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    );
                                   },
                                   child: Text(
                                     AppLocalizations.of(context)!.ok,
@@ -439,6 +452,14 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                   );
                 } else {
                   // 現在地周辺の空港に切り替え
+                  final List<double> customLabels = [
+                    50,
+                    100,
+                    200,
+                    400,
+                    800,
+                    1000
+                  ];
                   showDialog(
                       context: context,
                       builder: (BuildContext context) {
@@ -450,6 +471,8 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                             content: Consumer(builder: (context, ref, child) {
                               final sliderValue =
                                   ref.watch(sliderValueProvider);
+                              final sliderIndex =
+                                  customLabels.indexOf(sliderValue);
                               return Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
@@ -459,15 +482,17 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                                     ),
                                     const SizedBox(height: 10),
                                     Slider(
-                                      value: sliderValue,
-                                      min: 50,
-                                      max: 1000,
-                                      divisions: 10,
-                                      label: sliderValue.round().toString(),
+                                      value: sliderIndex.toDouble(),
+                                      min: 0,
+                                      max: customLabels.length - 1,
+                                      divisions: customLabels.length - 1,
+                                      label: customLabels[sliderIndex]
+                                          .toInt()
+                                          .toString(),
                                       onChanged: (double value) {
                                         ref
                                             .read(sliderValueProvider.notifier)
-                                            .state = value;
+                                            .state = customLabels[value.round()];
                                       },
                                     )
                                   ]);
@@ -495,13 +520,19 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                                   await ref
                                       .read(mapScreenProvider.notifier)
                                       .fetchAirports(
-                                          context, ref, sliderValue.toInt());
+                                          // ignore: use_build_context_synchronously
+                                          context,
+                                          ref,
+                                          sliderValue.toInt());
+                                  // ignore: use_build_context_synchronously
                                   Navigator.of(context).pop(); // モーダルを閉じる
+                                  // ignore: use_build_context_synchronously
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       backgroundColor: Colors.white,
                                       duration: const Duration(seconds: 1),
                                       content: Text(
+                                        // ignore: use_build_context_synchronously
                                         AppLocalizations.of(context)!
                                             .show_nearby_airports(
                                                 sliderValue.toInt()),

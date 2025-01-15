@@ -31,6 +31,7 @@
     "airport_in_the_area": "指定されたエリア内に空港が{markersInsidePolygon}件存在します。",
     "tap_marker": "マーカーをタップすると出発地や目的地に設定できます。",
     "designate_radius": "検索半径を指定してください。",
+    "show_polygon_and_area": "{region}の空港を表示します。",
     "hokkaido": "北海道",
     "tohoku": "東北地方",
     "kanto": "関東地方",
