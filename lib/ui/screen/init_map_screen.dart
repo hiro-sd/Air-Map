@@ -292,6 +292,7 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                                     AppLocalizations.of(context)!.ok,
                                     style: const TextStyle(
                                       fontSize: 15,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 )),
@@ -390,8 +391,7 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                                     .polygon_drawing_description),
                             actions: [
                               TextButton(
-                                child:
-                                    Text(AppLocalizations.of(context)!.close),
+                                child: Text(AppLocalizations.of(context)!.ok),
                                 onPressed: () {
                                   Navigator.of(context).pop(); // ダイアログを閉じる
                                 },
@@ -577,7 +577,7 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
   }
 }
 
-// TODO: ウィンドウ埋めた後のロジック
+// TODO: ウィンドウ埋めた後のロジック (flight apiなど調べる)
 // TODO: 出発する空港と行き先を指定したら、適切な経路や値段を表示する。
 // TODO: GoogleMapを長押しでもピンを指して、目的地設定できるようにする。
 // TODO: リファクタリング

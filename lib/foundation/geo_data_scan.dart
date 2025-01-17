@@ -41,16 +41,19 @@ Future<List<List<LatLng>>> loadAreaGeoJson(String area) async {
   return polygons;
 }
 
-List<Map<String, LatLng>> centerLatLngs = [
-  {'hokkaido': const LatLng(43.420962, 142.781281)},
-  {'tohoku': const LatLng(38.90753168981692, 140.6605755353413)},
-  {'kanto': const LatLng(36.04032406240875, 139.6575667323126)},
-  {'chubu': const LatLng(35.98531253025876, 137.8869741393959)},
-  {'kinki': const LatLng(34.64280347749818, 135.5739247499291)},
-  {'chugoku': const LatLng(34.840301716025444, 133.00408844111368)},
-  {'shikoku': const LatLng(33.729026776168574, 133.49864327030613)},
-  {'kyushu': const LatLng(32.66080691300808, 130.90413163851798)},
-  {'okinawa': const LatLng(25.28101081859356, 126.46166469419586)},
+List<Map<String, dynamic>> centerLatLngs = [
+  {'hokkaido': const LatLng(43.420962, 142.781281), 'zoom': 6.4},
+  {'tohoku': const LatLng(39.23286365076151, 140.5830066571554), 'zoom': 7.4},
+  {'kanto': const LatLng(35.13941202176295, 139.673593517746336), 'zoom': 7.7},
+  {'chubu': const LatLng(35.96401444205463, 137.68091997993142), 'zoom': 7.0},
+  {'kinki': const LatLng(34.64280347749818, 135.5739247499291), 'zoom': 7.7},
+  {'chugoku': const LatLng(34.99872056192886, 132.71277144634544), 'zoom': 7.3},
+  {
+    'shikoku': const LatLng(33.729026776168574, 133.49864327030613),
+    'zoom': 7.8
+  },
+  {'kyushu': const LatLng(30.883730385817117, 129.97552166585507), 'zoom': 6.8},
+  {'okinawa': const LatLng(25.76023575080417, 127.06245890649342), 'zoom': 6.1},
 ];
 
 // 読み込んだ座標をもとにポリゴンを描画する
@@ -147,14 +150,18 @@ Future<void> loadAndDisplayAreaPolygon(
 
   // StateNotifierを使用してマーカーを更新
   ref.read(mapScreenProvider.notifier).updateMarkers(newMarkers);
+  // centerLatLngsの座標に移動
+  final centerLatLngData = centerLatLngs.firstWhere(
+    (element) => element.containsKey(area),
+  );
 
   final GoogleMapController? controller =
       ref.read(mapScreenProvider.notifier).mapController;
   if (controller != null) {
-    final centerLatLng =
-        centerLatLngs.firstWhere((element) => element.containsKey(area))[area];
+    final centerLatLng = centerLatLngData[area] as LatLng;
+    final zoomLevel = centerLatLngData['zoom'] as double;
     controller.animateCamera(CameraUpdate.newCameraPosition(
-      CameraPosition(target: centerLatLng!, zoom: 6),
+      CameraPosition(target: centerLatLng, zoom: zoomLevel),
     ));
   }
 }
