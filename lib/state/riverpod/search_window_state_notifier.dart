@@ -20,7 +20,7 @@ class SearchWindowStateNotifier
     const String baseUrl =
         'https://maps.googleapis.com/maps/api/place/autocomplete/json';
     final String requestUrl =
-        '$baseUrl?input=$input&key=$apiKey&components=country:jp'; // 日本限定
+        '$baseUrl?input=$input&key=$apiKey&components=country:jp&types=airport'; // 日本限定, 空港限定
 
     try {
       final response = await http.get(Uri.parse(requestUrl));
