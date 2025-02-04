@@ -1,12 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:ticket_app/foundation/geo_data_scan.dart';
 import 'package:ticket_app/state/riverpod/polygon_drawing_notifier.dart';
 import 'package:ticket_app/state/riverpod/map_screen_state_notifier.dart';
-import 'package:ticket_app/ui/screen/airport_list_screen.dart';
+import 'package:ticket_app/functions/airport_list.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -19,8 +16,6 @@ class InitMapScreen extends ConsumerStatefulWidget {
 }
 
 class InitMapScreenState extends ConsumerState<InitMapScreen> {
-  double _iconRotation = 0.0;
-
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(mapScreenProvider);
@@ -28,303 +23,311 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
     final circles = ref.watch(circleProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        // TODO: AppBarのUI整理
-        toolbarHeight: 140,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        leadingWidth: 30,
-        title: Column(children: [
-          Container(
-            width: MediaQuery.of(context).size.width * 0.7,
-            height: 50,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(30),
-              boxShadow: const [
-                BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 10.0,
-                    spreadRadius: 1.0,
-                    offset: Offset(10, 10))
-              ],
-            ),
-            // 検索ウィンドウ
-            child: TextButton(
-              onPressed: () {
-                ref
-                    .read(mapScreenProvider.notifier)
-                    .openSearchWindow(context, ref, 'tmpTakeoff', true);
-              },
-              child: Row(children: [
-                const SizedBox(width: 7.5),
-                Icon(
-                  state.tmpTakeoff ? Icons.flight_takeoff : Icons.search,
-                  color: const Color.fromARGB(255, 100, 100, 100),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    state.tmpTakeoff
-                        ? state.selectedDeparture != null
-                            ? state.selectedDeparture!
-                            : AppLocalizations.of(context)!
-                                .search_departing_airport
-                        : AppLocalizations.of(context)!
-                            .search_departing_airport,
-                    style: TextStyle(
-                        color: state.tmpTakeoff
-                            ? state.selectedDeparture != null
-                                ? Colors.black
-                                : const Color.fromARGB(255, 100, 100, 100)
-                            : const Color.fromARGB(255, 100, 100, 100),
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.bold),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                state.tmpTakeoff
-                    ? IconButton(
-                        icon: const Icon(Icons.close),
-                        color: const Color.fromARGB(255, 100, 100, 100),
-                        padding: EdgeInsets.zero, // 中央に配置されるようにする
-                        onPressed: () {
-                          // TODO: 押した時にボタンなどで取得した全てのマーカーが消えてしまう
-                          ref
-                              .read(mapScreenProvider.notifier)
-                              .clearSelectedDeparture();
-                          state.departureMarkers.clear();
-                          ref
-                              .read(mapScreenProvider.notifier)
-                              .updateMarkers(state.destinationMarkers);
-                          ref
-                              .read(mapScreenProvider.notifier)
-                              .toggleTmpTakeoff();
-                        },
-                      )
-                    : const SizedBox(width: 0),
-              ]),
-            ),
-          ),
-          const SizedBox(height: 15),
-          Container(
-            width: MediaQuery.of(context).size.width * 0.7,
-            height: 50,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(30),
-              boxShadow: const [
-                BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 10.0,
-                    spreadRadius: 1.0,
-                    offset: Offset(10, 10))
-              ],
-            ),
-            child: TextButton(
-              // 検索フォーム
-              onPressed: () {
-                ref
-                    .read(mapScreenProvider.notifier)
-                    .openSearchWindow(context, ref, 'tmpLand', false);
-              },
-              child: Row(children: [
-                const SizedBox(width: 7.5),
-                Icon(
-                  state.tmpLand ? Icons.flight_land : Icons.search,
-                  color: const Color.fromARGB(255, 100, 100, 100),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    state.tmpLand
-                        ? state.selectedDestination != null
-                            ? state.selectedDestination!
-                            : AppLocalizations.of(context)!.search_airport
-                        : AppLocalizations.of(context)!.search_airport,
-                    style: TextStyle(
-                        color: state.tmpLand
-                            ? state.selectedDestination != null
-                                ? Colors.black
-                                : const Color.fromARGB(255, 100, 100, 100)
-                            : const Color.fromARGB(255, 100, 100, 100),
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.bold),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                state.tmpLand
-                    ? IconButton(
-                        icon: const Icon(Icons.close),
-                        color: const Color.fromARGB(255, 100, 100, 100),
-                        padding: EdgeInsets.zero, // 中央に配置されるようにする
-                        onPressed: () {
-                          ref
-                              .read(mapScreenProvider.notifier)
-                              .clearSelectedDestination();
-                          state.destinationMarkers.clear();
-                          ref
-                              .read(mapScreenProvider.notifier)
-                              .updateMarkers(state.departureMarkers);
-                          ref.read(mapScreenProvider.notifier).toggleTmpLand();
-                        },
-                      )
-                    : const SizedBox(width: 0),
-              ]),
-            ),
-          ),
-        ]),
-        leading: IconButton(
-          icon: Icon(Icons.menu,
-              color: Theme.of(context).colorScheme.onPrimary, size: 30),
-          onPressed: () {
-            showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              builder: (BuildContext context) {
-                // リストに表示する地方名と対応する識別子
-                final List<Map<String, String>> areas = [
-                  {
-                    'name': AppLocalizations.of(context)!.hokkaido,
-                    'key': 'hokkaido'
-                  },
-                  {
-                    'name': AppLocalizations.of(context)!.tohoku,
-                    'key': 'tohoku'
-                  },
-                  {'name': AppLocalizations.of(context)!.kanto, 'key': 'kanto'},
-                  {'name': AppLocalizations.of(context)!.chubu, 'key': 'chubu'},
-                  {'name': AppLocalizations.of(context)!.kinki, 'key': 'kinki'},
-                  {
-                    'name': AppLocalizations.of(context)!.chugoku,
-                    'key': 'chugoku'
-                  },
-                  {
-                    'name': AppLocalizations.of(context)!.shikoku,
-                    'key': 'shikoku'
-                  },
-                  {
-                    'name': AppLocalizations.of(context)!.kyushu,
-                    'key': 'kyushu'
-                  },
-                  {
-                    'name': AppLocalizations.of(context)!.okinawa,
-                    'key': 'okinawa'
-                  },
-                ];
+      // appBar: AppBar(
+      //   // TODO: AppBarのUI整理
+      //   //toolbarHeight: 140,
+      //   backgroundColor: Theme.of(context).colorScheme.primary,
+      //   //leadingWidth: 30,
+      //   title: Text(
+      //     AppLocalizations.of(context)!.title,
+      //     style: TextStyle(
+      //       fontSize: 20,
+      //       fontWeight: FontWeight.bold,
+      //       color: Theme.of(context).colorScheme.onPrimary,
+      //     ),
+      //   ),
+      //   // title: Column(children: [
+      //   //   Container(
+      //   //     width: MediaQuery.of(context).size.width * 0.7,
+      //   //     height: 50,
+      //   //     decoration: BoxDecoration(
+      //   //       color: Colors.white,
+      //   //       borderRadius: BorderRadius.circular(30),
+      //   //       boxShadow: const [
+      //   //         BoxShadow(
+      //   //             color: Colors.black12,
+      //   //             blurRadius: 10.0,
+      //   //             spreadRadius: 1.0,
+      //   //             offset: Offset(10, 10))
+      //   //       ],
+      //   //     ),
+      //   //     // 検索ウィンドウ
+      //   //     child: TextButton(
+      //   //       onPressed: () {
+      //   //         ref
+      //   //             .read(mapScreenProvider.notifier)
+      //   //             .openSearchWindow(context, ref, 'tmpTakeoff', true);
+      //   //       },
+      //   //       child: Row(children: [
+      //   //         const SizedBox(width: 7.5),
+      //   //         Icon(
+      //   //           state.tmpTakeoff ? Icons.flight_takeoff : Icons.search,
+      //   //           color: const Color.fromARGB(255, 100, 100, 100),
+      //   //         ),
+      //   //         const SizedBox(width: 10),
+      //   //         Expanded(
+      //   //           child: Text(
+      //   //             state.tmpTakeoff
+      //   //                 ? state.selectedDeparture != null
+      //   //                     ? state.selectedDeparture!
+      //   //                     : AppLocalizations.of(context)!
+      //   //                         .search_departing_airport
+      //   //                 : AppLocalizations.of(context)!
+      //   //                     .search_departing_airport,
+      //   //             style: TextStyle(
+      //   //                 color: state.tmpTakeoff
+      //   //                     ? state.selectedDeparture != null
+      //   //                         ? Colors.black
+      //   //                         : const Color.fromARGB(255, 100, 100, 100)
+      //   //                     : const Color.fromARGB(255, 100, 100, 100),
+      //   //                 fontSize: 12.5,
+      //   //                 fontWeight: FontWeight.bold),
+      //   //             overflow: TextOverflow.ellipsis,
+      //   //           ),
+      //   //         ),
+      //   //         state.tmpTakeoff
+      //   //             ? IconButton(
+      //   //                 icon: const Icon(Icons.close),
+      //   //                 color: const Color.fromARGB(255, 100, 100, 100),
+      //   //                 padding: EdgeInsets.zero, // 中央に配置されるようにする
+      //   //                 onPressed: () {
+      //   //                   // TODO: 押した時にボタンなどで取得した全てのマーカーが消えてしまう
+      //   //                   ref
+      //   //                       .read(mapScreenProvider.notifier)
+      //   //                       .clearSelectedDeparture();
+      //   //                   state.departureMarkers.clear();
+      //   //                   ref
+      //   //                       .read(mapScreenProvider.notifier)
+      //   //                       .updateMarkers(state.destinationMarkers);
+      //   //                   ref
+      //   //                       .read(mapScreenProvider.notifier)
+      //   //                       .toggleTmpTakeoff();
+      //   //                 },
+      //   //               )
+      //   //             : const SizedBox(width: 0),
+      //   //       ]),
+      //   //     ),
+      //   //   ),
+      //   //   const SizedBox(height: 15),
+      //   //   Container(
+      //   //     width: MediaQuery.of(context).size.width * 0.7,
+      //   //     height: 50,
+      //   //     decoration: BoxDecoration(
+      //   //       color: Colors.white,
+      //   //       borderRadius: BorderRadius.circular(30),
+      //   //       boxShadow: const [
+      //   //         BoxShadow(
+      //   //             color: Colors.black12,
+      //   //             blurRadius: 10.0,
+      //   //             spreadRadius: 1.0,
+      //   //             offset: Offset(10, 10))
+      //   //       ],
+      //   //     ),
+      //   //     child: TextButton(
+      //   //       // 検索フォーム
+      //   //       onPressed: () {
+      //   //         ref
+      //   //             .read(mapScreenProvider.notifier)
+      //   //             .openSearchWindow(context, ref, 'tmpLand', false);
+      //   //       },
+      //   //       child: Row(children: [
+      //   //         const SizedBox(width: 7.5),
+      //   //         Icon(
+      //   //           state.tmpLand ? Icons.flight_land : Icons.search,
+      //   //           color: const Color.fromARGB(255, 100, 100, 100),
+      //   //         ),
+      //   //         const SizedBox(width: 10),
+      //   //         Expanded(
+      //   //           child: Text(
+      //   //             state.tmpLand
+      //   //                 ? state.selectedDestination != null
+      //   //                     ? state.selectedDestination!
+      //   //                     : AppLocalizations.of(context)!.search_airport
+      //   //                 : AppLocalizations.of(context)!.search_airport,
+      //   //             style: TextStyle(
+      //   //                 color: state.tmpLand
+      //   //                     ? state.selectedDestination != null
+      //   //                         ? Colors.black
+      //   //                         : const Color.fromARGB(255, 100, 100, 100)
+      //   //                     : const Color.fromARGB(255, 100, 100, 100),
+      //   //                 fontSize: 12.5,
+      //   //                 fontWeight: FontWeight.bold),
+      //   //             overflow: TextOverflow.ellipsis,
+      //   //           ),
+      //   //         ),
+      //   //         state.tmpLand
+      //   //             ? IconButton(
+      //   //                 icon: const Icon(Icons.close),
+      //   //                 color: const Color.fromARGB(255, 100, 100, 100),
+      //   //                 padding: EdgeInsets.zero, // 中央に配置されるようにする
+      //   //                 onPressed: () {
+      //   //                   ref
+      //   //                       .read(mapScreenProvider.notifier)
+      //   //                       .clearSelectedDestination();
+      //   //                   state.destinationMarkers.clear();
+      //   //                   ref
+      //   //                       .read(mapScreenProvider.notifier)
+      //   //                       .updateMarkers(state.departureMarkers);
+      //   //                   ref.read(mapScreenProvider.notifier).toggleTmpLand();
+      //   //                 },
+      //   //               )
+      //   //             : const SizedBox(width: 0),
+      //   //       ]),
+      //   //     ),
+      //   //   ),
+      //   // ]),
+      //   leading: IconButton(
+      //     icon: Icon(Icons.menu,
+      //         color: Theme.of(context).colorScheme.onPrimary, size: 30),
+      //     onPressed: () {
+      //       showModalBottomSheet(
+      //         context: context,
+      //         isScrollControlled: true,
+      //         builder: (BuildContext context) {
+      //           // リストに表示する地方名と対応する識別子
+      //           final List<Map<String, String>> areas = [
+      //             {
+      //               'name': AppLocalizations.of(context)!.hokkaido,
+      //               'key': 'hokkaido'
+      //             },
+      //             {
+      //               'name': AppLocalizations.of(context)!.tohoku,
+      //               'key': 'tohoku'
+      //             },
+      //             {'name': AppLocalizations.of(context)!.kanto, 'key': 'kanto'},
+      //             {'name': AppLocalizations.of(context)!.chubu, 'key': 'chubu'},
+      //             {'name': AppLocalizations.of(context)!.kinki, 'key': 'kinki'},
+      //             {
+      //               'name': AppLocalizations.of(context)!.chugoku,
+      //               'key': 'chugoku'
+      //             },
+      //             {
+      //               'name': AppLocalizations.of(context)!.shikoku,
+      //               'key': 'shikoku'
+      //             },
+      //             {
+      //               'name': AppLocalizations.of(context)!.kyushu,
+      //               'key': 'kyushu'
+      //             },
+      //             {
+      //               'name': AppLocalizations.of(context)!.okinawa,
+      //               'key': 'okinawa'
+      //             },
+      //           ];
 
-                int selectedIndex = 0; // Pickerの初期選択インデックス
+      //           int selectedIndex = 0; // Pickerの初期選択インデックス
 
-                return FractionallySizedBox(
-                  heightFactor: 0.5,
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      Text(
-                        AppLocalizations.of(context)!.select_area,
-                        style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      Expanded(
-                        child: CupertinoPicker(
-                          itemExtent: 45, // 各項目の高さ
-                          onSelectedItemChanged: (index) {
-                            selectedIndex = index;
-                            HapticFeedback.heavyImpact();
-                          },
-                          children: areas
-                              .map((area) => Center(
-                                    child: Text(
-                                      area['name']!,
-                                      style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ))
-                              .toList(),
-                        ),
-                      ),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            SizedBox(
-                                width: 100,
-                                height: 45,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop(); // モーダルを閉じる
-                                  },
-                                  child: Text(
-                                    AppLocalizations.of(context)!.close,
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                )),
-                            SizedBox(
-                                width: 100,
-                                height: 45,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    // 選択された地方に基づいてポリゴンを描画
-                                    loadAndDisplayAreaPolygon(
-                                        areas[selectedIndex]['key']!,
-                                        ref,
-                                        context);
-                                    Navigator.of(context).pop(); // モーダルを閉じる
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        backgroundColor: Colors.white,
-                                        duration: const Duration(seconds: 2),
-                                        content: Text(
-                                          AppLocalizations.of(context)!
-                                              .show_polygon_and_area(
-                                                  areas[selectedIndex]
-                                                      ['name']!),
-                                          style: const TextStyle(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: Text(
-                                    AppLocalizations.of(context)!.ok,
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                )),
-                          ]),
-                      const SizedBox(height: 30),
-                    ],
-                  ),
-                );
-              },
-            );
-          },
-        ),
-        actions: [
-          (state.tmpTakeoff || state.tmpLand)
-              ? AnimatedRotation(
-                  turns: _iconRotation,
-                  duration: const Duration(milliseconds: 200),
-                  child: IconButton(
-                      icon: const Icon(Icons.swap_vert),
-                      iconSize: 30,
-                      color: Colors.white,
-                      onPressed: () {
-                        setState(() {
-                          _iconRotation += 0.5; // 180度回転
-                        });
-                        ref
-                            .read(mapScreenProvider.notifier)
-                            .swapDepartureAndDestination();
-                      }))
-              : const SizedBox(height: 0),
-        ],
-      ),
+      //           return FractionallySizedBox(
+      //             heightFactor: 0.5,
+      //             child: Column(
+      //               children: [
+      //                 const SizedBox(height: 20),
+      //                 Text(
+      //                   AppLocalizations.of(context)!.select_area,
+      //                   style: const TextStyle(
+      //                       fontSize: 20, fontWeight: FontWeight.bold),
+      //                 ),
+      //                 Expanded(
+      //                   child: CupertinoPicker(
+      //                     itemExtent: 45, // 各項目の高さ
+      //                     onSelectedItemChanged: (index) {
+      //                       selectedIndex = index;
+      //                       HapticFeedback.heavyImpact();
+      //                     },
+      //                     children: areas
+      //                         .map((area) => Center(
+      //                               child: Text(
+      //                                 area['name']!,
+      //                                 style: const TextStyle(
+      //                                     fontSize: 18,
+      //                                     fontWeight: FontWeight.bold),
+      //                               ),
+      //                             ))
+      //                         .toList(),
+      //                   ),
+      //                 ),
+      //                 Row(
+      //                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //                     children: [
+      //                       SizedBox(
+      //                           width: 100,
+      //                           height: 45,
+      //                           child: ElevatedButton(
+      //                             onPressed: () {
+      //                               Navigator.of(context).pop(); // モーダルを閉じる
+      //                             },
+      //                             child: Text(
+      //                               AppLocalizations.of(context)!.close,
+      //                               style: const TextStyle(
+      //                                 fontSize: 15,
+      //                                 fontWeight: FontWeight.bold,
+      //                               ),
+      //                             ),
+      //                           )),
+      //                       SizedBox(
+      //                           width: 100,
+      //                           height: 45,
+      //                           child: ElevatedButton(
+      //                             onPressed: () {
+      //                               // 選択された地方に基づいてポリゴンを描画
+      //                               loadAndDisplayAreaPolygon(
+      //                                   areas[selectedIndex]['key']!,
+      //                                   ref,
+      //                                   context);
+      //                               Navigator.of(context).pop(); // モーダルを閉じる
+      //                               ScaffoldMessenger.of(context).showSnackBar(
+      //                                 SnackBar(
+      //                                   backgroundColor: Colors.white,
+      //                                   duration: const Duration(seconds: 2),
+      //                                   content: Text(
+      //                                     AppLocalizations.of(context)!
+      //                                         .show_polygon_and_area(
+      //                                             areas[selectedIndex]
+      //                                                 ['name']!),
+      //                                     style: const TextStyle(
+      //                                         color: Colors.black,
+      //                                         fontWeight: FontWeight.bold),
+      //                                   ),
+      //                                 ),
+      //                               );
+      //                             },
+      //                             child: Text(
+      //                               AppLocalizations.of(context)!.ok,
+      //                               style: const TextStyle(
+      //                                 fontSize: 15,
+      //                                 fontWeight: FontWeight.bold,
+      //                               ),
+      //                             ),
+      //                           )),
+      //                     ]),
+      //                 const SizedBox(height: 30),
+      //               ],
+      //             ),
+      //           );
+      //         },
+      //       );
+      //     },
+      //   ),
+      //   // actions: [
+      //   //   (state.tmpTakeoff || state.tmpLand)
+      //   //       ? AnimatedRotation(
+      //   //           turns: _iconRotation,
+      //   //           duration: const Duration(milliseconds: 200),
+      //   //           child: IconButton(
+      //   //               icon: const Icon(Icons.swap_vert),
+      //   //               iconSize: 30,
+      //   //               color: Colors.white,
+      //   //               onPressed: () {
+      //   //                 setState(() {
+      //   //                   _iconRotation += 0.5; // 180度回転
+      //   //                 });
+      //   //                 ref
+      //   //                     .read(mapScreenProvider.notifier)
+      //   //                     .swapDepartureAndDestination();
+      //   //               }))
+      //   //       : const SizedBox(height: 0),
+      //   // ],
+      // ),
       body: Stack(
         children: <Widget>[
           GestureDetector(
@@ -341,8 +344,8 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                   : null, // ドラッグ操作が終了したときにコール
               child: GoogleMap(
                 initialCameraPosition: CameraPosition(
-                  target: state.circleCenter,
-                  zoom: 9,
+                  target: state.initialCenter.target,
+                  zoom: state.initialCenter.zoom,
                 ), // 初期位置
                 myLocationButtonEnabled: false,
                 myLocationEnabled: true,
@@ -351,14 +354,17 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                 zoomGesturesEnabled: true,
                 zoomControlsEnabled: false,
                 markers: state.markers, // Riverpodの状態を参照
+                onCameraMove: (position) => ref
+                    .read(mapScreenProvider.notifier)
+                    .updateInitialCenter(
+                        position), // 取得し続けるので、まだ動いてるときに遷移するとエラーになる
                 onMapCreated: (controller) {
                   ref.read(mapScreenProvider.notifier).mapController =
                       controller;
-                  ref.read(mapScreenProvider.notifier).getCurrentLocation();
-                  ref
-                      .read(polygonDrawingProvider.notifier)
-                      .controller
-                      .complete(controller);
+                  ref.read(mapScreenProvider.notifier).initializeMap();
+                  final polygonNotifier =
+                      ref.read(polygonDrawingProvider.notifier);
+                  polygonNotifier.mapController = controller; // コントローラーを保存
                 },
                 polygons:
                     ref.watch(polygonSetProvider), // マップ上に座標で囲まれた領域を多角形で表すもの
@@ -577,8 +583,6 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
   }
 }
 
-// TODO: ウィンドウ埋めた後のロジック (flight apiなど調べる)
-// TODO: 出発する空港と行き先を指定したら、適切な経路や値段を表示する。
 // TODO: GoogleMapを長押しでもピンを指して、目的地設定できるようにする。
 // TODO: リファクタリング
 // gitの流れが参考になる(https://qiita.com/yukiyoshimura/items/7aa4a8f8db493ab97c2b)

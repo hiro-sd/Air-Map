@@ -90,7 +90,7 @@ void showCustomBottomSheet(BuildContext context, WidgetRef ref, String? tmp,
                                 if (tmp == 'tmpTakeoff') {
                                   ref
                                       .read(mapScreenProvider.notifier)
-                                      .updateselectedDeparture(placeName);
+                                      .updateSelectedDeparture(placeName);
                                   state.tmpTakeoff
                                       ? null
                                       : ref
@@ -124,7 +124,7 @@ void showCustomBottomSheet(BuildContext context, WidgetRef ref, String? tmp,
                               onPressed: () {
                                 ref
                                     .read(mapScreenProvider.notifier)
-                                    .updateselectedDeparture(
+                                    .updateSelectedDeparture(
                                       placeName,
                                     );
                                 if (!state.tmpTakeoff) {

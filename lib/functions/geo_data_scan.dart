@@ -5,13 +5,13 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ticket_app/env/env.dart';
-import 'package:ticket_app/foundation/modal_sheet.dart';
+import 'package:ticket_app/functions/modal_sheet.dart';
 import 'package:ticket_app/state/riverpod/polygon_drawing_notifier.dart';
 import 'package:ticket_app/state/riverpod/map_screen_state_notifier.dart';
-import 'package:ticket_app/ui/screen/airport_list_screen.dart';
+import 'package:ticket_app/functions/airport_list.dart';
 import 'package:http/http.dart' as http;
 
-// geojsonファイルを読み込む
+// GeoJSONファイルを読み込む
 Future<List<List<LatLng>>> loadAreaGeoJson(String area) async {
   final String geojsonString =
       await rootBundle.loadString('assets/geodata/$area.geojson');
@@ -41,19 +41,17 @@ Future<List<List<LatLng>>> loadAreaGeoJson(String area) async {
   return polygons;
 }
 
-List<Map<String, dynamic>> centerLatLngs = [
-  {'hokkaido': const LatLng(43.420962, 142.781281), 'zoom': 6.4},
-  {'tohoku': const LatLng(39.23286365076151, 140.5830066571554), 'zoom': 7.4},
-  {'kanto': const LatLng(35.13941202176295, 139.673593517746336), 'zoom': 7.7},
-  {'chubu': const LatLng(35.96401444205463, 137.68091997993142), 'zoom': 7.0},
-  {'kinki': const LatLng(34.64280347749818, 135.5739247499291), 'zoom': 7.7},
-  {'chugoku': const LatLng(34.99872056192886, 132.71277144634544), 'zoom': 7.3},
-  {
-    'shikoku': const LatLng(33.729026776168574, 133.49864327030613),
-    'zoom': 7.8
-  },
-  {'kyushu': const LatLng(30.883730385817117, 129.97552166585507), 'zoom': 6.8},
-  {'okinawa': const LatLng(25.76023575080417, 127.06245890649342), 'zoom': 6.1},
+// 地域ごとの中心座標とズームレベル
+const List<Map<String, dynamic>> centerLatLngs = [
+  {'hokkaido': LatLng(43.42, 142.78), 'zoom': 6.4},
+  {'tohoku': LatLng(39.23, 140.58), 'zoom': 7.4},
+  {'kanto': LatLng(35.14, 139.67), 'zoom': 7.7},
+  {'chubu': LatLng(35.964, 137.681), 'zoom': 7.0},
+  {'kinki': LatLng(34.643, 135.574), 'zoom': 7.7},
+  {'chugoku': LatLng(34.999, 132.713), 'zoom': 7.3},
+  {'shikoku': LatLng(33.73, 133.50), 'zoom': 7.8},
+  {'kyushu': LatLng(30.884, 129.976), 'zoom': 6.8},
+  {'okinawa': LatLng(25.760, 127.062), 'zoom': 6.1},
 ];
 
 // 読み込んだ座標をもとにポリゴンを描画する
@@ -74,18 +72,19 @@ Future<void> loadAndDisplayAreaPolygon(
           ref.read(mapScreenProvider.notifier).clearMarkers()
         }
       : null;
-  final List<List<LatLng>> polygons = await loadAreaGeoJson(area);
+  // GeoJSONファイルを読み込む
+  final polygons = await loadAreaGeoJson(area);
 
+  // ポリゴンを描画
   final Set<Polygon> polygonSet = {};
   for (var points in polygons) {
-    final polygon = Polygon(
+    polygonSet.add(Polygon(
       polygonId: PolygonId(area + polygons.indexOf(points).toString()),
       points: points,
       strokeWidth: 3,
       strokeColor: Colors.blue.withOpacity(0.8),
       fillColor: Colors.blue.withOpacity(0.2),
-    );
-    polygonSet.add(polygon);
+    ));
   }
 
   ref.read(polygonSetProvider.notifier).state = polygonSet;
@@ -100,52 +99,14 @@ Future<void> loadAndDisplayAreaPolygon(
     final title = marker['title'](context);
     final snippet = marker['snippet'](context);
     return Marker(
-        markerId: MarkerId(marker['id']),
-        position: marker['position'],
-        infoWindow: InfoWindow(
-          title: title,
-          snippet: snippet,
-        ),
-        onTap: () async {
-          String apiKey = Env.key;
-          //final String title = marker['title'](context);
-
-          // TODO: markerタップでbottomSheetを表示できるようにする
-          // Place IDの取得
-          final placeSearchUrl =
-              'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=$title&inputtype=textquery&fields=place_id&key=$apiKey';
-
-          final placeSearchResponse = await http.get(Uri.parse(placeSearchUrl));
-          final placeSearchData = jsonDecode(placeSearchResponse.body);
-
-          if (placeSearchData['status'] != 'OK') {
-            return;
-          }
-
-          final placeId = placeSearchData['candidates'][0]['place_id'];
-
-          // Photo Referencesの取得
-          final detailsUrl =
-              'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=photos&key=$apiKey';
-
-          final detailsResponse = await http.get(Uri.parse(detailsUrl));
-          final detailsData = jsonDecode(detailsResponse.body);
-
-          if (detailsData['status'] != 'OK') {
-            return;
-          }
-
-          final photos = detailsData['result']['photos'] as List<dynamic>?;
-
-          // Photo URLsを生成
-          final List<String> photoUrls = photos?.map((photo) {
-                final photoRef = photo['photo_reference'];
-                return 'https://maps.googleapis.com/maps/api/place/photo?maxheight=400&maxwidth=400&photoreference=$photoRef&key=$apiKey';
-              }).toList() ??
-              [];
-          // ignore: use_build_context_synchronously
-          showCustomBottomSheet(context, ref, null, title, photoUrls);
-        });
+      markerId: MarkerId(marker['id']),
+      position: marker['position'],
+      infoWindow: InfoWindow(
+        title: title,
+        snippet: snippet,
+      ),
+      onTap: () => onMarkerTapped(marker, ref, context),
+    );
   }).toSet();
 
   // StateNotifierを使用してマーカーを更新
@@ -163,5 +124,53 @@ Future<void> loadAndDisplayAreaPolygon(
     controller.animateCamera(CameraUpdate.newCameraPosition(
       CameraPosition(target: centerLatLng, zoom: zoomLevel),
     ));
+  }
+}
+
+// マーカータップ時の処理
+Future<void> onMarkerTapped(
+    // TODO: マーカーをタップするとエラーになる
+    Map<String, dynamic> marker,
+    WidgetRef ref,
+    BuildContext context) async {
+  final apiKey = Env.key;
+  final String title = marker['title'](context);
+
+  try {
+    // Place IDの取得
+    final placeSearchUrl =
+        'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=$title&inputtype=textquery&fields=place_id&key=$apiKey';
+    final placeSearchResponse = await http.get(Uri.parse(placeSearchUrl));
+    if (placeSearchResponse.statusCode != 200) return;
+
+    final placeSearchData = jsonDecode(placeSearchResponse.body);
+    if (placeSearchData['status'] != 'OK') return;
+
+    final placeId = placeSearchData['candidates'][0]['place_id'];
+
+    // Photo Referencesの取得
+    final detailsUrl =
+        'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=photos&key=$apiKey';
+    final detailsResponse = await http.get(Uri.parse(detailsUrl));
+    if (detailsResponse.statusCode != 200) return;
+
+    final detailsData = jsonDecode(detailsResponse.body);
+    if (detailsData['status'] != 'OK') return;
+
+    final photos = detailsData['result']['photos'] as List<dynamic>?;
+
+    // Photo URLsを生成
+    final List<String> photoUrls = photos?.map((photo) {
+          final photoRef = photo['photo_reference'];
+          return 'https://maps.googleapis.com/maps/api/place/photo?maxheight=400&maxwidth=400&photoreference=$photoRef&key=$apiKey';
+        }).toList() ??
+        [];
+
+    if (context.mounted) {
+      showCustomBottomSheet(context, ref, null, title, photoUrls);
+    }
+  } catch (e) {
+    // エラーハンドリング
+    print('Error occurred: $e');
   }
 }

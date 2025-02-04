@@ -8,9 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ticket_app/env/env.dart';
-import 'package:ticket_app/foundation/modal_sheet.dart';
+import 'package:ticket_app/functions/modal_sheet.dart';
 import 'package:ticket_app/state/riverpod/map_screen_state_notifier.dart';
-import 'package:ticket_app/ui/screen/airport_list_screen.dart';
+import 'package:ticket_app/functions/airport_list.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 // 多角形を描画するためのStateProvider
@@ -20,7 +20,7 @@ final polylineSetProvider =
     StateProvider<HashSet<Polyline>>((ref) => HashSet<Polyline>());
 
 class PolygonDrawingNotifier extends StateNotifier<PolygonDrawingState> {
-  PolygonDrawingNotifier(this.controller)
+  PolygonDrawingNotifier()
       : super(PolygonDrawingState(
           polygonSet: {},
           polylineSet: HashSet<Polyline>(),
@@ -29,7 +29,7 @@ class PolygonDrawingNotifier extends StateNotifier<PolygonDrawingState> {
           lastYCoordinate: null,
         ));
 
-  Completer<GoogleMapController> controller;
+  GoogleMapController? mapController;
   List<LatLng> latLngList = [];
   int? lastXCoordinate;
   int? lastYCoordinate;
@@ -66,32 +66,43 @@ class PolygonDrawingNotifier extends StateNotifier<PolygonDrawingState> {
       lastXCoordinate = xCoordinate;
       lastYCoordinate = yCoordinate;
 
-      final GoogleMapController mapController = await controller.future;
-      final LatLng latLng = await mapController.getLatLng(
-        // GoogleMapにおける座標に変換
-        ScreenCoordinate(x: xCoordinate, y: yCoordinate),
-      );
+      final polygonNotifier = ref.read(polygonDrawingProvider.notifier);
+      final mapController = polygonNotifier.mapController;
 
-      // 新しいポイントをリストに追加する
-      latLngList = [...latLngList, latLng];
+      if (mapController == null) {
+        print("Error: GoogleMapController is null.");
+        return;
+      }
 
-      final polylineSet = ref.read(polylineSetProvider.notifier).state;
+      try {
+        final LatLng latLng = await mapController.getLatLng(
+          // GoogleMapにおける座標に変換
+          ScreenCoordinate(x: xCoordinate, y: yCoordinate),
+        );
 
-      // ポリラインのセットを初期化
-      polylineSet.removeWhere(
-          (polyline) => polyline.polylineId.value == 'user_polyline');
-      // 新しいポリラインを追加
-      polylineSet.add(
-        Polyline(
-          polylineId: const PolylineId('user_polyline'),
-          points: latLngList,
-          width: 3,
-          color: Colors.blue.withOpacity(0.8),
-        ),
-      );
+        // 新しいポイントをリストに追加する
+        latLngList = [...latLngList, latLng];
 
-      // なぞっている間ポリラインが描画され続ける
-      polygonSet.state = {...polygonSet.state};
+        final polylineSet = ref.read(polylineSetProvider.notifier).state;
+
+        // ポリラインのセットを初期化
+        polylineSet.removeWhere(
+            (polyline) => polyline.polylineId.value == 'user_polyline');
+        // 新しいポリラインを追加
+        polylineSet.add(
+          Polyline(
+            polylineId: const PolylineId('user_polyline'),
+            points: latLngList,
+            width: 3,
+            color: Colors.blue.withOpacity(0.8),
+          ),
+        );
+
+        // なぞっている間ポリラインが描画され続ける
+        polygonSet.state = {...polygonSet.state};
+      } catch (e) {
+        print("Error in onPanUpdate: $e");
+      }
     }
   }
 
@@ -229,7 +240,6 @@ class PolygonDrawingNotifier extends StateNotifier<PolygonDrawingState> {
   //「なぞる」の切り替えを行う関数
   void toggleDrawing(WidgetRef ref) {
     clearPolygons(ref);
-    ref.read(mapScreenProvider.notifier).clearMarkers();
     ref.read(circleProvider.notifier).state.clear();
     ref.read(drawPolygonEnabledProvider.notifier).state =
         !ref.read(drawPolygonEnabledProvider);
@@ -239,6 +249,7 @@ class PolygonDrawingNotifier extends StateNotifier<PolygonDrawingState> {
     ref.read(mapScreenProvider).tmpLand
         ? ref.read(mapScreenProvider.notifier).toggleTmpLand()
         : null;
+    ref.read(mapScreenProvider.notifier).clearMarkers();
   }
 
   // PolylineとPolygonとLatLngをクリアする関数
@@ -269,7 +280,7 @@ class PolygonDrawingState {
 
 final polygonDrawingProvider =
     StateNotifierProvider<PolygonDrawingNotifier, PolygonDrawingState>(
-        (ref) => PolygonDrawingNotifier(Completer<GoogleMapController>()));
+        (ref) => PolygonDrawingNotifier());
 
 // ポリゴン内のマーカーを取得する関数
 List<Map<String, dynamic>> getMarkersInsidePolygon(
@@ -301,4 +312,3 @@ List<Map<String, dynamic>> getMarkersInsidePolygon(
       .where((marker) => isPointInPolygon(marker['position'], polygonPoints))
       .toList();
 }
-// TODO: マーカーの内部判定のロジックを理解する
