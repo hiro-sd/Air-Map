@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ticket_app/functions/optimal_flight.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:ticket_app/state/riverpod/map_screen_state_notifier.dart';
 import 'package:ticket_app/functions/airport_list.dart';
+import 'package:ticket_app/ui/screen/flight_result_screen.dart';
 
 final passengerProvider = StateProvider<int?>((ref) => null);
 final dateProvider = StateProvider<DateTime?>((ref) => null);
@@ -31,130 +31,142 @@ class SearchFlightScreenState extends ConsumerState<SearchFlightScreen> {
     final destinationCode = ref.watch(destinationCodeProvider);
 
     return Scaffold(
-      body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            const SizedBox(height: 20),
-            const Text('This is the flight searching screen.',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-            Row(children: [
-              SizedBox(width: MediaQuery.of(context).size.width * 0.15),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.7,
-                child: TextField(
-                  readOnly: true,
-                  onTap: () => showAirportPicker(context, ref, "origin"),
-                  decoration: InputDecoration(
-                    hintText: 'From: ${state.selectedDeparture ?? ''}',
-                    border: const OutlineInputBorder(),
-                    suffixIcon: const Icon(Icons.flight_takeoff),
+      body: SingleChildScrollView(
+          child: Column(children: <Widget>[
+        const SizedBox(height: 100),
+        Text(AppLocalizations.of(context)!.flight_screen_title,
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 20),
+        Row(children: [
+          SizedBox(width: MediaQuery.of(context).size.width * 0.15),
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.7,
+            child: TextField(
+              readOnly: true,
+              onTap: () => showAirportPicker(context, ref, "origin"),
+              decoration: InputDecoration(
+                hintText: 'From: ${state.selectedDeparture ?? ''}',
+                border: const OutlineInputBorder(),
+                suffixIcon: const Icon(Icons.flight_takeoff),
+              ),
+            ),
+          ),
+          if (state.tmpTakeoff && state.tmpLand) // TODO: なぜか片方nullだとうまくいかない
+            AnimatedRotation(
+                turns: _iconRotation,
+                duration: const Duration(milliseconds: 200),
+                child: IconButton(
+                    icon: const Icon(Icons.swap_vert),
+                    iconSize: 30,
+                    onPressed: () {
+                      setState(() {
+                        _iconRotation += 0.5; // 180度回転
+                      });
+                      ref
+                          .read(mapScreenProvider.notifier)
+                          .swapDepartureAndDestination(ref);
+                    })),
+        ]),
+        const SizedBox(height: 20),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.7,
+          child: TextField(
+            readOnly: true,
+            onTap: () => showAirportPicker(context, ref, "destination"),
+            decoration: InputDecoration(
+              hintText: 'To: ${state.selectedDestination ?? ''}',
+              border: const OutlineInputBorder(),
+              suffixIcon: const Icon(Icons.flight_land),
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.7,
+          child: TextField(
+            readOnly: true,
+            decoration: InputDecoration(
+              hintText: (selectedDate != null)
+                  ? "Date: ${selectedDate.year}/${selectedDate.month}/${selectedDate.day}"
+                  : "Date",
+              border: const OutlineInputBorder(),
+              suffixIcon: const Icon(Icons.calendar_today),
+            ),
+            onTap: () async {
+              DateTime? pickedDate = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(DateTime.now().year - 1),
+                  lastDate: DateTime(DateTime.now().year + 1));
+              if (pickedDate != null) {
+                ref.read(dateProvider.notifier).state = pickedDate;
+              }
+            },
+          ),
+        ),
+        const SizedBox(height: 20),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.7,
+          child: TextField(
+            // 数字を入力した後、確定できるようにする
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              hintText: (passengers != null) // TODO: 表記が確定しない問題
+                  ? "Number of passengers: $passengers"
+                  : "Number of passengers",
+              border: const OutlineInputBorder(),
+              suffixIcon: const Icon(Icons.people),
+            ),
+            onChanged: (value) {
+              ref.read(passengerProvider.notifier).state = int.tryParse(value);
+            },
+          ),
+        ),
+        const SizedBox(height: 20),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.5,
+          height: 50,
+          child: ElevatedButton(
+            onPressed: () async {
+              // フライト検索処理を実装
+              if (state.selectedDeparture == null ||
+                  state.selectedDestination == null ||
+                  selectedDate == null ||
+                  passengers == null ||
+                  originCode == null ||
+                  destinationCode == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: Colors.white,
+                    duration: const Duration(seconds: 1),
+                    content: Text(AppLocalizations.of(context)!.fill_all_fields,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.black)),
                   ),
-                ),
-              ),
-              if (state.tmpTakeoff && state.tmpLand) // なぜか片方nullだとうまくいかない
-                AnimatedRotation(
-                    turns: _iconRotation,
-                    duration: const Duration(milliseconds: 200),
-                    child: IconButton(
-                        icon: const Icon(Icons.swap_vert),
-                        iconSize: 30,
-                        onPressed: () {
-                          setState(() {
-                            _iconRotation += 0.5; // 180度回転
-                          });
-                          ref
-                              .read(mapScreenProvider.notifier)
-                              .swapDepartureAndDestination(ref);
-                        })),
-            ]),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.7,
-              child: TextField(
-                readOnly: true,
-                onTap: () => showAirportPicker(context, ref, "destination"),
-                decoration: InputDecoration(
-                  hintText: 'To: ${state.selectedDestination ?? ''}',
-                  border: const OutlineInputBorder(),
-                  suffixIcon: const Icon(Icons.flight_land),
-                ),
-              ),
+                );
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FlightResultScreen(
+                      origin: state.selectedDeparture!,
+                      originCode: originCode,
+                      destination: state.selectedDestination!,
+                      destinationCode: destinationCode,
+                      date: selectedDate,
+                      passengers: passengers,
+                    ),
+                  ),
+                );
+              }
+            },
+            child: Text(
+              AppLocalizations.of(context)!.search_flight,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.7,
-              child: TextField(
-                readOnly: true,
-                decoration: InputDecoration(
-                  hintText: (selectedDate != null)
-                      ? "Date: ${selectedDate.year}/${selectedDate.month}/${selectedDate.day}"
-                      : "Date",
-                  border: const OutlineInputBorder(),
-                  suffixIcon: const Icon(Icons.calendar_today),
-                ),
-                onTap: () async {
-                  DateTime? pickedDate = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime(DateTime.now().year - 1),
-                      lastDate: DateTime(DateTime.now().year + 1));
-                  if (pickedDate != null) {
-                    ref.read(dateProvider.notifier).state = pickedDate;
-                  }
-                },
-              ),
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.7,
-              child: TextField(
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  hintText: (passengers != null)
-                      ? "Number of passengers: $passengers"
-                      : "Number of passengers",
-                  border: const OutlineInputBorder(),
-                  suffixIcon: const Icon(Icons.people),
-                ),
-                onChanged: (value) {
-                  ref.read(passengerProvider.notifier).state =
-                      int.tryParse(value);
-                },
-              ),
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.5,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () {
-                  // フライト検索処理を実装
-                  if (state.selectedDeparture == null ||
-                      state.selectedDestination == null ||
-                      selectedDate == null ||
-                      passengers == null ||
-                      originCode == null ||
-                      destinationCode == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        backgroundColor: Colors.white,
-                        duration: Duration(seconds: 1),
-                        content: Text('Please fill in all fields',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black)),
-                      ),
-                    );
-                  } else {
-                    getAccessToken();
-                    searchFlights(
-                        originCode, destinationCode, selectedDate, passengers);
-                  }
-                },
-                child: const Text(
-                  "SEARCH FLIGHT",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-          ]),
+          ),
+        ),
+      ])),
     );
   }
 }
@@ -254,6 +266,5 @@ void showAirportPicker(BuildContext context, WidgetRef ref, String place) {
   );
 }
 
-// TODO: UIとロジック見直し
+// TODO: UI見直し (往復、直行、表示順、など追加？)
 // TODO: マーカーをタップして空港を指定した際には、この画面に遷移させる。
-// TODO: 横画面にした時に、スクロールできるようにする。

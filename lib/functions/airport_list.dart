@@ -826,7 +826,7 @@ Set<Marker> generateMarkers(BuildContext context, WidgetRef ref) {
           snippet: airport['snippet'](context),
         ),
         onTap: () async {
-          String apiKey = Env.key;
+          String apiKey = Env.googleMapsApiKey;
           final String title = airport['title'](context);
 
           // Place IDの取得

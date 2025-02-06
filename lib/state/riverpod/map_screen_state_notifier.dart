@@ -32,7 +32,7 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
   Position? currentPosition;
   GoogleMapController? mapController;
   bool isFirstLoad = true;
-  String apiKey = Env.key;
+  String apiKey = Env.googleMapsApiKey;
 
   // 初回のみ現在地を取得
   Future<void> initializeMap() async {

@@ -8,7 +8,7 @@ class SearchWindowStateNotifier
     extends StateNotifier<List<Map<String, dynamic>>> {
   SearchWindowStateNotifier() : super([]);
 
-  String apiKey = Env.key;
+  String apiKey = Env.googleMapsApiKey;
 
   // 検索候補の取得
   Future<void> fetchSuggestions(String input) async {

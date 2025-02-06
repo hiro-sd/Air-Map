@@ -6,10 +6,12 @@ import 'package:ticket_app/state/riverpod/map_screen_state_notifier.dart';
 // BottomSheetを表示する関数
 void showCustomBottomSheet(BuildContext context, WidgetRef ref, String? tmp,
     String placeName, List<String> photoUrls) {
-  final state = ref.watch(mapScreenProvider);
+  final state = ref.read(mapScreenProvider);
+  final safeContext = // 必要？？
+      Navigator.of(context, rootNavigator: true).overlay!.context;
   showModalBottomSheet(
     // ignore: use_build_context_synchronously
-    context: context,
+    context: safeContext,
     isScrollControlled: true,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -91,20 +93,20 @@ void showCustomBottomSheet(BuildContext context, WidgetRef ref, String? tmp,
                                   ref
                                       .read(mapScreenProvider.notifier)
                                       .updateSelectedDeparture(placeName);
-                                  state.tmpTakeoff
-                                      ? null
-                                      : ref
-                                          .read(mapScreenProvider.notifier)
-                                          .toggleTmpTakeoff();
+                                  if (!state.tmpTakeoff) {
+                                    ref
+                                        .read(mapScreenProvider.notifier)
+                                        .toggleTmpTakeoff();
+                                  }
                                 } else if (tmp == 'tmpLand') {
                                   ref
                                       .read(mapScreenProvider.notifier)
                                       .updateSelectedDestination(placeName);
-                                  state.tmpLand
-                                      ? null
-                                      : ref
-                                          .read(mapScreenProvider.notifier)
-                                          .toggleTmpLand();
+                                  if (!state.tmpLand) {
+                                    ref
+                                        .read(mapScreenProvider.notifier)
+                                        .toggleTmpLand();
+                                  }
                                 }
                                 Navigator.pop(context); // BottomSheetを閉じる
                               },

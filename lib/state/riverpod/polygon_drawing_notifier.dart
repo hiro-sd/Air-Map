@@ -188,7 +188,7 @@ class PolygonDrawingNotifier extends StateNotifier<PolygonDrawingState> {
             snippet: marker['snippet'](context),
           ),
           onTap: () async {
-            String apiKey = Env.key;
+            String apiKey = Env.googleMapsApiKey;
             final String title = marker['title'](context);
 
             // Place IDの取得

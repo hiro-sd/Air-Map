@@ -133,7 +133,7 @@ Future<void> onMarkerTapped(
     Map<String, dynamic> marker,
     WidgetRef ref,
     BuildContext context) async {
-  final apiKey = Env.key;
+  final apiKey = Env.googleMapsApiKey;
   final String title = marker['title'](context);
 
   try {
@@ -166,9 +166,11 @@ Future<void> onMarkerTapped(
         }).toList() ??
         [];
 
-    if (context.mounted) {
-      showCustomBottomSheet(context, ref, null, title, photoUrls);
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (context.mounted) {
+        showCustomBottomSheet(context, ref, null, title, photoUrls);
+      }
+    });
   } catch (e) {
     // エラーハンドリング
     print('Error occurred: $e');
