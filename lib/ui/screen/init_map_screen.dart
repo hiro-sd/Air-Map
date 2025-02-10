@@ -411,6 +411,7 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                   },
                   child: Icon(
                     drawPolygonEnabled ? Icons.pause : Icons.draw,
+                    color: Theme.of(context).colorScheme.primary,
                     size: 27.5,
                   ))),
           Positioned(
@@ -555,8 +556,9 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                       });
                 }
               },
-              child: const Icon(
+              child: Icon(
                 Icons.local_airport,
+                color: Theme.of(context).colorScheme.primary,
                 size: 27.5,
               ),
             ),
@@ -571,8 +573,9 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
               onPressed: () {
                 ref.read(mapScreenProvider.notifier).getCurrentLocation();
               },
-              child: const Icon(
+              child: Icon(
                 Icons.my_location,
+                color: Theme.of(context).colorScheme.primary,
                 size: 27.5,
               ),
             ),
@@ -583,6 +586,5 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
   }
 }
 
-// TODO: GoogleMapを長押しでもピンを指して、目的地設定できるようにする。
 // TODO: リファクタリング
 // gitの流れが参考になる(https://qiita.com/yukiyoshimura/items/7aa4a8f8db493ab97c2b)

@@ -30,7 +30,7 @@ class Root extends ConsumerWidget {
 
     final bar = BottomNavigationBar(
       items: items, // アイテムたち
-      selectedItemColor: Colors.teal,
+      selectedItemColor: Theme.of(context).colorScheme.primary,
       currentIndex: index, // インデックス
       onTap: (index) {
         ref.read(indexProvider.notifier).state = index;
@@ -45,14 +45,14 @@ class Root extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        //backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: index == 0
             ? Text(
                 AppLocalizations.of(context)!.title,
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               )
             : Text(
@@ -60,13 +60,13 @@ class Root extends ConsumerWidget {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
         leading: index == 0
             ? IconButton(
                 icon: Icon(Icons.menu,
-                    color: Theme.of(context).colorScheme.onPrimary, size: 30),
+                    color: Theme.of(context).colorScheme.primary),
                 onPressed: () {
                   showModalBottomSheet(
                     context: context,

@@ -88,7 +88,7 @@ class SearchFlightScreenState extends ConsumerState<SearchFlightScreen> {
             decoration: InputDecoration(
               hintText: (selectedDate != null)
                   ? "Date: ${selectedDate.year}/${selectedDate.month}/${selectedDate.day}"
-                  : "Date",
+                  : "Date:",
               border: const OutlineInputBorder(),
               suffixIcon: const Icon(Icons.calendar_today),
             ),
@@ -106,22 +106,21 @@ class SearchFlightScreenState extends ConsumerState<SearchFlightScreen> {
         ),
         const SizedBox(height: 20),
         SizedBox(
-          width: MediaQuery.of(context).size.width * 0.7,
-          child: TextField(
-            // 数字を入力した後、確定できるようにする
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              hintText: (passengers != null) // TODO: 表記が確定しない問題
-                  ? "Number of passengers: $passengers"
-                  : "Number of passengers",
-              border: const OutlineInputBorder(),
-              suffixIcon: const Icon(Icons.people),
-            ),
-            onChanged: (value) {
-              ref.read(passengerProvider.notifier).state = int.tryParse(value);
-            },
-          ),
-        ),
+            width: MediaQuery.of(context).size.width * 0.7,
+            child: TextField(
+              keyboardType: TextInputType.values[4],
+              decoration: InputDecoration(
+                hintText: (passengers != null) // TODO: 表記が確定しない問題
+                    ? "Number of passengers: $passengers"
+                    : "Number of passengers",
+                border: const OutlineInputBorder(),
+                suffixIcon: const Icon(Icons.people),
+              ),
+              onChanged: (value) {
+                ref.read(passengerProvider.notifier).state =
+                    int.tryParse(value);
+              },
+            )),
         const SizedBox(height: 20),
         SizedBox(
           width: MediaQuery.of(context).size.width * 0.5,

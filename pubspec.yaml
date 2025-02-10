@@ -27,6 +27,9 @@ dependencies:
 
   cupertino_icons: ^1.0.8
   envied: ^1.0.0
+  url_launcher: ^6.3.1
+  flutter_launcher_icons: ^0.14.3
+  flutter_native_splash: ^2.4.4
 
 dev_dependencies:
   flutter_test:
@@ -94,3 +97,23 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_icons: 
+  image_path_android: assets/icons/android_icon.png
+  adaptive_icon_background: '#000000' #iconの背景色
+  adaptive_icon_foreground: assets/icons/android_icon.png
+  image_path_ios: assets/icons/ios_icon.png
+  android: true
+  adaptive_icon_padding: true
+  min_sdk_android: 21 #Androidの最小SDKバージョン
+  ios: true 
+
+flutter_native_splash: 
+  background_image: "assets/icons/splash_background.png"  #背景画像を指定
+  image: "assets/icons/splash.png"  #スプラッシュ画像を指定
+  android_12: 
+    icon_background_color: "#000000"  #Android12用の背景色指定　#TODO: android12の背景食せていする
+    image: "assets/icons/splash_android12.png"  #Android12用のスプラッシュ画像を指定
+  android: true
+  ios: true
+  fullscreen: true  #trueで通知バーが非表示になる 

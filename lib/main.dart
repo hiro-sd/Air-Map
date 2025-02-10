@@ -18,13 +18,13 @@ class MyApp extends StatelessWidget {
       title: 'air_ticket_app',
       theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.teal,
+            seedColor: Colors.blue,
             brightness: Brightness.light,
           ),
           useMaterial3: true),
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.teal,
+          seedColor: Colors.blue,
           brightness: Brightness.dark,
         ),
         useMaterial3: true,

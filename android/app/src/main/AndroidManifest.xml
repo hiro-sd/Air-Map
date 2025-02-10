@@ -5,7 +5,7 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">-->
         <application
-        android:label="google_maps_in_flutter"
+        android:label="フライト検索"
         android:icon="@mipmap/ic_launcher">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -47,6 +47,11 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- URLを開くための設定 (url_launcher 用) -->
+        <intent>
+        <action android:name="android.intent.action.VIEW" />
+        <data android:scheme="https"/>
         </intent>
     </queries>
 </manifest>

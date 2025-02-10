@@ -86,14 +86,21 @@ class FlightResultScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        //backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(
           AppLocalizations.of(context)!.search_result,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: Theme.of(context).colorScheme.primary,
           ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          color: Theme.of(context).colorScheme.primary,
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
       ),
       body: FutureBuilder<List<FlightOffer>?>(
@@ -107,7 +114,8 @@ class FlightResultScreen extends StatelessWidget {
             );
           } else if (!snapshot.hasData || snapshot.data!.isEmpty == true) {
             return const Center(
-              child: Text("No flights available"),
+              child: Text("No flights available.",
+                  style: TextStyle(fontWeight: FontWeight.bold)),
             );
           } else {
             var offers = snapshot.data!;
@@ -116,6 +124,7 @@ class FlightResultScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 var offer = offers[index];
                 return Card(
+                    elevation: 10,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                       side: const BorderSide(
@@ -129,24 +138,26 @@ class FlightResultScreen extends StatelessWidget {
                           Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(origin,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.grey,
-                                    )),
+                                Flexible(
+                                    child: Text(origin,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.grey,
+                                        ))),
                                 Text("${offer.carrier} ${offer.flightNumber}",
                                     style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.grey,
                                     )),
-                                Text(destination,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.grey,
-                                    )),
+                                Flexible(
+                                    child: Text(destination,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.grey,
+                                        ))),
                               ]),
                           Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -161,15 +172,16 @@ class FlightResultScreen extends StatelessWidget {
                                 const SizedBox(width: 8),
                                 Transform.rotate(
                                     angle: pi / 2,
-                                    child: Icon(Icons.flight,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary)),
+                                    child: Icon(
+                                      Icons.flight,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    )),
                                 Expanded(
                                   child: Container(
-                                    height: 2, // 細いライン
+                                    height: 2,
                                     margin: const EdgeInsets.only(right: 8),
-                                    color: Colors.grey[500],
+                                    color: Colors.grey,
                                   ),
                                 ),
                                 Text(
@@ -188,11 +200,9 @@ class FlightResultScreen extends StatelessWidget {
                               color: Colors.grey,
                             ),
                           ),
-                          const SizedBox(height: 10),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              // 出発情報
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -213,7 +223,7 @@ class FlightResultScreen extends StatelessWidget {
                                         Text(
                                           "${offer.departureTime.hour}:${offer.departureTime.minute.toString().padLeft(2, '0')}",
                                           style: TextStyle(
-                                            fontSize: 22,
+                                            fontSize: 24,
                                             fontWeight: FontWeight.bold,
                                             color: Theme.of(context)
                                                 .colorScheme
@@ -231,7 +241,7 @@ class FlightResultScreen extends StatelessWidget {
                                         ),
                                         Text(offer.departureTerminal,
                                             style: const TextStyle(
-                                              fontSize: 22,
+                                              fontSize: 24,
                                               fontWeight: FontWeight.bold,
                                             )),
                                       ]),
@@ -242,9 +252,8 @@ class FlightResultScreen extends StatelessWidget {
                               Container(
                                 width: 0.5,
                                 height: 70,
-                                color: Colors.grey[700],
+                                color: Colors.grey,
                               ),
-                              // 到着情報
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
@@ -265,7 +274,7 @@ class FlightResultScreen extends StatelessWidget {
                                         Text(
                                           offer.arrivalTerminal,
                                           style: const TextStyle(
-                                            fontSize: 22,
+                                            fontSize: 24,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
@@ -283,7 +292,7 @@ class FlightResultScreen extends StatelessWidget {
                                           Text(
                                             "${offer.arrivalTime.hour}:${offer.arrivalTime.minute.toString().padLeft(2, '0')}",
                                             style: TextStyle(
-                                              fontSize: 22,
+                                              fontSize: 24,
                                               fontWeight: FontWeight.bold,
                                               color: Theme.of(context)
                                                   .colorScheme
@@ -298,8 +307,8 @@ class FlightResultScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-                          Divider(
-                            color: Colors.grey[700],
+                          const Divider(
+                            color: Colors.grey,
                             thickness: 0.5,
                           ),
                           Row(
@@ -331,11 +340,17 @@ class FlightResultScreen extends StatelessWidget {
                                         color: Theme.of(context)
                                             .colorScheme
                                             .primary,
-                                        fontSize: 14,
+                                        fontSize: 18,
                                         fontWeight: FontWeight.bold),
                                   ),
-                                  onPressed: () {}, // TODO: 予約ボタンを押した時の処理
-                                ),
+                                  onPressed: () => launchBookingSite(
+                                      offer.carrier,
+                                      offer.flightNumber,
+                                      originCode,
+                                      destinationCode,
+                                      date,
+                                      passengers),
+                                )
                               ])
                         ])));
               },
