@@ -448,12 +448,10 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                       .switchToAllAirports(generateMarkers(context, ref));
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      backgroundColor: Colors.white,
                       duration: const Duration(seconds: 1),
                       content: Text(
                         AppLocalizations.of(context)!.show_airports,
-                        style: const TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                   );
@@ -536,7 +534,6 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                                   // ignore: use_build_context_synchronously
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      backgroundColor: Colors.white,
                                       duration: const Duration(seconds: 1),
                                       content: Text(
                                         // ignore: use_build_context_synchronously
@@ -544,7 +541,6 @@ class InitMapScreenState extends ConsumerState<InitMapScreen> {
                                             .show_nearby_airports(
                                                 sliderValue.toInt()),
                                         style: const TextStyle(
-                                            color: Colors.black,
                                             fontWeight: FontWeight.bold),
                                       ),
                                     ),

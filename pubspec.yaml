@@ -30,6 +30,7 @@ dependencies:
   url_launcher: ^6.3.1
   flutter_launcher_icons: ^0.14.3
   flutter_native_splash: ^2.4.4
+  lottie: ^3.2.0
 
 dev_dependencies:
   flutter_test:
@@ -66,6 +67,8 @@ flutter:
     - assets/geodata/shikoku.geojson
     - assets/geodata/kyushu.geojson
     - assets/geodata/okinawa.geojson
+    - assets/animations/loadingAnimation.json
+    - assets/animations/splash_screen.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -109,11 +112,11 @@ flutter_icons:
   ios: true 
 
 flutter_native_splash: 
-  background_image: "assets/icons/splash_background.png"  #背景画像を指定
-  image: "assets/icons/splash.png"  #スプラッシュ画像を指定
+  background_image: "assets/splash/splash_background.png"  #背景画像を指定
+  image: "assets/splash/splash.png"  #スプラッシュ画像を指定
   android_12: 
     icon_background_color: "#000000"  #Android12用の背景色指定　#TODO: android12の背景食せていする
-    image: "assets/icons/splash_android12.png"  #Android12用のスプラッシュ画像を指定
+    image: "assets/splash/splash_android12.png"  #Android12用のスプラッシュ画像を指定
   android: true
   ios: true
   fullscreen: true  #trueで通知バーが非表示になる 

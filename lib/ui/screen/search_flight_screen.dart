@@ -87,8 +87,8 @@ class SearchFlightScreenState extends ConsumerState<SearchFlightScreen> {
             readOnly: true,
             decoration: InputDecoration(
               hintText: (selectedDate != null)
-                  ? "Date: ${selectedDate.year}/${selectedDate.month}/${selectedDate.day}"
-                  : "Date:",
+                  ? "${AppLocalizations.of(context)!.date}: ${selectedDate.year}/${selectedDate.month}/${selectedDate.day}"
+                  : "${AppLocalizations.of(context)!.date}:",
               border: const OutlineInputBorder(),
               suffixIcon: const Icon(Icons.calendar_today),
             ),
@@ -111,8 +111,8 @@ class SearchFlightScreenState extends ConsumerState<SearchFlightScreen> {
               keyboardType: TextInputType.values[4],
               decoration: InputDecoration(
                 hintText: (passengers != null) // TODO: 表記が確定しない問題
-                    ? "Number of passengers: $passengers"
-                    : "Number of passengers",
+                    ? "${AppLocalizations.of(context)!.number_of_passengers}: $passengers"
+                    : "${AppLocalizations.of(context)!.number_of_passengers}:",
                 border: const OutlineInputBorder(),
                 suffixIcon: const Icon(Icons.people),
               ),
@@ -136,11 +136,11 @@ class SearchFlightScreenState extends ConsumerState<SearchFlightScreen> {
                   destinationCode == null) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    backgroundColor: Colors.white,
                     duration: const Duration(seconds: 1),
                     content: Text(AppLocalizations.of(context)!.fill_all_fields,
                         style: const TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.black)),
+                          fontWeight: FontWeight.bold,
+                        )),
                   ),
                 );
               } else {

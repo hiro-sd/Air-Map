@@ -15,16 +15,17 @@ class Root extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final index = ref.watch(indexProvider);
+    List<BottomNavigationBarItem> items;
 
     // アイテムたち
-    const items = [
+    items = [
       BottomNavigationBarItem(
-        icon: Icon(Icons.map),
-        label: 'Map',
+        icon: const Icon(Icons.map),
+        label: AppLocalizations.of(context)!.map,
       ),
       BottomNavigationBarItem(
-        icon: Icon(Icons.search),
-        label: 'Search',
+        icon: const Icon(Icons.search),
+        label: AppLocalizations.of(context)!.search,
       ),
     ];
 
@@ -178,7 +179,6 @@ class Root extends ConsumerWidget {
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(
                                             SnackBar(
-                                              backgroundColor: Colors.white,
                                               duration:
                                                   const Duration(seconds: 2),
                                               content: Text(
@@ -187,7 +187,6 @@ class Root extends ConsumerWidget {
                                                         areas[selectedIndex]
                                                             ['name']!),
                                                 style: const TextStyle(
-                                                    color: Colors.black,
                                                     fontWeight:
                                                         FontWeight.bold),
                                               ),

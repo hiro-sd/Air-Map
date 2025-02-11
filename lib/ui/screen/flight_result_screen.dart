@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:ticket_app/functions/optimal_flight.dart';
 
 class FlightOffer {
@@ -107,15 +108,20 @@ class FlightResultScreen extends StatelessWidget {
         future: searchFlights(originCode, destinationCode, date, passengers),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+                child: Lottie.asset(
+              'assets/animations/loadingAnimation.json',
+              width: 200,
+              height: 200,
+            ));
           } else if (snapshot.hasError) {
             return Center(
               child: Text("Error: ${snapshot.error}"),
             );
           } else if (!snapshot.hasData || snapshot.data!.isEmpty == true) {
-            return const Center(
-              child: Text("No flights available.",
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+            return Center(
+              child: Text(AppLocalizations.of(context)!.no_flight,
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
             );
           } else {
             var offers = snapshot.data!;

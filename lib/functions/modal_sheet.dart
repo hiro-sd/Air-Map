@@ -136,8 +136,7 @@ void showCustomBottomSheet(BuildContext context, WidgetRef ref, String? tmp,
                                 }
                                 Navigator.pop(context);
                               },
-                              child: Text(
-                                  AppLocalizations.of(context)!.departure,
+                              child: Text(AppLocalizations.of(context)!.origin,
                                   style: const TextStyle(
                                       fontWeight: FontWeight.bold))),
                           ElevatedButton(
