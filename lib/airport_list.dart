@@ -1,11 +1,6 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:ticket_app/env/env.dart';
-import 'package:ticket_app/functions/modal_sheet.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final List<Map<String, dynamic>> airportData = [
   {
@@ -28,7 +23,7 @@ final List<Map<String, dynamic>> airportData = [
   },
   {
     'id': 'marker_3',
-    'position': const LatLng(43.04593, 144.19604),
+    'position': const LatLng(43.04509909852728, 144.19628336688587),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.kushiro_airport,
     'snippet': (BuildContext context) =>
@@ -37,7 +32,7 @@ final List<Map<String, dynamic>> airportData = [
   },
   {
     'id': 'marker_4',
-    'position': const LatLng(43.67397, 142.44662),
+    'position': const LatLng(43.671548264542935, 142.44683010621156),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.asahikawa_airport,
     'snippet': (BuildContext context) =>
@@ -46,7 +41,7 @@ final List<Map<String, dynamic>> airportData = [
   },
   {
     'id': 'marker_5',
-    'position': const LatLng(43.88415, 144.15902),
+    'position': const LatLng(43.881638359526875, 144.15856863103053),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.memanbetsu_airport,
     'snippet': (BuildContext context) =>
@@ -73,7 +68,7 @@ final List<Map<String, dynamic>> airportData = [
   },
   {
     'id': 'marker_8',
-    'position': const LatLng(42.72958, 143.22172),
+    'position': const LatLng(42.731235134537904, 143.2177599863364),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.obihiro_airport,
     'snippet': (BuildContext context) =>
@@ -82,7 +77,7 @@ final List<Map<String, dynamic>> airportData = [
   },
   {
     'id': 'marker_9',
-    'position': const LatLng(45.24600, 141.18043),
+    'position': const LatLng(45.2439829789367, 141.1840988874117),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.rishiri_airport,
     'snippet': (BuildContext context) =>
@@ -100,7 +95,7 @@ final List<Map<String, dynamic>> airportData = [
   },
   {
     'id': 'marker_11',
-    'position': const LatLng(44.30765, 143.40370),
+    'position': const LatLng(44.30639700967616, 143.40684120556202),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.monbetsu_airport,
     'snippet': (BuildContext context) =>
@@ -109,7 +104,7 @@ final List<Map<String, dynamic>> airportData = [
   },
   {
     'id': 'marker_12',
-    'position': const LatLng(43.57638, 144.93922),
+    'position': const LatLng(43.572853674412755, 144.95616246968882),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.nakashibetsu_airport,
     'snippet': (BuildContext context) =>
@@ -511,7 +506,7 @@ final List<Map<String, dynamic>> airportData = [
   },
   {
     'id': 'marker_57',
-    'position': const LatLng(34.21873, 134.01876),
+    'position': const LatLng(34.21486920230928, 134.01470943690953),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.takamatsu_airport,
     'snippet': (BuildContext context) =>
@@ -628,7 +623,7 @@ final List<Map<String, dynamic>> airportData = [
   },
   {
     'id': 'marker_70',
-    'position': const LatLng(31.87274, 131.44141),
+    'position': const LatLng(31.8762045258875, 131.44840012968373),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.miyazaki_airport,
     'snippet': (BuildContext context) =>
@@ -770,7 +765,7 @@ final List<Map<String, dynamic>> airportData = [
   },
   {
     'id': 'marker_86',
-    'position': const LatLng(24.82925, 125.14948),
+    'position': const LatLng(24.82717204931966, 125.14708543452318),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.shimojishima_airport,
     'snippet': (BuildContext context) =>
@@ -814,55 +809,3 @@ final List<Map<String, dynamic>> airportData = [
     "IATA": 'OGN',
   }
 ];
-
-// 空港のマーカーを生成する関数
-Set<Marker> generateMarkers(BuildContext context, WidgetRef ref) {
-  return airportData.map((airport) {
-    return Marker(
-        markerId: MarkerId(airport['id']),
-        position: airport['position'],
-        infoWindow: InfoWindow(
-          title: airport['title'](context),
-          snippet: airport['snippet'](context),
-        ),
-        onTap: () async {
-          String apiKey = Env.googleMapsApiKey;
-          final String title = airport['title'](context);
-
-          // Place IDの取得
-          final placeSearchUrl =
-              'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=$title&inputtype=textquery&fields=place_id&key=$apiKey';
-
-          final placeSearchResponse = await http.get(Uri.parse(placeSearchUrl));
-          final placeSearchData = jsonDecode(placeSearchResponse.body);
-
-          if (placeSearchData['status'] != 'OK') {
-            return;
-          }
-
-          final placeId = placeSearchData['candidates'][0]['place_id'];
-
-          // Photo Referencesの取得
-          final detailsUrl =
-              'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=photos&key=$apiKey';
-
-          final detailsResponse = await http.get(Uri.parse(detailsUrl));
-          final detailsData = jsonDecode(detailsResponse.body);
-
-          if (detailsData['status'] != 'OK') {
-            return;
-          }
-
-          final photos = detailsData['result']['photos'] as List<dynamic>?;
-
-          // Photo URLsを生成
-          final List<String> photoUrls = photos?.map((photo) {
-                final photoRef = photo['photo_reference'];
-                return 'https://maps.googleapis.com/maps/api/place/photo?maxheight=400&maxwidth=400&photoreference=$photoRef&key=$apiKey';
-              }).toList() ??
-              [];
-          // ignore: use_build_context_synchronously
-          showCustomBottomSheet(context, ref, null, title, photoUrls);
-        });
-  }).toSet();
-}

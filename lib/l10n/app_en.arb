@@ -1,5 +1,6 @@
 {
     "@@locale":"en",
+    "app_title": "Search App",
     "title":"Airport Map",
     "map": "Map",
     "ratethisapp": "Review this app.",
@@ -7,6 +8,7 @@
     "switch_map": "This map will be upgraded.",
     "show_airports": "Airports in Japan are shown on the map.",
     "show_nearby_airports": "Airports within a {sliderValue}km radius are shown on the map.",
+    "alert_message": "Flight information may not be accurate. Be sure to check the official website via the booking button.",
     "close": "Close",
     "ok": "OK",
     "date": "Date",

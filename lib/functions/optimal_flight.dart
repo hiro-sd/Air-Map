@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:ticket_app/env/env.dart';
-import 'package:ticket_app/ui/screen/flight_result_screen.dart';
+import 'package:ticket_app/screen/flight_result_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 const String baseUrl = "https://test.api.amadeus.com";
@@ -74,10 +74,11 @@ Future<void> launchBookingSite(
       '${date.day.toString().padLeft(2, '0')}-${date.month.toString().padLeft(2, '0')}-${date.year}';
 
   final airlineUrls = {
-    'NH': 'https://www.ana.co.jp/ja/jp/',
-    'JL': 'https://www.jal.co.jp/jp/ja/',
+    'NH': 'https://www.ana.co.jp/ja/jp/search/domestic/flight/',
+    'JL': 'https://www.jal.co.jp/jp/ja/dom/', // JALやANAはURLで検索できない
     'GK':
         'https://www.jetstar.com/jp/ja/home?adults=$passengers&children=0&destination=$destinationCode&flexible=1&flight-type=1&infants=0&origin=$originCode&selected-departure-date=$departureDate&tab=1',
+    'NU': 'https://jta-okinawa.com/'
   };
 
   final baseUrl = airlineUrls[carrier] ??
@@ -92,4 +93,3 @@ Future<void> launchBookingSite(
 }
 
 // TODO: これを応用して、複数の出発地・目的地候補から、最も適切な出発地や目的地を選択する？？
-// TODO: ANAとJALは、検索ページのURLがわからない？？

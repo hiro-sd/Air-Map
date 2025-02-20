@@ -1,5 +1,6 @@
 {
     "@@locale":"ja",
+    "app_title": "検索アプリ",
     "title":"空港マップ",
     "map": "マップ",
     "ratethisapp": "このアプリをレビューする",
@@ -7,6 +8,7 @@
     "switch_map": "表示変更",
     "show_airports": "全国の空港を表示します。",
     "show_nearby_airports": "半径{sliderValue}km以内の空港を表示します。",
+    "alert_message": "※ フライト情報は正確ではない可能性があります。必ず予約ボタンから公式サイトで確認してください。",
     "close": "閉じる",
     "ok": "OK",
     "date": "搭乗日",
@@ -29,7 +31,7 @@
     "polygon_drawing": "描画モード",
     "normal_mode": "通常モード",
     "cancel_polygon_drawing": "描画モードを終了しました。",
-    "polygon_drawing_description": "描画された範囲の空港を自動検索します。",
+    "polygon_drawing_description": "描画されたエリア内の空港を自動検索します。",
     "select_area": "地方を指定する",
     "search_result": "検索結果",
     "airport_in_the_area": "指定されたエリア内に空港が{markersInsidePolygon}件存在します。",

@@ -4,12 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:ticket_app/env/env.dart';
-import 'package:ticket_app/functions/modal_sheet.dart';
-import 'package:ticket_app/state/riverpod/polygon_drawing_notifier.dart';
-import 'package:ticket_app/state/riverpod/map_screen_state_notifier.dart';
-import 'package:ticket_app/functions/airport_list.dart';
-import 'package:http/http.dart' as http;
+import 'package:ticket_app/functions/generate_markers.dart';
+import 'package:ticket_app/state/polygon_drawing_notifier.dart';
+import 'package:ticket_app/state/map_screen_state_notifier.dart';
+import 'package:ticket_app/airport_list.dart';
 
 // GeoJSONファイルを読み込む
 Future<List<List<LatLng>>> loadAreaGeoJson(String area) async {
@@ -37,7 +35,6 @@ Future<List<List<LatLng>>> loadAreaGeoJson(String area) async {
       }
     }
   }
-
   return polygons;
 }
 
@@ -72,6 +69,7 @@ Future<void> loadAndDisplayAreaPolygon(
           ref.read(mapScreenProvider.notifier).clearMarkers()
         }
       : null;
+
   // GeoJSONファイルを読み込む
   final polygons = await loadAreaGeoJson(area);
 
@@ -88,29 +86,14 @@ Future<void> loadAndDisplayAreaPolygon(
   }
 
   ref.read(polygonSetProvider.notifier).state = polygonSet;
-  final airportMarkers = airportData;
   final markersInsidePolygon = polygons
       .map((polygonPoints) =>
-          getMarkersInsidePolygon(polygonPoints, airportMarkers))
+          getMarkersInsidePolygon(polygonPoints, airportData))
       .expand((markers) => markers)
       .toList();
-  // マーカーをGoogleMap上に反映
-  final newMarkers = markersInsidePolygon.map((marker) {
-    final title = marker['title'](context);
-    final snippet = marker['snippet'](context);
-    return Marker(
-      markerId: MarkerId(marker['id']),
-      position: marker['position'],
-      infoWindow: InfoWindow(
-        title: title,
-        snippet: snippet,
-      ),
-      onTap: () => onMarkerTapped(marker, ref, context),
-    );
-  }).toSet();
-
-  // StateNotifierを使用してマーカーを更新
-  ref.read(mapScreenProvider.notifier).updateMarkers(newMarkers);
+  ref
+      .read(mapScreenProvider.notifier)
+      .updateMarkers(generateMarkers(markersInsidePolygon));
   // centerLatLngsの座標に移動
   final centerLatLngData = centerLatLngs.firstWhere(
     (element) => element.containsKey(area),
@@ -124,55 +107,5 @@ Future<void> loadAndDisplayAreaPolygon(
     controller.animateCamera(CameraUpdate.newCameraPosition(
       CameraPosition(target: centerLatLng, zoom: zoomLevel),
     ));
-  }
-}
-
-// マーカータップ時の処理
-Future<void> onMarkerTapped(
-    // TODO: マーカーをタップするとエラーになる
-    Map<String, dynamic> marker,
-    WidgetRef ref,
-    BuildContext context) async {
-  final apiKey = Env.googleMapsApiKey;
-  final String title = marker['title'](context);
-
-  try {
-    // Place IDの取得
-    final placeSearchUrl =
-        'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=$title&inputtype=textquery&fields=place_id&key=$apiKey';
-    final placeSearchResponse = await http.get(Uri.parse(placeSearchUrl));
-    if (placeSearchResponse.statusCode != 200) return;
-
-    final placeSearchData = jsonDecode(placeSearchResponse.body);
-    if (placeSearchData['status'] != 'OK') return;
-
-    final placeId = placeSearchData['candidates'][0]['place_id'];
-
-    // Photo Referencesの取得
-    final detailsUrl =
-        'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=photos&key=$apiKey';
-    final detailsResponse = await http.get(Uri.parse(detailsUrl));
-    if (detailsResponse.statusCode != 200) return;
-
-    final detailsData = jsonDecode(detailsResponse.body);
-    if (detailsData['status'] != 'OK') return;
-
-    final photos = detailsData['result']['photos'] as List<dynamic>?;
-
-    // Photo URLsを生成
-    final List<String> photoUrls = photos?.map((photo) {
-          final photoRef = photo['photo_reference'];
-          return 'https://maps.googleapis.com/maps/api/place/photo?maxheight=400&maxwidth=400&photoreference=$photoRef&key=$apiKey';
-        }).toList() ??
-        [];
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (context.mounted) {
-        showCustomBottomSheet(context, ref, null, title, photoUrls);
-      }
-    });
-  } catch (e) {
-    // エラーハンドリング
-    print('Error occurred: $e');
   }
 }

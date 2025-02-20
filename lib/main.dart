@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:ticket_app/ui/screen/root_screen.dart';
+import 'package:ticket_app/screen/root_screen.dart';
+
+final GlobalKey<NavigatorState> globalNavigatorKey =
+    GlobalKey<NavigatorState>();
+
+final globalNavigatorKeyProvider = Provider<GlobalKey<NavigatorState>>((ref) {
+  return globalNavigatorKey;
+});
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -13,9 +20,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: globalNavigatorKey,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      title: 'フライト検索',
+      title: '検索アプリ', // AppLocalizations.of(context)!.app_title,
       theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
             seedColor: Colors.blue,

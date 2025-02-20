@@ -1,16 +1,13 @@
 import 'dart:async';
 import 'dart:collection';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:ticket_app/env/env.dart';
-import 'package:ticket_app/functions/modal_sheet.dart';
-import 'package:ticket_app/state/riverpod/map_screen_state_notifier.dart';
-import 'package:ticket_app/functions/airport_list.dart';
+import 'package:ticket_app/functions/generate_markers.dart';
+import 'package:ticket_app/state/map_screen_state_notifier.dart';
+import 'package:ticket_app/airport_list.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 // 多角形を描画するためのStateProvider
@@ -106,9 +103,8 @@ class PolygonDrawingNotifier extends StateNotifier<PolygonDrawingState> {
     }
   }
 
-  // なぞり終えた際に Polygon インスタンスを生成し、_polygonSet に追加する。
-  Future<void> onPanEnd(
-      DragEndDetails details, BuildContext context, WidgetRef ref) async {
+  // なぞり終えた際に Polygon インスタンスを生成し、_polygonSet に追加する
+  void onPanEnd(DragEndDetails details, BuildContext context, WidgetRef ref) {
     final polygonSet = ref.read(polygonSetProvider.notifier);
     // 最後にキャッシュされた座標をリセット
     lastXCoordinate = null;
@@ -131,12 +127,9 @@ class PolygonDrawingNotifier extends StateNotifier<PolygonDrawingState> {
     // ユーザーが描画したポリゴンのポイントを取得
     final polygonPoints = ref.read(polygonSetProvider).first.points;
 
-    // 空港データ
-    final airportMarkers = airportData;
-
     // 空港データの中からポリゴン内部のマーカーを取得
     final markersInsidePolygon = // マーカーのリストを保持
-        getMarkersInsidePolygon(polygonPoints, airportMarkers);
+        getMarkersInsidePolygon(polygonPoints, airportData);
 
     if (markersInsidePolygon.isEmpty) {
       showDialog(
@@ -179,58 +172,9 @@ class PolygonDrawingNotifier extends StateNotifier<PolygonDrawingState> {
     }
 
     // マーカーをGoogleMap上に反映
-    final newMarkers = markersInsidePolygon.map((marker) {
-      return Marker(
-          markerId: MarkerId(marker['id']),
-          position: marker['position'],
-          infoWindow: InfoWindow(
-            title: marker['title'](context),
-            snippet: marker['snippet'](context),
-          ),
-          onTap: () async {
-            String apiKey = Env.googleMapsApiKey;
-            final String title = marker['title'](context);
-
-            // Place IDの取得
-            final placeSearchUrl =
-                'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=$title&inputtype=textquery&fields=place_id&key=$apiKey';
-
-            final placeSearchResponse =
-                await http.get(Uri.parse(placeSearchUrl));
-            final placeSearchData = jsonDecode(placeSearchResponse.body);
-
-            if (placeSearchData['status'] != 'OK') {
-              return;
-            }
-
-            final placeId = placeSearchData['candidates'][0]['place_id'];
-
-            // Photo Referencesの取得
-            final detailsUrl =
-                'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=photos&key=$apiKey';
-
-            final detailsResponse = await http.get(Uri.parse(detailsUrl));
-            final detailsData = jsonDecode(detailsResponse.body);
-
-            if (detailsData['status'] != 'OK') {
-              return;
-            }
-
-            final photos = detailsData['result']['photos'] as List<dynamic>?;
-
-            // Photo URLsを生成
-            final List<String> photoUrls = photos?.map((photo) {
-                  final photoRef = photo['photo_reference'];
-                  return 'https://maps.googleapis.com/maps/api/place/photo?maxheight=400&maxwidth=400&photoreference=$photoRef&key=$apiKey';
-                }).toList() ??
-                [];
-            // ignore: use_build_context_synchronously
-            showCustomBottomSheet(context, ref, null, title, photoUrls);
-          });
-    }).toSet();
-
-    // StateNotifierを使用してマーカーを更新
-    ref.read(mapScreenProvider.notifier).updateMarkers(newMarkers);
+    ref
+        .read(mapScreenProvider.notifier)
+        .updateMarkers(generateMarkers(markersInsidePolygon));
 
     // 描画状態を終了
     ref.read(drawPolygonEnabledProvider.notifier).state =

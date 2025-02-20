@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ticket_app/functions/geo_data_scan.dart';
-import 'package:ticket_app/ui/screen/init_map_screen.dart';
-import 'package:ticket_app/ui/screen/search_flight_screen.dart';
+import 'package:ticket_app/screen/map_screen.dart';
+import 'package:ticket_app/screen/search_flight_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 final indexProvider = StateProvider<int>((ref) => 0);
@@ -40,13 +40,12 @@ class Root extends ConsumerWidget {
 
     // 画面たち
     const pages = [
-      InitMapScreen(),
+      MapScreen(),
       SearchFlightScreen(),
     ];
 
     return Scaffold(
       appBar: AppBar(
-        //backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: index == 0
             ? Text(
                 AppLocalizations.of(context)!.title,
@@ -72,7 +71,7 @@ class Root extends ConsumerWidget {
                   showModalBottomSheet(
                     context: context,
                     isScrollControlled: true,
-                    builder: (BuildContext context) {
+                    builder: (context) {
                       // リストに表示する地方名と対応する識別子
                       final List<Map<String, String>> areas = [
                         {
@@ -118,8 +117,9 @@ class Root extends ConsumerWidget {
                       return FractionallySizedBox(
                         heightFactor: 0.5,
                         child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 30),
                             Text(
                               AppLocalizations.of(context)!.select_area,
                               style: const TextStyle(

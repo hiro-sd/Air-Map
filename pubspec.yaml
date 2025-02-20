@@ -31,7 +31,7 @@ dependencies:
   flutter_launcher_icons: ^0.14.3
   flutter_native_splash: ^2.4.4
   lottie: ^3.2.0
-
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -115,7 +115,7 @@ flutter_native_splash:
   background_image: "assets/splash/splash_background.png"  #背景画像を指定
   image: "assets/splash/splash.png"  #スプラッシュ画像を指定
   android_12: 
-    icon_background_color: "#000000"  #Android12用の背景色指定　#TODO: android12の背景食せていする
+    icon_background_color: "#000000"  #Android12用の背景色指定　#TODO: android12の背景色設定する
     image: "assets/splash/splash_android12.png"  #Android12用のスプラッシュ画像を指定
   android: true
   ios: true

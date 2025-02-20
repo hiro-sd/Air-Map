@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:ticket_app/state/riverpod/map_screen_state_notifier.dart';
-import 'package:ticket_app/functions/airport_list.dart';
-import 'package:ticket_app/ui/screen/flight_result_screen.dart';
+import 'package:ticket_app/state/map_screen_state_notifier.dart';
+import 'package:ticket_app/airport_list.dart';
+import 'package:ticket_app/screen/flight_result_screen.dart';
 
 final passengerProvider = StateProvider<int?>((ref) => null);
 final dateProvider = StateProvider<DateTime?>((ref) => null);
@@ -24,9 +24,9 @@ double _iconRotation = 0.0;
 class SearchFlightScreenState extends ConsumerState<SearchFlightScreen> {
   @override
   Widget build(BuildContext context) {
-    final passengers = ref.watch(passengerProvider);
     final state = ref.watch(mapScreenProvider);
     final selectedDate = ref.watch(dateProvider);
+    final passengers = ref.watch(passengerProvider);
     final originCode = ref.watch(originCodeProvider);
     final destinationCode = ref.watch(destinationCodeProvider);
 
@@ -35,8 +35,8 @@ class SearchFlightScreenState extends ConsumerState<SearchFlightScreen> {
           child: Column(children: <Widget>[
         const SizedBox(height: 100),
         Text(AppLocalizations.of(context)!.flight_screen_title,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 20),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 40),
         Row(children: [
           SizedBox(width: MediaQuery.of(context).size.width * 0.15),
           SizedBox(
@@ -46,12 +46,14 @@ class SearchFlightScreenState extends ConsumerState<SearchFlightScreen> {
               onTap: () => showAirportPicker(context, ref, "origin"),
               decoration: InputDecoration(
                 hintText: 'From: ${state.selectedDeparture ?? ''}',
+                hintStyle: const TextStyle(fontWeight: FontWeight.bold),
                 border: const OutlineInputBorder(),
                 suffixIcon: const Icon(Icons.flight_takeoff),
               ),
             ),
           ),
-          if (state.tmpTakeoff && state.tmpLand) // TODO: なぜか片方nullだとうまくいかない
+          if (state.selectedDeparture != null &&
+              state.selectedDestination != null)
             AnimatedRotation(
                 turns: _iconRotation,
                 duration: const Duration(milliseconds: 200),
@@ -75,6 +77,7 @@ class SearchFlightScreenState extends ConsumerState<SearchFlightScreen> {
             onTap: () => showAirportPicker(context, ref, "destination"),
             decoration: InputDecoration(
               hintText: 'To: ${state.selectedDestination ?? ''}',
+              hintStyle: const TextStyle(fontWeight: FontWeight.bold),
               border: const OutlineInputBorder(),
               suffixIcon: const Icon(Icons.flight_land),
             ),
@@ -86,9 +89,9 @@ class SearchFlightScreenState extends ConsumerState<SearchFlightScreen> {
           child: TextField(
             readOnly: true,
             decoration: InputDecoration(
-              hintText: (selectedDate != null)
-                  ? "${AppLocalizations.of(context)!.date}: ${selectedDate.year}/${selectedDate.month}/${selectedDate.day}"
-                  : "${AppLocalizations.of(context)!.date}:",
+              hintText:
+                  "${AppLocalizations.of(context)!.date}: ${selectedDate != null ? "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}" : ''}",
+              hintStyle: const TextStyle(fontWeight: FontWeight.bold),
               border: const OutlineInputBorder(),
               suffixIcon: const Icon(Icons.calendar_today),
             ),
@@ -108,32 +111,32 @@ class SearchFlightScreenState extends ConsumerState<SearchFlightScreen> {
         SizedBox(
             width: MediaQuery.of(context).size.width * 0.7,
             child: TextField(
+              readOnly: true,
               keyboardType: TextInputType.values[4],
               decoration: InputDecoration(
-                hintText: (passengers != null) // TODO: 表記が確定しない問題
-                    ? "${AppLocalizations.of(context)!.number_of_passengers}: $passengers"
-                    : "${AppLocalizations.of(context)!.number_of_passengers}:",
+                hintText:
+                    "${AppLocalizations.of(context)!.number_of_passengers}: ${passengers ?? ''}",
+                hintStyle: const TextStyle(fontWeight: FontWeight.bold),
                 border: const OutlineInputBorder(),
                 suffixIcon: const Icon(Icons.people),
               ),
-              onChanged: (value) {
-                ref.read(passengerProvider.notifier).state =
-                    int.tryParse(value);
-              },
+              onTap: () => showPassengerPicker(context, ref),
             )),
-        const SizedBox(height: 20),
+        const SizedBox(height: 40),
         SizedBox(
           width: MediaQuery.of(context).size.width * 0.5,
           height: 50,
           child: ElevatedButton(
             onPressed: () async {
               // フライト検索処理を実装
-              if (state.selectedDeparture == null ||
-                  state.selectedDestination == null ||
-                  selectedDate == null ||
-                  passengers == null ||
-                  originCode == null ||
-                  destinationCode == null) {
+              if ([
+                state.selectedDeparture,
+                state.selectedDestination,
+                selectedDate,
+                passengers,
+                originCode,
+                destinationCode
+              ].contains(null)) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     duration: const Duration(seconds: 1),
@@ -149,11 +152,11 @@ class SearchFlightScreenState extends ConsumerState<SearchFlightScreen> {
                   MaterialPageRoute(
                     builder: (context) => FlightResultScreen(
                       origin: state.selectedDeparture!,
-                      originCode: originCode,
+                      originCode: originCode!,
                       destination: state.selectedDestination!,
-                      destinationCode: destinationCode,
-                      date: selectedDate,
-                      passengers: passengers,
+                      destinationCode: destinationCode!,
+                      date: selectedDate!,
+                      passengers: passengers!,
                     ),
                   ),
                 );
@@ -170,7 +173,7 @@ class SearchFlightScreenState extends ConsumerState<SearchFlightScreen> {
   }
 }
 
-// 空港選択ピッカー
+// 空港選択Picker
 void showAirportPicker(BuildContext context, WidgetRef ref, String place) {
   int selectedIndex = 0;
   List airportNames =
@@ -223,7 +226,6 @@ void showAirportPicker(BuildContext context, WidgetRef ref, String place) {
                   height: 45,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).pop(); // モーダルを閉じる
                       if (place == "origin") {
                         ref
                             .read(mapScreenProvider.notifier)
@@ -247,6 +249,7 @@ void showAirportPicker(BuildContext context, WidgetRef ref, String place) {
                           ref.read(mapScreenProvider.notifier).toggleTmpLand();
                         }
                       }
+                      Navigator.of(context).pop(); // モーダルを閉じる
                     },
                     child: Text(
                       AppLocalizations.of(context)!.ok,
@@ -265,5 +268,81 @@ void showAirportPicker(BuildContext context, WidgetRef ref, String place) {
   );
 }
 
+// 乗客選択Picker
+void showPassengerPicker(BuildContext context, WidgetRef ref) {
+  int selectedPassengers = ref.read(passengerProvider) ?? 1; // 初期値1人
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    builder: (BuildContext builder) {
+      return FractionallySizedBox(
+        heightFactor: 0.5,
+        child: Column(
+          children: [
+            Expanded(
+              child: CupertinoPicker(
+                itemExtent: 45,
+                onSelectedItemChanged: (index) {
+                  selectedPassengers = index + 1; // 1~9人まで選択可能
+                  HapticFeedback.heavyImpact();
+                },
+                scrollController: FixedExtentScrollController(
+                  initialItem: selectedPassengers - 1, // 1人目が index=0
+                ),
+                children: List.generate(9, (index) {
+                  return Center(
+                    child: Text(
+                      "${index + 1}",
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                  );
+                }),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SizedBox(
+                  width: 100,
+                  height: 45,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // モーダルを閉じる
+                    },
+                    child: Text(
+                      AppLocalizations.of(context)!.close,
+                      style: const TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 100,
+                  height: 45,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      ref.read(passengerProvider.notifier).state =
+                          selectedPassengers;
+                      Navigator.of(context).pop(); // モーダルを閉じる
+                    },
+                    child: Text(
+                      AppLocalizations.of(context)!.ok,
+                      style: const TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 30),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+
 // TODO: UI見直し (往復、直行、表示順、など追加？)
-// TODO: マーカーをタップして空港を指定した際には、この画面に遷移させる。
