@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       navigatorKey: globalNavigatorKey,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      title: '検索アプリ', // AppLocalizations.of(context)!.app_title,
+      title: 'Air Map',
       theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
             seedColor: Colors.blue,
