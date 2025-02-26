@@ -6,6 +6,7 @@ import 'package:ticket_app/functions/geo_data_scan.dart';
 import 'package:ticket_app/screen/map_screen.dart';
 import 'package:ticket_app/screen/search_flight_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:ticket_app/screen/settings_screen.dart';
 
 final indexProvider = StateProvider<int>((ref) => 0);
 
@@ -27,6 +28,10 @@ class Root extends ConsumerWidget {
         icon: const Icon(Icons.search),
         label: AppLocalizations.of(context)!.search,
       ),
+      BottomNavigationBarItem(
+        icon: const Icon(Icons.settings),
+        label: AppLocalizations.of(context)!.settings,
+      ),
     ];
 
     final bar = BottomNavigationBar(
@@ -42,6 +47,7 @@ class Root extends ConsumerWidget {
     const pages = [
       MapScreen(),
       SearchFlightScreen(),
+      SettingsScreen(),
     ];
 
     return Scaffold(
@@ -55,14 +61,23 @@ class Root extends ConsumerWidget {
                   color: Theme.of(context).colorScheme.primary,
                 ),
               )
-            : Text(
-                AppLocalizations.of(context)!.search,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
+            : index == 1
+                ? Text(
+                    AppLocalizations.of(context)!.search,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  )
+                : Text(
+                    AppLocalizations.of(context)!.settings,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
         leading: index == 0
             ? IconButton(
                 icon: Icon(Icons.menu,
