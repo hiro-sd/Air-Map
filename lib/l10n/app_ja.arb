@@ -12,7 +12,7 @@
     "switch_map": "表示変更",
     "show_airports": "全国の空港を表示します。",
     "show_nearby_airports": "半径{sliderValue}km以内の空港を表示します。",
-    "alert_message": "※ フライト情報は正確ではない可能性があります。必ず予約ボタンから公式サイトで確認してください。",
+    "alert_message": "※ 正確なフライト情報は予約ボタンをタップし、必ず公式サイトで確認してください。",
     "close": "閉じる",
     "ok": "OK",
     "date": "搭乗日",
