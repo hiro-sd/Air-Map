@@ -1,0 +1,32 @@
+{
+    "abc": {
+        "prefix": "abc",
+        "scope": "dart",
+        "body": [
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        ],
+    },
+    "app": {
+        "prefix": "app",
+        "scope": "dart",
+        "body": [
+            "AppLocalizations.of(context)!."
+        ],
+    },
+    "consumer": {
+        "prefix": "consumer",
+        "scope": "dart",
+        "body": [
+            "class $1 extends ConsumerWidget {",
+            "  const $1({",
+            "    super.key,",
+            "  });",
+            "",
+            "  @override",
+            "  Widget build(BuildContext context, WidgetRef ref) {",
+            "    return Container();",
+            "  }",
+            "}"
+        ]
+    },
+}
