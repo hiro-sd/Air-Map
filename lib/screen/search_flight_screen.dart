@@ -112,7 +112,7 @@ class SearchFlightScreenState extends ConsumerState<SearchFlightScreen> {
             width: MediaQuery.of(context).size.width * 0.7,
             child: TextField(
               readOnly: true,
-              keyboardType: TextInputType.values[4],
+              keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 hintText:
                     "${AppLocalizations.of(context)!.number_of_passengers}: ${passengers ?? ''}",
