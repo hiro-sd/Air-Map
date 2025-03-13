@@ -25,6 +25,42 @@ class MapScreenState extends ConsumerState<MapScreen> {
     final circles = ref.watch(circleProvider);
     Timer? debounce;
 
+    void onCameraMove(CameraPosition position) {
+      if (!mounted) return; // 画面が破棄されていたら処理しない
+      debounce?.cancel();
+      debounce = Timer(const Duration(milliseconds: 200), () {
+        // 200msごとに1回だけ実行
+        if (mounted) {
+          ref.read(mapScreenProvider.notifier).updateInitialCenter(position);
+        }
+      });
+    }
+
+    void showPolygonDrawingDialog(BuildContext context) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(
+              drawPolygonEnabled
+                  ? AppLocalizations.of(context)!.normal_mode
+                  : AppLocalizations.of(context)!.polygon_drawing,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            content: Text(drawPolygonEnabled
+                ? AppLocalizations.of(context)!.cancel_polygon_drawing
+                : AppLocalizations.of(context)!.polygon_drawing_description),
+            actions: [
+              TextButton(
+                child: Text(AppLocalizations.of(context)!.ok),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -53,16 +89,7 @@ class MapScreenState extends ConsumerState<MapScreen> {
                 zoomControlsEnabled: false,
                 markers: state.markers,
                 onCameraMove: (position) {
-                  if (!mounted) return; // 画面が破棄されていたら処理しない
-                  debounce?.cancel();
-                  debounce = Timer(const Duration(milliseconds: 200), () {
-                    // 200msごとに1回だけ実行
-                    if (mounted) {
-                      ref
-                          .read(mapScreenProvider.notifier)
-                          .updateInitialCenter(position);
-                    }
-                  });
+                  onCameraMove(position);
                 },
                 onMapCreated: (controller) {
                   ref.read(mapScreenProvider.notifier).mapController =
@@ -84,32 +111,7 @@ class MapScreenState extends ConsumerState<MapScreen> {
                   heroTag: null,
                   shape: const CircleBorder(),
                   onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text(
-                                drawPolygonEnabled
-                                    ? AppLocalizations.of(context)!.normal_mode
-                                    : AppLocalizations.of(context)!
-                                        .polygon_drawing,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold)),
-                            content: Text(drawPolygonEnabled
-                                ? AppLocalizations.of(context)!
-                                    .cancel_polygon_drawing
-                                : AppLocalizations.of(context)!
-                                    .polygon_drawing_description),
-                            actions: [
-                              TextButton(
-                                child: Text(AppLocalizations.of(context)!.ok),
-                                onPressed: () {
-                                  Navigator.of(context).pop(); // ダイアログを閉じる
-                                },
-                              ),
-                            ],
-                          );
-                        });
+                    showPolygonDrawingDialog(context);
                     ref
                         .read(polygonDrawingProvider.notifier)
                         .toggleDrawing(ref);
@@ -129,16 +131,6 @@ class MapScreenState extends ConsumerState<MapScreen> {
               onPressed: () {
                 ref.read(polygonSetProvider).clear();
                 ref.read(polylineSetProvider).clear();
-                if (state.tmpLand) {
-                  ref.read(mapScreenProvider.notifier).toggleTmpLand();
-                  ref
-                      .read(mapScreenProvider.notifier)
-                      .clearSelectedDestination();
-                }
-                if (state.tmpTakeoff) {
-                  ref.read(mapScreenProvider.notifier).toggleTmpTakeoff();
-                  ref.read(mapScreenProvider.notifier).clearSelectedDeparture();
-                }
                 if (!state.showAllAirports) {
                   // 全国の空港に切り替え
                   ref.read(circleProvider.notifier).state.clear();

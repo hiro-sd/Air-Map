@@ -16,23 +16,18 @@ class Root extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final index = ref.watch(indexProvider);
-    List<BottomNavigationBarItem> items;
 
     // アイテムたち
-    items = [
-      BottomNavigationBarItem(
-        icon: const Icon(Icons.map),
-        label: AppLocalizations.of(context)!.map,
-      ),
-      BottomNavigationBarItem(
-        icon: const Icon(Icons.search),
-        label: AppLocalizations.of(context)!.search,
-      ),
-      BottomNavigationBarItem(
-        icon: const Icon(Icons.settings),
-        label: AppLocalizations.of(context)!.settings,
-      ),
-    ];
+    final items = [
+      {'icon': Icons.map, 'label': AppLocalizations.of(context)!.map},
+      {'icon': Icons.search, 'label': AppLocalizations.of(context)!.search},
+      {'icon': Icons.settings, 'label': AppLocalizations.of(context)!.settings},
+    ]
+        .map((item) => BottomNavigationBarItem(
+              icon: Icon(item['icon'] as IconData),
+              label: item['label'] as String,
+            ))
+        .toList();
 
     final bar = BottomNavigationBar(
       items: items, // アイテムたち
@@ -50,34 +45,23 @@ class Root extends ConsumerWidget {
       SettingsScreen(),
     ];
 
+    // タイトルたち
+    final titles = [
+      AppLocalizations.of(context)!.title,
+      AppLocalizations.of(context)!.search,
+      AppLocalizations.of(context)!.settings
+    ];
+
     return Scaffold(
       appBar: AppBar(
-        title: index == 0
-            ? Text(
-                AppLocalizations.of(context)!.title,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              )
-            : index == 1
-                ? Text(
-                    AppLocalizations.of(context)!.search,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  )
-                : Text(
-                    AppLocalizations.of(context)!.settings,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
+        title: Text(
+          titles[index],
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
         leading: index == 0
             ? IconButton(
                 icon: Icon(Icons.menu,

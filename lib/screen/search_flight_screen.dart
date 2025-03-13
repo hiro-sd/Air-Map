@@ -233,11 +233,6 @@ void showAirportPicker(BuildContext context, WidgetRef ref, String place) {
                                 airportNames[selectedIndex]);
                         ref.read(originCodeProvider.notifier).state =
                             airportCodes[selectedIndex];
-                        if (!ref.read(mapScreenProvider).tmpTakeoff) {
-                          ref
-                              .read(mapScreenProvider.notifier)
-                              .toggleTmpTakeoff();
-                        }
                       } else {
                         ref
                             .read(mapScreenProvider.notifier)
@@ -245,9 +240,6 @@ void showAirportPicker(BuildContext context, WidgetRef ref, String place) {
                                 airportNames[selectedIndex]);
                         ref.read(destinationCodeProvider.notifier).state =
                             airportCodes[selectedIndex];
-                        if (!ref.read(mapScreenProvider).tmpLand) {
-                          ref.read(mapScreenProvider.notifier).toggleTmpLand();
-                        }
                       }
                       Navigator.of(context).pop(); // モーダルを閉じる
                     },

@@ -77,14 +77,14 @@ class PolygonDrawingNotifier extends StateNotifier<PolygonDrawingState> {
           ScreenCoordinate(x: xCoordinate, y: yCoordinate),
         );
 
-        // 新しいポイントをリストに追加する
+        // // 新しいポイントをリストに追加する
         latLngList = [...latLngList, latLng];
 
         final polylineSet = ref.read(polylineSetProvider.notifier).state;
-
         // ポリラインのセットを初期化
         polylineSet.removeWhere(
             (polyline) => polyline.polylineId.value == 'user_polyline');
+
         // 新しいポリラインを追加
         polylineSet.add(
           Polyline(
@@ -187,12 +187,6 @@ class PolygonDrawingNotifier extends StateNotifier<PolygonDrawingState> {
     ref.read(circleProvider.notifier).state.clear();
     ref.read(drawPolygonEnabledProvider.notifier).state =
         !ref.read(drawPolygonEnabledProvider);
-    ref.read(mapScreenProvider).tmpTakeoff
-        ? ref.read(mapScreenProvider.notifier).toggleTmpTakeoff()
-        : null;
-    ref.read(mapScreenProvider).tmpLand
-        ? ref.read(mapScreenProvider.notifier).toggleTmpLand()
-        : null;
     ref.read(mapScreenProvider.notifier).clearMarkers();
   }
 

@@ -21,9 +21,7 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
                 target: LatLng(35.6895, 139.6917), zoom: 9), // 初期位置（東京）
             showAllAirports: false,
             selectedDeparture: null,
-            selectedDestination: null,
-            tmpTakeoff: false,
-            tmpLand: false));
+            selectedDestination: null));
 
   Position? currentPosition;
   GoogleMapController? mapController;
@@ -32,18 +30,9 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
 
   // 初回のみ現在地を取得
   Future<void> initializeMap() async {
-    if (isFirstLoad) {
-      await getCurrentLocation();
-      isFirstLoad = false; // 初回ロード後はfalseにする
-    }
-  }
-
-  void toggleTmpTakeoff() {
-    state = state.copyWith(tmpTakeoff: !state.tmpTakeoff);
-  }
-
-  void toggleTmpLand() {
-    state = state.copyWith(tmpLand: !state.tmpLand);
+    if (!isFirstLoad) return;
+    isFirstLoad = false; // 初回ロード後はfalseにする
+    await getCurrentLocation();
   }
 
   void updateMarkers(Set<Marker> newMarkers) {
@@ -65,8 +54,6 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
       selectedDestination: state.selectedDeparture,
       departureMarkers: state.destinationMarkers,
       destinationMarkers: state.departureMarkers,
-      tmpTakeoff: state.tmpLand,
-      tmpLand: state.tmpTakeoff,
     );
   }
 
@@ -136,7 +123,7 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
             .animateCamera(CameraUpdate.newCameraPosition(newCameraPosition));
       }
     } catch (e) {
-      print("Error getting location: $e");
+      debugPrint("Error getting location: $e");
     }
   }
 
@@ -146,18 +133,14 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
 
     double lat = currentPosition!.latitude;
     double lng = currentPosition!.longitude;
-    List<Map<String, dynamic>> nearAirports = [];
 
-    for (var airport in airportData) {
-      double airportLat = airport['position'].latitude;
-      double airportLng = airport['position'].longitude;
-      double distance =
-          Geolocator.distanceBetween(lat, lng, airportLat, airportLng);
-      if (distance <= (searchRadius * 1000) /*検索範囲*/) {
-        nearAirports.add(airport);
-      }
-    }
-    switchAirports(generateMarkers(nearAirports), false);
+    switchAirports(
+        generateMarkers(airportData.where((airport) {
+          double distance = Geolocator.distanceBetween(lat, lng,
+              airport['position'].latitude, airport['position'].longitude);
+          return distance <= (searchRadius * 1000);
+        }).toList()),
+        false);
   }
 }
 
@@ -169,14 +152,12 @@ final mapScreenProvider =
 
 class MapScreenState {
   final Set<Marker> markers;
-  Set<Marker> departureMarkers;
-  Set<Marker> destinationMarkers;
+  final Set<Marker> departureMarkers;
+  final Set<Marker> destinationMarkers;
   final CameraPosition initialCenter;
   final bool showAllAirports;
   final String? selectedDeparture;
   final String? selectedDestination;
-  final bool tmpTakeoff;
-  final bool tmpLand;
 
   MapScreenState({
     required this.markers,
@@ -186,8 +167,6 @@ class MapScreenState {
     required this.showAllAirports,
     required this.selectedDeparture,
     required this.selectedDestination,
-    required this.tmpTakeoff,
-    required this.tmpLand,
   });
 
   // 状態を部分的に更新するためのcopyWithメソッド
@@ -199,19 +178,14 @@ class MapScreenState {
     String? selectedDestination,
     Set<Marker>? departureMarkers,
     Set<Marker>? destinationMarkers,
-    bool? tmpTakeoff,
-    bool? tmpLand,
-  }) {
-    return MapScreenState(
-      markers: markers ?? this.markers,
-      departureMarkers: departureMarkers ?? this.departureMarkers,
-      destinationMarkers: destinationMarkers ?? this.destinationMarkers,
-      initialCenter: initialCenter ?? this.initialCenter,
-      showAllAirports: showAllAirports ?? this.showAllAirports,
-      selectedDeparture: selectedDeparture ?? this.selectedDeparture,
-      selectedDestination: selectedDestination ?? this.selectedDestination,
-      tmpTakeoff: tmpTakeoff ?? this.tmpTakeoff,
-      tmpLand: tmpLand ?? this.tmpLand,
-    );
-  }
+  }) =>
+      MapScreenState(
+        markers: markers ?? this.markers,
+        departureMarkers: departureMarkers ?? this.departureMarkers,
+        destinationMarkers: destinationMarkers ?? this.destinationMarkers,
+        initialCenter: initialCenter ?? this.initialCenter,
+        showAllAirports: showAllAirports ?? this.showAllAirports,
+        selectedDeparture: selectedDeparture ?? this.selectedDeparture,
+        selectedDestination: selectedDestination ?? this.selectedDestination,
+      );
 }

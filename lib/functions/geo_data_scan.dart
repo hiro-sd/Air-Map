@@ -16,9 +16,9 @@ Future<List<List<LatLng>>> loadAreaGeoJson(String area) async {
   final Map<String, dynamic> geojson = json.decode(geojsonString);
 
   final List<List<LatLng>> polygons = [];
-
   final List<dynamic> features = geojson['features'];
-  for (var feature in features) {
+
+  for (final feature in features) {
     if (feature['geometry']['type'] == 'MultiPolygon') {
       final List<dynamic> coordinates = feature['geometry']['coordinates'];
 
@@ -54,58 +54,50 @@ const List<Map<String, dynamic>> centerLatLngs = [
 // 読み込んだ座標をもとにポリゴンを描画する
 Future<void> loadAndDisplayAreaPolygon(
     String area, WidgetRef ref, BuildContext context) async {
+  // 既存データをクリア
   ref.read(polygonSetProvider).clear();
   ref.read(polylineSetProvider).clear();
   ref.read(circleProvider.notifier).state.clear();
-  ref.read(mapScreenProvider).tmpLand
-      ? {
-          ref.read(mapScreenProvider.notifier).toggleTmpLand(),
-          ref.read(mapScreenProvider.notifier).clearMarkers()
-        }
-      : null;
-  ref.read(mapScreenProvider).tmpTakeoff
-      ? {
-          ref.read(mapScreenProvider.notifier).toggleTmpTakeoff(),
-          ref.read(mapScreenProvider.notifier).clearMarkers()
-        }
-      : null;
 
   // GeoJSONファイルを読み込む
   final polygons = await loadAreaGeoJson(area);
 
-  // ポリゴンを描画
-  final Set<Polygon> polygonSet = {};
-  for (var points in polygons) {
-    polygonSet.add(Polygon(
-      polygonId: PolygonId(area + polygons.indexOf(points).toString()),
-      points: points,
-      strokeWidth: 3,
-      strokeColor: Colors.blue.withOpacity(0.8),
-      fillColor: Colors.blue.withOpacity(0.2),
-    ));
-  }
-
+  // ポリゴンをセットする
+  final Set<Polygon> polygonSet = {
+    for (var i = 0; i < polygons.length; i++)
+      Polygon(
+        polygonId: PolygonId('$area-$i'),
+        points: polygons[i],
+        strokeWidth: 3,
+        strokeColor: Colors.blue.withOpacity(0.8),
+        fillColor: Colors.blue.withOpacity(0.2),
+      )
+  };
   ref.read(polygonSetProvider.notifier).state = polygonSet;
+
+  // マーカーをセットする
   final markersInsidePolygon = polygons
-      .map((polygonPoints) =>
-          getMarkersInsidePolygon(polygonPoints, airportData))
-      .expand((markers) => markers)
+      .expand(
+        (polygonPoints) => getMarkersInsidePolygon(polygonPoints, airportData),
+      )
       .toList();
   ref
       .read(mapScreenProvider.notifier)
       .updateMarkers(generateMarkers(markersInsidePolygon));
-  // centerLatLngsの座標に移動
-  final centerLatLngData = centerLatLngs.firstWhere(
+
+  // 地図の中心座標とズームレベルをセットする
+  final Map<String, dynamic> centerData = centerLatLngs.firstWhere(
     (element) => element.containsKey(area),
   );
 
   final GoogleMapController? controller =
       ref.read(mapScreenProvider.notifier).mapController;
   if (controller != null) {
-    final centerLatLng = centerLatLngData[area] as LatLng;
-    final zoomLevel = centerLatLngData['zoom'] as double;
     controller.animateCamera(CameraUpdate.newCameraPosition(
-      CameraPosition(target: centerLatLng, zoom: zoomLevel),
+      CameraPosition(
+        target: centerData[area] as LatLng,
+        zoom: centerData['zoom'] as double,
+      ),
     ));
   }
 }

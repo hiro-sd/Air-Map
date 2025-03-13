@@ -15,7 +15,7 @@ void showCustomBottomSheet(BuildContext context, ref, String placeName,
     ),
     barrierColor: Colors.black.withOpacity(0.2),
     builder: (context) {
-      final state = ref.read(mapScreenProvider);
+      //final state = ref.read(mapScreenProvider);
       return SingleChildScrollView(
           child: IntrinsicHeight(
               child: Padding(
@@ -87,9 +87,6 @@ void showCustomBottomSheet(BuildContext context, ref, String placeName,
                             placeName,
                           );
                       ref.read(originCodeProvider.notifier).state = airportCode;
-                      if (!state.tmpTakeoff) {
-                        ref.read(mapScreenProvider.notifier).toggleTmpTakeoff();
-                      }
                       ref.read(indexProvider.notifier).state = 1;
                       Navigator.pop(context);
                     },
@@ -115,9 +112,6 @@ void showCustomBottomSheet(BuildContext context, ref, String placeName,
                           );
                       ref.read(destinationCodeProvider.notifier).state =
                           airportCode;
-                      if (!state.tmpLand) {
-                        ref.read(mapScreenProvider.notifier).toggleTmpLand();
-                      }
                       ref.read(indexProvider.notifier).state = 1;
                       Navigator.pop(context);
                     },
