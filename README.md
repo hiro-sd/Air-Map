@@ -1,16 +1,20 @@
-# Air Map
+# 空港・航空券検索アプリ Air Map✈️
 
-A new Flutter project.
+## 概要📖
+日本国内の空港とフライトを対象に、地域ごとや現在地からの距離ごとに空港を検索したり、マップ上をかこって検索することでも空港を表示できます。
+出発地・到着地・日付・人数を指定すると、フライト情報を取得できます。
+本アプリはFlutterを使用して開発しました。
 
-## Getting Started
+## 使用技術🧩
+・Flutter (Dart)
+・Google Maps API (マップの表示)
+・Amadeus API (フライト情報の取得)
+・Riverpod (状態管理)
 
-This project is a starting point for a Flutter application.
+## 特徴☕️
+・地図から空港を選択可能
+・かこって検索で空港の場所を表示
+・複数空港を指定した最安値フライト比較 (開発中)
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## その他
+お問い合わせ: https://forms.gle/NkXVb3CU1JLB4pJa8
