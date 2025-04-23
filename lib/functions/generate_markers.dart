@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:hive/hive.dart';
 import 'package:ticket_app/env/env.dart';
 import 'package:ticket_app/functions/modal_sheet.dart';
 import 'package:http/http.dart' as http;
@@ -10,7 +9,6 @@ import 'package:ticket_app/main.dart';
 
 Map<String, String> placeIdCache = {}; // Place IDのキャッシュ
 Map<String, List<String>> photoUrlCache = {}; // Photo URLのキャッシュ
-var box = Hive.box('cacheBox');
 
 // 空港のマーカーを生成する関数
 Set<Marker> generateMarkers(List<Map<String, dynamic>> airports) {

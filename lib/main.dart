@@ -11,9 +11,11 @@ final globalNavigatorKeyProvider = Provider<GlobalKey<NavigatorState>>((ref) {
   return globalNavigatorKey;
 });
 
+late Box box;
+
 void main() async {
   await Hive.initFlutter();
-  await Hive.openBox('cacheBox');
+  box = await Hive.openBox('cacheBox');
   runApp(const ProviderScope(child: MyApp()));
 }
 

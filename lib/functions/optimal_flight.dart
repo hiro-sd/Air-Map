@@ -75,7 +75,7 @@ Future<void> launchBookingSite(
 
   final airlineUrls = {
     'NH': 'https://www.ana.co.jp/ja/jp/search/domestic/flight/',
-    'JL': 'https://www.jal.co.jp/jp/ja/dom/', // JALやANAはURLで検索できない
+    'JL': 'https://www.jal.co.jp/jp/ja/dom/', // JALやANAはURLで検索できない?
     'GK':
         'https://www.jetstar.com/jp/ja/home?adults=$passengers&children=0&destination=$destinationCode&flexible=1&flight-type=1&infants=0&origin=$originCode&selected-departure-date=$departureDate&tab=1',
     'NU': 'https://jta-okinawa.com/'
