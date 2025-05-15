@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:ticket_app/state/map_screen_state_notifier.dart';
 import 'package:ticket_app/airport_list.dart';
 import 'package:ticket_app/screen/flight_result_screen.dart';
+import 'package:ticket_app/state/map_state_controller.dart';
 
 final passengerProvider = StateProvider<int?>((ref) => null);
 final dateProvider = StateProvider<DateTime?>((ref) => null);
@@ -24,7 +24,7 @@ double _iconRotation = 0.0;
 class SearchFlightScreenState extends ConsumerState<SearchFlightScreen> {
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(mapScreenProvider);
+    final state = ref.watch(mapStateControllerProvider);
     final selectedDate = ref.watch(dateProvider);
     final passengers = ref.watch(passengerProvider);
     final originCode = ref.watch(originCodeProvider);
@@ -65,7 +65,7 @@ class SearchFlightScreenState extends ConsumerState<SearchFlightScreen> {
                         _iconRotation += 0.5; // 180度回転
                       });
                       ref
-                          .read(mapScreenProvider.notifier)
+                          .read(mapStateControllerProvider.notifier)
                           .swapDepartureAndDestination(ref);
                     })),
         ]),
@@ -228,14 +228,14 @@ void showAirportPicker(BuildContext context, WidgetRef ref, String place) {
                     onPressed: () {
                       if (place == "origin") {
                         ref
-                            .read(mapScreenProvider.notifier)
+                            .read(mapStateControllerProvider.notifier)
                             .updateSelectedDeparture(
                                 airportNames[selectedIndex]);
                         ref.read(originCodeProvider.notifier).state =
                             airportCodes[selectedIndex];
                       } else {
                         ref
-                            .read(mapScreenProvider.notifier)
+                            .read(mapStateControllerProvider.notifier)
                             .updateSelectedDestination(
                                 airportNames[selectedIndex]);
                         ref.read(destinationCodeProvider.notifier).state =

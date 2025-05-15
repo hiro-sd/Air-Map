@@ -1,27 +1,33 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:ticket_app/env/env.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:ticket_app/airport_list.dart';
+import 'package:ticket_app/env/env.dart';
 import 'package:ticket_app/functions/generate_markers.dart';
 import 'package:ticket_app/screen/search_flight_screen.dart';
+import 'package:ticket_app/state/map_state.dart';
+
+part 'map_state_controller.g.dart';
 
 final sliderValueProvider = StateProvider<double>((ref) => 50.0);
 final circleProvider = StateProvider<Set<Circle>>((ref) => {});
 
-// MapScreenの状態を管理するStateNotifier
-class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
-  MapScreenStateNotifier()
-      : super(MapScreenState(
-            markers: {},
-            departureMarkers: {},
-            destinationMarkers: {},
-            initialCenter: const CameraPosition(
-                target: LatLng(35.6895, 139.6917), zoom: 9), // 初期位置（東京）
-            showAllAirports: false,
-            selectedDeparture: null,
-            selectedDestination: null));
+@riverpod
+class MapStateController extends _$MapStateController {
+  @override
+  MapState build() {
+    return const MapState(
+      markers: {},
+      departureMarkers: {},
+      destinationMarkers: {},
+      initialCenter: CameraPosition(target: LatLng(35.6895, 139.6917), zoom: 9),
+      showAllAirports: false,
+      selectedDeparture: null,
+      selectedDestination: null,
+    );
+  }
 
   Position? currentPosition;
   GoogleMapController? mapController;
@@ -142,50 +148,4 @@ class MapScreenStateNotifier extends StateNotifier<MapScreenState> {
         }).toList()),
         false);
   }
-}
-
-// Provider定義
-final mapScreenProvider =
-    StateNotifierProvider<MapScreenStateNotifier, MapScreenState>(
-  (ref) => MapScreenStateNotifier(),
-);
-
-class MapScreenState {
-  final Set<Marker> markers;
-  final Set<Marker> departureMarkers;
-  final Set<Marker> destinationMarkers;
-  final CameraPosition initialCenter;
-  final bool showAllAirports;
-  final String? selectedDeparture;
-  final String? selectedDestination;
-
-  MapScreenState({
-    required this.markers,
-    required this.departureMarkers,
-    required this.destinationMarkers,
-    required this.initialCenter,
-    required this.showAllAirports,
-    required this.selectedDeparture,
-    required this.selectedDestination,
-  });
-
-  // 状態を部分的に更新するためのcopyWithメソッド
-  MapScreenState copyWith({
-    Set<Marker>? markers,
-    CameraPosition? initialCenter,
-    bool? showAllAirports,
-    String? selectedDeparture,
-    String? selectedDestination,
-    Set<Marker>? departureMarkers,
-    Set<Marker>? destinationMarkers,
-  }) =>
-      MapScreenState(
-        markers: markers ?? this.markers,
-        departureMarkers: departureMarkers ?? this.departureMarkers,
-        destinationMarkers: destinationMarkers ?? this.destinationMarkers,
-        initialCenter: initialCenter ?? this.initialCenter,
-        showAllAirports: showAllAirports ?? this.showAllAirports,
-        selectedDeparture: selectedDeparture ?? this.selectedDeparture,
-        selectedDestination: selectedDestination ?? this.selectedDestination,
-      );
 }

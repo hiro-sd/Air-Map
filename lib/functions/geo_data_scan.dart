@@ -5,9 +5,10 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ticket_app/functions/generate_markers.dart';
-import 'package:ticket_app/state/polygon_drawing_notifier.dart';
-import 'package:ticket_app/state/map_screen_state_notifier.dart';
+import 'package:ticket_app/functions/get_markers_inside_polygon.dart';
+import 'package:ticket_app/state/map_state_controller.dart';
 import 'package:ticket_app/airport_list.dart';
+import 'package:ticket_app/state/polygon_drawing_state_controller.dart';
 
 // GeoJSONファイルを読み込む
 Future<List<List<LatLng>>> loadAreaGeoJson(String area) async {
@@ -69,8 +70,8 @@ Future<void> loadAndDisplayAreaPolygon(
         polygonId: PolygonId('$area-$i'),
         points: polygons[i],
         strokeWidth: 3,
-        strokeColor: Colors.blue.withOpacity(0.8),
-        fillColor: Colors.blue.withOpacity(0.2),
+        strokeColor: Colors.blue.withValues(alpha: (255 * 0.2)),
+        fillColor: Colors.blue.withValues(alpha: (255 * 0.8)),
       )
   };
   ref.read(polygonSetProvider.notifier).state = polygonSet;
@@ -82,7 +83,7 @@ Future<void> loadAndDisplayAreaPolygon(
       )
       .toList();
   ref
-      .read(mapScreenProvider.notifier)
+      .read(mapStateControllerProvider.notifier)
       .updateMarkers(generateMarkers(markersInsidePolygon));
 
   // 地図の中心座標とズームレベルをセットする
@@ -91,7 +92,7 @@ Future<void> loadAndDisplayAreaPolygon(
   );
 
   final GoogleMapController? controller =
-      ref.read(mapScreenProvider.notifier).mapController;
+      ref.read(mapStateControllerProvider.notifier).mapController;
   if (controller != null) {
     controller.animateCamera(CameraUpdate.newCameraPosition(
       CameraPosition(

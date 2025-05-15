@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:ticket_app/state/map_screen_state_notifier.dart';
 import 'package:ticket_app/screen/root_screen.dart';
 import 'package:ticket_app/screen/search_flight_screen.dart';
+import 'package:ticket_app/state/map_state_controller.dart';
 
 // BottomSheetを表示する関数
 void showCustomBottomSheet(BuildContext context, ref, String placeName,
@@ -13,9 +13,8 @@ void showCustomBottomSheet(BuildContext context, ref, String placeName,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
-    barrierColor: Colors.black.withOpacity(0.2),
     builder: (context) {
-      //final state = ref.read(mapScreenProvider);
+      //final state = ref.read(mapStateControllerProvider);
       return SingleChildScrollView(
           child: IntrinsicHeight(
               child: Padding(
@@ -82,7 +81,7 @@ void showCustomBottomSheet(BuildContext context, ref, String placeName,
                         padding: const EdgeInsets.symmetric(horizontal: 15)),
                     onPressed: () {
                       ref
-                          .read(mapScreenProvider.notifier)
+                          .read(mapStateControllerProvider.notifier)
                           .updateSelectedDeparture(
                             placeName,
                           );
@@ -106,7 +105,7 @@ void showCustomBottomSheet(BuildContext context, ref, String placeName,
                         padding: const EdgeInsets.symmetric(horizontal: 15)),
                     onPressed: () {
                       ref
-                          .read(mapScreenProvider.notifier)
+                          .read(mapStateControllerProvider.notifier)
                           .updateSelectedDestination(
                             placeName,
                           );

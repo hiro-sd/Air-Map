@@ -1,30 +1,37 @@
-import 'dart:async';
 import 'dart:collection';
 import 'dart:io';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:ticket_app/functions/generate_markers.dart';
-import 'package:ticket_app/state/map_screen_state_notifier.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:ticket_app/airport_list.dart';
+import 'package:ticket_app/functions/generate_markers.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:ticket_app/functions/get_markers_inside_polygon.dart';
+import 'package:ticket_app/state/map_state_controller.dart';
+import 'polygon_drawing_state.dart';
 
-// 多角形を描画するためのStateProvider
+part 'polygon_drawing_state_controller.g.dart';
+
+// // 多角形を描画するためのStateProvider
 final drawPolygonEnabledProvider = StateProvider<bool>((ref) => false);
 final polygonSetProvider = StateProvider<Set<Polygon>>((ref) => {});
 final polylineSetProvider =
     StateProvider<HashSet<Polyline>>((ref) => HashSet<Polyline>());
 
-class PolygonDrawingNotifier extends StateNotifier<PolygonDrawingState> {
-  PolygonDrawingNotifier()
-      : super(PolygonDrawingState(
-          polygonSet: {},
-          polylineSet: HashSet<Polyline>(),
-          latLngList: [],
-          lastXCoordinate: null,
-          lastYCoordinate: null,
-        ));
+@Riverpod(keepAlive: true)
+class PolygonDrawingStateController extends _$PolygonDrawingStateController {
+  @override
+  PolygonDrawingState build() {
+    return PolygonDrawingState(
+      polygonSet: {},
+      polylineSet: HashSet<Polyline>(),
+      latLngList: [],
+      lastXCoordinate: null,
+      lastYCoordinate: null,
+    );
+  }
 
   GoogleMapController? mapController;
   List<LatLng> latLngList = [];
@@ -63,8 +70,7 @@ class PolygonDrawingNotifier extends StateNotifier<PolygonDrawingState> {
       lastXCoordinate = xCoordinate;
       lastYCoordinate = yCoordinate;
 
-      final polygonNotifier = ref.read(polygonDrawingProvider.notifier);
-      final mapController = polygonNotifier.mapController;
+      final mapController = this.mapController;
 
       if (mapController == null) {
         print("Error: GoogleMapController is null.");
@@ -91,7 +97,7 @@ class PolygonDrawingNotifier extends StateNotifier<PolygonDrawingState> {
             polylineId: const PolylineId('user_polyline'),
             points: latLngList,
             width: 3,
-            color: Colors.blue.withOpacity(0.8),
+            color: Colors.blue.withValues(alpha: (255 * 0.2)),
           ),
         );
 
@@ -119,8 +125,8 @@ class PolygonDrawingNotifier extends StateNotifier<PolygonDrawingState> {
         polygonId: const PolygonId('user_polygon'),
         points: latLngList,
         strokeWidth: 3,
-        strokeColor: Colors.blue.withOpacity(0.8),
-        fillColor: Colors.blue.withOpacity(0.2),
+        strokeColor: Colors.blue.withValues(alpha: (255 * 0.2)),
+        fillColor: Colors.blue.withValues(alpha: (255 * 0.8)),
       ),
     );
 
@@ -173,7 +179,7 @@ class PolygonDrawingNotifier extends StateNotifier<PolygonDrawingState> {
 
     // マーカーをGoogleMap上に反映
     ref
-        .read(mapScreenProvider.notifier)
+        .read(mapStateControllerProvider.notifier)
         .updateMarkers(generateMarkers(markersInsidePolygon));
 
     // 描画状態を終了
@@ -187,7 +193,7 @@ class PolygonDrawingNotifier extends StateNotifier<PolygonDrawingState> {
     ref.read(circleProvider.notifier).state.clear();
     ref.read(drawPolygonEnabledProvider.notifier).state =
         !ref.read(drawPolygonEnabledProvider);
-    ref.read(mapScreenProvider.notifier).clearMarkers();
+    ref.read(mapStateControllerProvider.notifier).clearMarkers();
   }
 
   // PolylineとPolygonとLatLngをクリアする関数
@@ -198,55 +204,4 @@ class PolygonDrawingNotifier extends StateNotifier<PolygonDrawingState> {
     latLngList.clear();
     polylineSet.state.clear();
   }
-}
-
-class PolygonDrawingState {
-  final Set<Polygon> polygonSet;
-  final HashSet<Polyline> polylineSet;
-  final List<LatLng> latLngList;
-  final int? lastXCoordinate;
-  final int? lastYCoordinate;
-
-  PolygonDrawingState({
-    required this.polygonSet,
-    required this.polylineSet,
-    required this.latLngList,
-    required this.lastXCoordinate,
-    required this.lastYCoordinate,
-  });
-}
-
-final polygonDrawingProvider =
-    StateNotifierProvider<PolygonDrawingNotifier, PolygonDrawingState>(
-        (ref) => PolygonDrawingNotifier());
-
-// ポリゴン内のマーカーを取得する関数
-List<Map<String, dynamic>> getMarkersInsidePolygon(
-    List<LatLng> polygonPoints, List<Map<String, dynamic>> markers) {
-  // ray-casting algorithmを使用して点が多角形の内部にあるかどうかを判定
-  bool isPointInPolygon(LatLng point, List<LatLng> polygon) {
-    int intersectCount = 0;
-    for (int j = 0; j < polygon.length; j++) {
-      LatLng vertex1 = polygon[j];
-      LatLng vertex2 = polygon[(j + 1) % polygon.length];
-
-      // Check if the point lies on a horizontal line between vertex1 and vertex2
-      if (((vertex1.latitude > point.latitude) !=
-              (vertex2.latitude > point.latitude)) &&
-          (point.longitude <
-              (vertex2.longitude - vertex1.longitude) *
-                      (point.latitude - vertex1.latitude) /
-                      (vertex2.latitude - vertex1.latitude) +
-                  vertex1.longitude)) {
-        intersectCount++;
-      }
-    }
-    // intersectionが奇数回の場合、点は多角形の内部にある
-    return intersectCount % 2 == 1;
-  }
-
-  // 多角形の内部にあるかどうかを元にマーカーをフィルタリングする
-  return markers
-      .where((marker) => isPointInPolygon(marker['position'], polygonPoints))
-      .toList();
 }

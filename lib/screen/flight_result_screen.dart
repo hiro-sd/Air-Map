@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:ticket_app/functions/optimal_flight.dart';
 
+@immutable
 class FlightOffer {
   final String id;
   final String duration;
@@ -15,7 +16,7 @@ class FlightOffer {
   final DateTime arrivalTime;
   final double price;
 
-  FlightOffer({
+  const FlightOffer({
     required this.id,
     required this.duration,
     required this.departureTerminal,
@@ -65,6 +66,7 @@ class FlightOffer {
   }
 }
 
+@immutable
 class FlightResultScreen extends StatelessWidget {
   final String origin;
   final String originCode;
@@ -95,12 +97,15 @@ class FlightResultScreen extends StatelessWidget {
             color: Theme.of(context).colorScheme.primary,
           ),
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
+        // leading: IconButton(
+        //   icon: const Icon(Icons.arrow_back_ios),
+        //   color: Theme.of(context).colorScheme.primary,
+        //   onPressed: () {
+        //     Navigator.pop(context);
+        //   },
+        // ),
+        iconTheme: IconThemeData(
           color: Theme.of(context).colorScheme.primary,
-          onPressed: () {
-            Navigator.pop(context);
-          },
         ),
       ),
       body: FutureBuilder<List<FlightOffer>?>(
