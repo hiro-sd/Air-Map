@@ -220,24 +220,8 @@ final List<Map<String, dynamic>> airportData = [
         AppLocalizations.of(context)!.oshima_airport_snippet,
     'IATA': 'OIM',
   },
-  // {
-  //   'id': 'marker_25',
-  //   'position': const LatLng(34.37067, 139.26960),
-  //   'title': (BuildContext context) =>
-  //       AppLocalizations.of(context)!.niijima_airport,
-  //   'snippet': (BuildContext context) =>
-  //       AppLocalizations.of(context)!.niijima_airport_snippet,
-  // },
-  // {
-  //   'id': 'marker_26',
-  //   'position': const LatLng(34.19027, 139.13444),
-  //   'title': (BuildContext context) =>
-  //       AppLocalizations.of(context)!.kouzushima_airport,
-  //   'snippet': (BuildContext context) =>
-  //       AppLocalizations.of(context)!.kouzushima_airport_snippet,
-  // },
   {
-    'id': 'marker_27',
+    'id': 'marker_25',
     'position': const LatLng(34.07293, 139.56008),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.miyakejima_airport,
@@ -246,7 +230,7 @@ final List<Map<String, dynamic>> airportData = [
     "IATA": 'MYE',
   },
   {
-    'id': 'marker_28',
+    'id': 'marker_26',
     'position': const LatLng(33.11685, 139.78308),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.hachijojima_aiport,
@@ -254,16 +238,8 @@ final List<Map<String, dynamic>> airportData = [
         AppLocalizations.of(context)!.hachijojima_airport_snippet,
     "IATA": 'HAC',
   },
-  // {
-  //   'id': 'marker_29',
-  //   'position': const LatLng(35.67264, 139.52990),
-  //   'title': (BuildContext context) =>
-  //       AppLocalizations.of(context)!.chofu_airfield,
-  //   'snippet': (BuildContext context) =>
-  //       AppLocalizations.of(context)!.chofu_airfield_snippet,
-  // },
   {
-    'id': 'marker_30',
+    'id': 'marker_27',
     'position': const LatLng(35.77135, 140.38573),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.narita_airport,
@@ -272,7 +248,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'NRT',
   },
   {
-    'id': 'marker_31',
+    'id': 'marker_28',
     'position': const LatLng(36.18219, 140.41643),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.ibaraki_airport,
@@ -281,7 +257,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'IBR',
   },
   {
-    'id': 'marker_32',
+    'id': 'marker_29',
     'position': const LatLng(34.85792, 136.80977),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.chubu_airport,
@@ -290,7 +266,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'NGO',
   },
   {
-    'id': 'marker_33',
+    'id': 'marker_30',
     'position': const LatLng(35.25359, 136.92460),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.nagoya_airport,
@@ -299,7 +275,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'NKM',
   },
   {
-    'id': 'marker_34',
+    'id': 'marker_31',
     'position': const LatLng(36.16466, 137.92643),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.matsumoto_airport,
@@ -308,7 +284,7 @@ final List<Map<String, dynamic>> airportData = [
     "IATA": 'MMJ',
   },
   {
-    'id': 'marker_35',
+    'id': 'marker_32',
     'position': const LatLng(37.95253, 139.11339),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.niigata_airport,
@@ -317,7 +293,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'KIJ',
   },
   {
-    'id': 'marker_36',
+    'id': 'marker_33',
     'position': const LatLng(38.06229, 138.40870),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.sado_airport,
@@ -326,7 +302,7 @@ final List<Map<String, dynamic>> airportData = [
     "IATA": 'SDS',
   },
   {
-    'id': 'marker_37',
+    'id': 'marker_34',
     'position': const LatLng(36.64837, 137.18761),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.toyama_airport,
@@ -335,7 +311,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'TOY',
   },
   {
-    'id': 'marker_38',
+    'id': 'marker_35',
     'position': const LatLng(37.29543, 136.95752),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.noto_airport,
@@ -344,7 +320,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'NTQ',
   },
   {
-    'id': 'marker_39',
+    'id': 'marker_36',
     'position': const LatLng(36.39317, 136.40610),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.komatsu_airport,
@@ -353,7 +329,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'KMQ',
   },
   {
-    'id': 'marker_40',
+    'id': 'marker_37',
     'position': const LatLng(36.14009, 136.22204),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.fukui_airport,
@@ -362,7 +338,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'FKJ',
   },
   {
-    'id': 'marker_41',
+    'id': 'marker_38',
     'position': const LatLng(34.79710, 138.18672),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.shizuoka_airport,
@@ -371,7 +347,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'FSZ',
   },
   {
-    'id': 'marker_42',
+    'id': 'marker_39',
     'position': const LatLng(34.43204, 135.23703),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.kansai_airport,
@@ -380,7 +356,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'KIX',
   },
   {
-    'id': 'marker_43',
+    'id': 'marker_40',
     'position': const LatLng(34.78617, 135.43809),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.itami_airport,
@@ -389,7 +365,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'ITM',
   },
   {
-    'id': 'marker_44',
+    'id': 'marker_41',
     'position': const LatLng(34.63724, 135.22812),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.kobe_airport,
@@ -398,7 +374,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'UKB',
   },
   {
-    'id': 'marker_45',
+    'id': 'marker_42',
     'position': const LatLng(35.51633, 134.78939),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.tajima_airport,
@@ -407,7 +383,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'TJH',
   },
   {
-    'id': 'marker_46',
+    'id': 'marker_43',
     'position': const LatLng(33.66218, 135.36057),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.shirahama_airport,
@@ -416,7 +392,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'SHM',
   },
   {
-    'id': 'marker_47',
+    'id': 'marker_44',
     'position': const LatLng(35.52659, 134.16801),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.tottori_airport,
@@ -425,7 +401,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'TTJ',
   },
   {
-    'id': 'marker_48',
+    'id': 'marker_45',
     'position': const LatLng(35.49522, 133.23817),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.yonago_airport,
@@ -434,7 +410,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'YGJ',
   },
   {
-    'id': 'marker_49',
+    'id': 'marker_46',
     'position': const LatLng(35.41364, 132.88875),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.izumo_airport,
@@ -443,7 +419,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'IZO',
   },
   {
-    'id': 'marker_50',
+    'id': 'marker_47',
     'position': const LatLng(34.67822, 131.79675),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.iwami_airport,
@@ -452,7 +428,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'IWJ',
   },
   {
-    'id': 'marker_51',
+    'id': 'marker_48',
     'position': const LatLng(36.17773, 133.32969),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.oki_airport,
@@ -461,7 +437,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'OKI',
   },
   {
-    'id': 'marker_52',
+    'id': 'marker_49',
     'position': const LatLng(34.75819, 133.85584),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.okayama_airport,
@@ -470,7 +446,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'OKJ',
   },
   {
-    'id': 'marker_53',
+    'id': 'marker_50',
     'position': const LatLng(34.43729, 132.92070),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.hiroshima_airport,
@@ -479,7 +455,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'HIJ',
   },
   {
-    'id': 'marker_54',
+    'id': 'marker_51',
     'position': const LatLng(34.15887, 132.23475),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.iwakuni_airport,
@@ -488,7 +464,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'IWK',
   },
   {
-    'id': 'marker_55',
+    'id': 'marker_52',
     'position': const LatLng(33.93132, 131.27853),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.ube_airport,
@@ -497,7 +473,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'UBJ',
   },
   {
-    'id': 'marker_56',
+    'id': 'marker_53',
     'position': const LatLng(34.13454, 134.61796),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.tokushima_airport,
@@ -506,7 +482,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'TKS',
   },
   {
-    'id': 'marker_57',
+    'id': 'marker_54',
     'position': const LatLng(34.21486920230928, 134.01470943690953),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.takamatsu_airport,
@@ -515,7 +491,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'TAK',
   },
   {
-    'id': 'marker_58',
+    'id': 'marker_55',
     'position': const LatLng(33.82773, 132.70034),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.matsuyama_airport,
@@ -524,7 +500,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'MYJ',
   },
   {
-    'id': 'marker_59',
+    'id': 'marker_56',
     'position': const LatLng(33.54779, 133.67407),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.kochi_airport,
@@ -533,7 +509,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'KCZ',
   },
   {
-    'id': 'marker_60',
+    'id': 'marker_57',
     'position': const LatLng(33.58497, 130.44910),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.fukuoka_airport,
@@ -542,7 +518,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'FUK',
   },
   {
-    'id': 'marker_61',
+    'id': 'marker_58',
     'position': const LatLng(33.83899, 131.03334),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.kitakyushu_airport,
@@ -551,7 +527,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'KKJ',
   },
   {
-    'id': 'marker_62',
+    'id': 'marker_59',
     'position': const LatLng(33.15093, 130.30179),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.saga_airport,
@@ -560,7 +536,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'HSG',
   },
   {
-    'id': 'marker_63',
+    'id': 'marker_60',
     'position': const LatLng(32.91601, 129.91375),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.nagasaki_airport,
@@ -569,7 +545,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'NGS',
   },
   {
-    'id': 'marker_64',
+    'id': 'marker_61',
     'position': const LatLng(33.75026, 129.78407),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.iki_airport,
@@ -578,7 +554,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'IKI',
   },
   {
-    'id': 'marker_65',
+    'id': 'marker_62',
     'position': const LatLng(34.28591, 129.32607),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.tsushima_airport,
@@ -587,7 +563,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'TSJ',
   },
   {
-    'id': 'marker_66',
+    'id': 'marker_63',
     'position': const LatLng(32.66802, 128.83432),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.fukue_airport,
@@ -596,7 +572,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'FUJ',
   },
   {
-    'id': 'marker_67',
+    'id': 'marker_64',
     'position': const LatLng(32.83524, 130.85900),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.kumamoto_airport,
@@ -605,7 +581,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'KMJ',
   },
   {
-    'id': 'marker_68',
+    'id': 'marker_65',
     'position': const LatLng(32.48258, 130.15929),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.amakusa_airport,
@@ -614,7 +590,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'AXJ',
   },
   {
-    'id': 'marker_69',
+    'id': 'marker_66',
     'position': const LatLng(33.47964, 131.73623),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.oita_airport,
@@ -623,7 +599,7 @@ final List<Map<String, dynamic>> airportData = [
     "IATA": 'OIT',
   },
   {
-    'id': 'marker_70',
+    'id': 'marker_67',
     'position': const LatLng(31.8762045258875, 131.44840012968373),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.miyazaki_airport,
@@ -632,7 +608,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'KMI',
   },
   {
-    'id': 'marker_71',
+    'id': 'marker_68',
     'position': const LatLng(31.80069, 130.72023),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.kagoshima_airport,
@@ -640,16 +616,8 @@ final List<Map<String, dynamic>> airportData = [
         AppLocalizations.of(context)!.kagoshima_airport_snippet,
     'IATA': 'KOJ',
   },
-  // {
-  //   'id': 'marker_72',
-  //   'position': const LatLng(30.78437, 130.27159),
-  //   'title': (BuildContext context) =>
-  //       AppLocalizations.of(context)!.satsuma_airport,
-  //   'snippet': (BuildContext context) =>
-  //       AppLocalizations.of(context)!.satsuma_airport_snippet,
-  // },
   {
-    'id': 'marker_73',
+    'id': 'marker_69',
     'position': const LatLng(30.60928, 130.99153),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.tanegashima_airport,
@@ -658,7 +626,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'TNE',
   },
   {
-    'id': 'marker_74',
+    'id': 'marker_70',
     'position': const LatLng(30.38452, 130.66032),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.yakushima_airport,
@@ -666,16 +634,8 @@ final List<Map<String, dynamic>> airportData = [
         AppLocalizations.of(context)!.yakushima_airport_snippet,
     'IATA': 'KUM',
   },
-  // {
-  //   'id': 'marker_75',
-  //   'position': const LatLng(29.60860, 129.70101),
-  //   'title': (BuildContext context) =>
-  //       AppLocalizations.of(context)!.suwanosejima_airport,
-  //   'snippet': (BuildContext context) =>
-  //       AppLocalizations.of(context)!.suwanosejima_airport_snippet,
-  // },
   {
-    'id': 'marker_76',
+    'id': 'marker_71',
     'position': const LatLng(28.43066, 129.71131),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.amami_airport,
@@ -684,7 +644,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'ASJ',
   },
   {
-    'id': 'marker_77',
+    'id': 'marker_72',
     'position': const LatLng(28.31980, 129.92746),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.kikai_airport,
@@ -693,7 +653,7 @@ final List<Map<String, dynamic>> airportData = [
     "IATA": 'KKX',
   },
   {
-    'id': 'marker_78',
+    'id': 'marker_73',
     'position': const LatLng(27.83227, 128.88321),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.tokunoshima_airport,
@@ -702,7 +662,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'TKN',
   },
   {
-    'id': 'marker_79',
+    'id': 'marker_74',
     'position': const LatLng(27.43317, 128.70476),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.okinoerabu_airport,
@@ -711,7 +671,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'OKE',
   },
   {
-    'id': 'marker_80',
+    'id': 'marker_75',
     'position': const LatLng(27.04309, 128.39995),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.yoron_airport,
@@ -720,7 +680,7 @@ final List<Map<String, dynamic>> airportData = [
     "IATA": 'RNJ',
   },
   {
-    'id': 'marker_81',
+    'id': 'marker_76',
     'position': const LatLng(26.20012, 127.64659),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.naha_airport,
@@ -729,7 +689,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'OKA',
   },
   {
-    'id': 'marker_82',
+    'id': 'marker_77',
     'position': const LatLng(26.36492, 126.71749),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.kumejima_airport,
@@ -738,7 +698,7 @@ final List<Map<String, dynamic>> airportData = [
     'IATA': 'UEO',
   },
   {
-    'id': 'marker_83',
+    'id': 'marker_78',
     'position': const LatLng(25.94448, 131.32441),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.kitadaito_airport,
@@ -747,7 +707,7 @@ final List<Map<String, dynamic>> airportData = [
     "IATA": 'KTD',
   },
   {
-    'id': 'marker_84',
+    'id': 'marker_79',
     'position': const LatLng(25.84603, 131.26547),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.minamidaito_airport,
@@ -756,7 +716,7 @@ final List<Map<String, dynamic>> airportData = [
     "IATA": 'MMD',
   },
   {
-    'id': 'marker_85',
+    'id': 'marker_80',
     'position': const LatLng(24.77929, 125.29763),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.miyako_airport,
@@ -765,7 +725,7 @@ final List<Map<String, dynamic>> airportData = [
     "IATA": 'MMY',
   },
   {
-    'id': 'marker_86',
+    'id': 'marker_81',
     'position': const LatLng(24.82717204931966, 125.14708543452318),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.shimojishima_airport,
@@ -774,7 +734,7 @@ final List<Map<String, dynamic>> airportData = [
     "IATA": 'SHI',
   },
   {
-    'id': 'marker_87',
+    'id': 'marker_82',
     'position': const LatLng(24.65409, 124.67739),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.tarama_airport,
@@ -783,7 +743,7 @@ final List<Map<String, dynamic>> airportData = [
     "IATA": 'TRA',
   },
   {
-    'id': 'marker_88',
+    'id': 'marker_83',
     'position': const LatLng(24.39599, 124.24578),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.ishigaki_airport,
@@ -792,7 +752,7 @@ final List<Map<String, dynamic>> airportData = [
     "IATA": 'ISG',
   },
   {
-    'id': 'marker_89',
+    'id': 'marker_84',
     'position': const LatLng(24.06028, 123.80456),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.hateruma_airport,
@@ -801,7 +761,7 @@ final List<Map<String, dynamic>> airportData = [
     "IATA": 'HTR',
   },
   {
-    'id': 'marker_90',
+    'id': 'marker_85',
     'position': const LatLng(24.46521, 122.97988),
     'title': (BuildContext context) =>
         AppLocalizations.of(context)!.yonaguni_airport,
