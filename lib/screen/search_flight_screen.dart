@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:ticket_app/l10n/app_localizations.dart';
 import 'package:ticket_app/airport_list.dart';
 import 'package:ticket_app/screen/flight_result_screen.dart';
 import 'package:ticket_app/state/map_state_controller.dart';

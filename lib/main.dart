@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:ticket_app/l10n/app_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:ticket_app/screen/root_screen.dart';
 

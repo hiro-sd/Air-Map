@@ -5,7 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ticket_app/functions/generate_markers.dart';
 import 'package:ticket_app/state/map_state_controller.dart';
 import 'package:ticket_app/airport_list.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:ticket_app/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ticket_app/state/polygon_drawing_state_controller.dart';
 
@@ -204,6 +204,7 @@ class MapScreenState extends ConsumerState<MapScreen> {
                                       ref.read(sliderValueProvider);
                                   final currentPosition =
                                       await Geolocator.getCurrentPosition();
+                                  if (!context.mounted) return;
                                   ref.read(circleProvider.notifier).state = {
                                     Circle(
                                       circleId: const CircleId(

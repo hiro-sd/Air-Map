@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:ticket_app/env/env.dart';
 import 'package:ticket_app/screen/flight_result_screen.dart';
@@ -25,7 +26,7 @@ Future<String?> getAccessToken() async {
     final data = jsonDecode(response.body);
     return data['access_token'];
   } else {
-    print("Failed to get access token: ${response.body}");
+    debugPrint("Failed to get access token: HTTP ${response.statusCode}");
     return null;
   }
 }
@@ -35,7 +36,7 @@ Future<List<FlightOffer>?> searchFlights(String originCode,
     String destinationCode, DateTime date, int passengers) async {
   String? accessToken = await getAccessToken();
   if (accessToken == null) {
-    print("Failed to get access token");
+    debugPrint("Failed to get access token");
     return null;
   }
 
@@ -57,7 +58,7 @@ Future<List<FlightOffer>?> searchFlights(String originCode,
         .map((offer) => FlightOffer.fromJson(offer))
         .toList();
   } else {
-    print("Error fetching flights: ${response.body}");
+    debugPrint("Error fetching flights: HTTP ${response.statusCode}");
     return null;
   }
 }

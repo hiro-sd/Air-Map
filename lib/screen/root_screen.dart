@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ticket_app/functions/geo_data_scan.dart';
 import 'package:ticket_app/screen/map_screen.dart';
 import 'package:ticket_app/screen/search_flight_screen.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:ticket_app/l10n/app_localizations.dart';
 import 'package:ticket_app/screen/settings_screen.dart';
 
 final indexProvider = StateProvider<int>((ref) => 0);

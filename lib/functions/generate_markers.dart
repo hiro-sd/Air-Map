@@ -38,7 +38,7 @@ Set<Marker> generateMarkers(List<Map<String, dynamic>> airports) {
                   currentContext, ref, title, snippet, photoUrls, airportCode);
             }
           } catch (e) {
-            print("Error: $e");
+            debugPrint("Error: $e");
           }
         });
   }).toSet();

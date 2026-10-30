@@ -7,7 +7,7 @@ part of 'polygon_drawing_state_controller.dart';
 // **************************************************************************
 
 String _$polygonDrawingStateControllerHash() =>
-    r'6e79bfee7fce15176fd8cb17ab88b318e87760a5';
+    r'5f3224ab4252c1e7d691183bc44998eb17cad30e';
 
 /// See also [PolygonDrawingStateController].
 @ProviderFor(PolygonDrawingStateController)

@@ -7,7 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:ticket_app/airport_list.dart';
 import 'package:ticket_app/functions/generate_markers.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:ticket_app/l10n/app_localizations.dart';
 import 'package:ticket_app/functions/get_markers_inside_polygon.dart';
 import 'package:ticket_app/state/map_state_controller.dart';
 import 'polygon_drawing_state.dart';
@@ -73,7 +73,7 @@ class PolygonDrawingStateController extends _$PolygonDrawingStateController {
       final mapController = this.mapController;
 
       if (mapController == null) {
-        print("Error: GoogleMapController is null.");
+        debugPrint("Error: GoogleMapController is null.");
         return;
       }
 
@@ -104,7 +104,7 @@ class PolygonDrawingStateController extends _$PolygonDrawingStateController {
         // なぞっている間ポリラインが描画され続ける
         polygonSet.state = {...polygonSet.state};
       } catch (e) {
-        print("Error in onPanUpdate: $e");
+        debugPrint("Error in onPanUpdate: $e");
       }
     }
   }

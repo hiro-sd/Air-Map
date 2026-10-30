@@ -20,3 +20,28 @@
 お問い合わせ: https://forms.gle/NkXVb3CU1JLB4pJa8
 App Storeリンク: https://apps.apple.com/jp/app/air-map/id6742508414?l=ja
 
+## 開発環境
+
+Flutter 3.40.0-0.1.pre で Android デバッグ版の起動と iOS シミュレータ向けビルドを確認しています。別の Flutter バージョンで作業する場合は、先に `flutter analyze` と各対象のビルドを確認してください。
+
+このリポジトリには API キーを含むファイルを登録していません。開発機に次のファイルを用意してください。
+
+| ファイル | 必要な設定 |
+| --- | --- |
+| `.env` | `GOOGLE_MAPS_API_KEY`、`AMADEUS_API_KEY`、`AMADEUS_API_SECRET` |
+| `android/secret.properties` | `googleMap.apiKey` |
+| `ios/Runner/Environment.swift` | `struct Env { static let googleMapsApiKey = "..." }` |
+
+依存関係と生成コードを準備します。
+
+```sh
+flutter pub get
+dart run build_runner build --delete-conflicting-outputs
+flutter gen-l10n
+flutter analyze
+flutter test
+```
+
+Android で実行する場合は `flutter run -d <AndroidのデバイスID>`、iOS シミュレータで実行する場合は `flutter run -d <iOSのデバイスID>` を使用します。接続先は `flutter devices` で確認できます。地域から旅を探す機能の次の実装順序は [開発計画](docs/development-plan.md) に記載しています。
+
+Android エミュレータで地図だけが表示されない場合は、端末日時と通信状態を確認してください。検証時は古いスナップショットにより日時がずれており、コールドブート後に地図が表示されました。
