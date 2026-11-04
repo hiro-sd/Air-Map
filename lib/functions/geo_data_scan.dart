@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -56,9 +57,9 @@ const List<Map<String, dynamic>> centerLatLngs = [
 Future<void> loadAndDisplayAreaPolygon(
     String area, WidgetRef ref, BuildContext context) async {
   // 既存データをクリア
-  ref.read(polygonSetProvider).clear();
-  ref.read(polylineSetProvider).clear();
-  ref.read(circleProvider.notifier).state.clear();
+  ref.read(polygonSetProvider.notifier).state = {};
+  ref.read(polylineSetProvider.notifier).state = HashSet<Polyline>();
+  ref.read(circleProvider.notifier).state = {};
 
   // GeoJSONファイルを読み込む
   final polygons = await loadAreaGeoJson(area);
@@ -70,8 +71,8 @@ Future<void> loadAndDisplayAreaPolygon(
         polygonId: PolygonId('$area-$i'),
         points: polygons[i],
         strokeWidth: 3,
-        strokeColor: Colors.blue.withValues(alpha: (255 * 0.2)),
-        fillColor: Colors.blue.withValues(alpha: (255 * 0.8)),
+        strokeColor: Colors.blue.withValues(alpha: 0.2),
+        fillColor: Colors.blue.withValues(alpha: 0.8),
       )
   };
   ref.read(polygonSetProvider.notifier).state = polygonSet;

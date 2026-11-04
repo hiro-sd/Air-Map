@@ -98,7 +98,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get no_airport => 'No airports exist within the specified area.';
 
   @override
-  String get no_flight => 'No flights found.';
+  String get no_flight =>
+      'No flights could be confirmed for this search with the current data.';
+
+  @override
+  String get flight_search_failed =>
+      'Flight information could not be loaded. Please try again later.';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get location_unavailable =>
+      'Could not get your location. Check location settings.';
 
   @override
   String get failed_to_load_image => 'Image failed to load';
@@ -157,6 +169,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fill_all_fields => 'Please fill in the all fields.';
+
+  @override
+  String get same_airport => 'Choose different departure and arrival airports.';
+
+  @override
+  String get past_date => 'Choose today or a future date.';
 
   @override
   String get terminal => 'Terminal';

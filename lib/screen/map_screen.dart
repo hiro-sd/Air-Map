@@ -1,6 +1,6 @@
 import 'dart:async';
+import 'dart:collection';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ticket_app/functions/generate_markers.dart';
 import 'package:ticket_app/state/map_state_controller.dart';
@@ -18,17 +18,23 @@ class MapScreen extends ConsumerStatefulWidget {
 }
 
 class MapScreenState extends ConsumerState<MapScreen> {
+  Timer? _cameraDebounce;
+
+  @override
+  void dispose() {
+    _cameraDebounce?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(mapStateControllerProvider);
     final drawPolygonEnabled = ref.watch(drawPolygonEnabledProvider);
     final circles = ref.watch(circleProvider);
-    Timer? debounce;
-
     void onCameraMove(CameraPosition position) {
       if (!mounted) return; // 画面が破棄されていたら処理しない
-      debounce?.cancel();
-      debounce = Timer(const Duration(milliseconds: 200), () {
+      _cameraDebounce?.cancel();
+      _cameraDebounce = Timer(const Duration(milliseconds: 200), () {
         // 200msごとに1回だけ実行
         if (mounted) {
           ref
@@ -133,11 +139,12 @@ class MapScreenState extends ConsumerState<MapScreen> {
               heroTag: null, // Heroアニメーションを無効にする
               shape: const CircleBorder(),
               onPressed: () {
-                ref.read(polygonSetProvider).clear();
-                ref.read(polylineSetProvider).clear();
+                ref.read(polygonSetProvider.notifier).state = {};
+                ref.read(polylineSetProvider.notifier).state =
+                    HashSet<Polyline>();
                 if (!state.showAllAirports) {
                   // 全国の空港に切り替え
-                  ref.read(circleProvider.notifier).state.clear();
+                  ref.read(circleProvider.notifier).state = {};
                   ref
                       .read(mapStateControllerProvider.notifier)
                       .switchAirports(generateMarkers(airportData), true);
@@ -202,27 +209,39 @@ class MapScreenState extends ConsumerState<MapScreen> {
                                 onPressed: () async {
                                   final sliderValue =
                                       ref.read(sliderValueProvider);
-                                  final currentPosition =
-                                      await Geolocator.getCurrentPosition();
+                                  final currentPosition = await ref
+                                      .read(mapStateControllerProvider.notifier)
+                                      .getCurrentLocation();
                                   if (!context.mounted) return;
+                                  if (currentPosition == null) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            AppLocalizations.of(context)!
+                                                .location_unavailable),
+                                      ),
+                                    );
+                                    return;
+                                  }
+                                  final center = LatLng(
+                                      currentPosition.latitude,
+                                      currentPosition.longitude);
                                   ref.read(circleProvider.notifier).state = {
                                     Circle(
                                       circleId: const CircleId(
                                           'currentLocationCircle'),
-                                      center: LatLng(currentPosition.latitude,
-                                          currentPosition.longitude),
+                                      center: center,
                                       radius: sliderValue * 1000, // メートル単位
                                       strokeWidth: 3,
-                                      strokeColor: Colors.blue
-                                          .withValues(alpha: (255 * 0.2)),
-                                      fillColor: Colors.blue
-                                          .withValues(alpha: (255 * 0.8)),
+                                      strokeColor:
+                                          Colors.blue.withValues(alpha: 0.2),
+                                      fillColor:
+                                          Colors.blue.withValues(alpha: 0.8),
                                     )
                                   };
                                   ref
                                       .read(mapStateControllerProvider.notifier)
-                                      .fetchAirports(
-                                          context, ref, sliderValue.toInt());
+                                      .fetchAirports(center, sliderValue);
                                   Navigator.of(context).pop(); // モーダルを閉じる
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(

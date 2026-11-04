@@ -2,13 +2,13 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:ticket_app/env/env.dart';
-import 'package:ticket_app/screen/flight_result_screen.dart';
+import 'package:ticket_app/model/flight_offer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 const String baseUrl = "https://test.api.amadeus.com";
 
 // アクセストークンを取得
-Future<String?> getAccessToken() async {
+Future<String> getAccessToken() async {
   final String apiKey = Env.amadeusApiKey;
   final String apiSecret = Env.amadeusApiSecret;
 
@@ -20,47 +20,48 @@ Future<String?> getAccessToken() async {
       "client_id": apiKey,
       "client_secret": apiSecret
     },
-  );
+  ).timeout(const Duration(seconds: 15));
 
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body);
-    return data['access_token'];
-  } else {
+  if (response.statusCode != 200) {
     debugPrint("Failed to get access token: HTTP ${response.statusCode}");
-    return null;
+    throw Exception('Could not authenticate flight search');
   }
+  final data = jsonDecode(response.body) as Map<String, dynamic>;
+  return data['access_token'] as String;
 }
 
 // フライトを検索
-Future<List<FlightOffer>?> searchFlights(String originCode,
+Future<List<FlightOffer>> searchFlights(String originCode,
     String destinationCode, DateTime date, int passengers) async {
-  String? accessToken = await getAccessToken();
-  if (accessToken == null) {
-    debugPrint("Failed to get access token");
-    return null;
-  }
+  final accessToken = await getAccessToken();
 
   // 日付を YYYY-MM-DD 形式に変換
   String formattedDate =
       "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
 
   final response = await http.get(
-    Uri.parse(
-        "https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode=$originCode&destinationLocationCode=$destinationCode&departureDate=$formattedDate&adults=$passengers&nonStop=true&max=30&currencyCode=JPY"),
+    Uri.parse('$baseUrl/v2/shopping/flight-offers').replace(queryParameters: {
+      'originLocationCode': originCode,
+      'destinationLocationCode': destinationCode,
+      'departureDate': formattedDate,
+      'adults': passengers.toString(),
+      'nonStop': 'true',
+      'max': '30',
+      'currencyCode': 'JPY',
+    }),
     headers: {
       "Authorization": "Bearer $accessToken",
     },
-  );
+  ).timeout(const Duration(seconds: 15));
 
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body);
-    return (data['data'] as List)
-        .map((offer) => FlightOffer.fromJson(offer))
-        .toList();
-  } else {
+  if (response.statusCode != 200) {
     debugPrint("Error fetching flights: HTTP ${response.statusCode}");
-    return null;
+    throw Exception('Could not fetch flights');
   }
+  final data = jsonDecode(response.body) as Map<String, dynamic>;
+  return (data['data'] as List)
+      .map((offer) => FlightOffer.fromJson(offer as Map<String, dynamic>))
+      .toList();
 }
 
 // 各サイトにリダイレクト

@@ -19,9 +19,19 @@ class SearchFlightScreen extends ConsumerStatefulWidget {
   SearchFlightScreenState createState() => SearchFlightScreenState();
 }
 
-double _iconRotation = 0.0;
-
 class SearchFlightScreenState extends ConsumerState<SearchFlightScreen> {
+  double _iconRotation = 0.0;
+
+  void _showValidationMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(seconds: 2),
+        content:
+            Text(message, style: const TextStyle(fontWeight: FontWeight.bold)),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(mapStateControllerProvider);
@@ -96,11 +106,12 @@ class SearchFlightScreenState extends ConsumerState<SearchFlightScreen> {
               suffixIcon: const Icon(Icons.calendar_today),
             ),
             onTap: () async {
+              final today = DateUtils.dateOnly(DateTime.now());
               DateTime? pickedDate = await showDatePicker(
                   context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(DateTime.now().year - 1),
-                  lastDate: DateTime(DateTime.now().year + 1));
+                  initialDate: today,
+                  firstDate: today,
+                  lastDate: DateTime(today.year + 1, today.month, today.day));
               if (pickedDate != null) {
                 ref.read(dateProvider.notifier).state = pickedDate;
               }
@@ -127,8 +138,7 @@ class SearchFlightScreenState extends ConsumerState<SearchFlightScreen> {
           width: MediaQuery.of(context).size.width * 0.5,
           height: 50,
           child: ElevatedButton(
-            onPressed: () async {
-              // フライト検索処理を実装
+            onPressed: () {
               if ([
                 state.selectedDeparture,
                 state.selectedDestination,
@@ -137,15 +147,14 @@ class SearchFlightScreenState extends ConsumerState<SearchFlightScreen> {
                 originCode,
                 destinationCode
               ].contains(null)) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    duration: const Duration(seconds: 1),
-                    content: Text(AppLocalizations.of(context)!.fill_all_fields,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        )),
-                  ),
-                );
+                _showValidationMessage(
+                    AppLocalizations.of(context)!.fill_all_fields);
+              } else if (originCode == destinationCode) {
+                _showValidationMessage(
+                    AppLocalizations.of(context)!.same_airport);
+              } else if (DateUtils.dateOnly(selectedDate!)
+                  .isBefore(DateUtils.dateOnly(DateTime.now()))) {
+                _showValidationMessage(AppLocalizations.of(context)!.past_date);
               } else {
                 Navigator.push(
                   context,
@@ -155,7 +164,7 @@ class SearchFlightScreenState extends ConsumerState<SearchFlightScreen> {
                       originCode: originCode!,
                       destination: state.selectedDestination!,
                       destinationCode: destinationCode!,
-                      date: selectedDate!,
+                      date: selectedDate,
                       passengers: passengers!,
                     ),
                   ),
@@ -335,6 +344,5 @@ void showPassengerPicker(BuildContext context, WidgetRef ref) {
     },
   );
 }
-
 
 // TODO: UI見直し (往復、直行、表示順、など追加？)

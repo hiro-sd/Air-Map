@@ -27,19 +27,18 @@ Set<Marker> generateMarkers(List<Map<String, dynamic>> airports) {
           final String snippet = airport['snippet'](currentContext);
           final String airportCode = airport['IATA'];
 
+          List<String> photoUrls = [];
           try {
             String placeId = await _getPlaceId(title, apiKey);
-            List<String> photoUrls = await _getPhotoUrls(placeId, apiKey);
-
-            if (currentContext.mounted) {
-              final ref = ProviderScope.containerOf(
-                  currentContext); // refをウィジェットツリーから取得
-              showCustomBottomSheet(
-                  currentContext, ref, title, snippet, photoUrls, airportCode);
-            }
+            photoUrls = await _getPhotoUrls(placeId, apiKey);
           } catch (e) {
-            debugPrint("Error: $e");
+            debugPrint("Could not load airport photos: $e");
           }
+
+          if (!currentContext.mounted) return;
+          final ref = ProviderScope.containerOf(currentContext);
+          showCustomBottomSheet(
+              currentContext, ref, title, snippet, photoUrls, airportCode);
         });
   }).toSet();
 }

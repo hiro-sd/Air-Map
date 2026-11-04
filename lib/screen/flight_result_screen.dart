@@ -3,77 +3,20 @@ import 'package:ticket_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:ticket_app/functions/optimal_flight.dart';
+import 'package:ticket_app/model/flight_offer.dart';
+
+typedef FlightSearch = Future<List<FlightOffer>> Function(
+    String originCode, String destinationCode, DateTime date, int passengers);
 
 @immutable
-class FlightOffer {
-  final String id;
-  final String duration;
-  final String departureTerminal;
-  final String arrivalTerminal;
-  final String carrier;
-  final String flightNumber;
-  final DateTime departureTime;
-  final DateTime arrivalTime;
-  final double price;
-
-  const FlightOffer({
-    required this.id,
-    required this.duration,
-    required this.departureTerminal,
-    required this.arrivalTerminal,
-    required this.carrier,
-    required this.flightNumber,
-    required this.departureTime,
-    required this.arrivalTime,
-    required this.price,
-  });
-
-  factory FlightOffer.fromJson(Map<String, dynamic> json) {
-    var itineraries = json['itineraries'] as List;
-    if (itineraries.isEmpty) {
-      throw Exception("No itineraries found");
-    }
-
-    var firstSegment = itineraries[0]['segments'] as List;
-    if (firstSegment.isEmpty) {
-      throw Exception("No segments found");
-    }
-
-    String formatDuration(String duration) {
-      final regex = RegExp(r'PT(\d+H)?(\d+M)?');
-      final match = regex.firstMatch(duration);
-
-      if (match == null) return '';
-
-      String hours = match.group(1)?.replaceAll('H', 'h') ?? '';
-      String minutes = match.group(2)?.replaceAll('M', 'm') ?? '';
-
-      return '$hours$minutes';
-    }
-
-    var firstFlight = firstSegment[0];
-
-    return FlightOffer(
-        id: json['id'] ?? "Unknown",
-        duration: formatDuration(itineraries[0]['duration']),
-        departureTerminal: firstFlight['departure']['terminal'] ?? "-",
-        arrivalTerminal: firstFlight['arrival']['terminal'] ?? "-",
-        carrier: firstFlight['carrierCode'] ?? "",
-        flightNumber: firstFlight['number'] ?? "",
-        departureTime: DateTime.parse(firstFlight['departure']['at']),
-        arrivalTime: DateTime.parse(firstFlight['arrival']['at']),
-        price: double.parse(json['price']['total']));
-  }
-}
-
-@immutable
-class FlightResultScreen extends StatelessWidget {
+class FlightResultScreen extends StatefulWidget {
   final String origin;
   final String originCode;
   final String destination;
   final String destinationCode;
   final DateTime date;
   final int passengers;
+  final FlightSearch? flightSearch;
 
   const FlightResultScreen({
     super.key,
@@ -83,7 +26,38 @@ class FlightResultScreen extends StatelessWidget {
     required this.destinationCode,
     required this.date,
     required this.passengers,
+    this.flightSearch,
   });
+
+  @override
+  State<FlightResultScreen> createState() => _FlightResultScreenState();
+}
+
+class _FlightResultScreenState extends State<FlightResultScreen> {
+  late Future<List<FlightOffer>> _offersFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadOffers();
+  }
+
+  @override
+  void didUpdateWidget(covariant FlightResultScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.originCode != widget.originCode ||
+        oldWidget.destinationCode != widget.destinationCode ||
+        oldWidget.date != widget.date ||
+        oldWidget.passengers != widget.passengers ||
+        oldWidget.flightSearch != widget.flightSearch) {
+      _loadOffers();
+    }
+  }
+
+  void _loadOffers() {
+    _offersFuture = (widget.flightSearch ?? searchFlights)(widget.originCode,
+        widget.destinationCode, widget.date, widget.passengers);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,8 +82,8 @@ class FlightResultScreen extends StatelessWidget {
           color: Theme.of(context).colorScheme.primary,
         ),
       ),
-      body: FutureBuilder<List<FlightOffer>?>(
-        future: searchFlights(originCode, destinationCode, date, passengers),
+      body: FutureBuilder<List<FlightOffer>>(
+        future: _offersFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
@@ -120,9 +94,18 @@ class FlightResultScreen extends StatelessWidget {
             ));
           } else if (snapshot.hasError) {
             return Center(
-              child: Text("Error: ${snapshot.error}"),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(AppLocalizations.of(context)!.flight_search_failed),
+                  TextButton(
+                    onPressed: () => setState(_loadOffers),
+                    child: Text(AppLocalizations.of(context)!.retry),
+                  ),
+                ],
+              ),
             );
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty == true) {
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(
               child: Text(AppLocalizations.of(context)!.no_flight,
                   style: const TextStyle(fontWeight: FontWeight.bold)),
@@ -163,7 +146,7 @@ class FlightResultScreen extends StatelessWidget {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Flexible(
-                                      child: Text(origin,
+                                      child: Text(widget.origin,
                                           style: const TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.bold,
@@ -176,7 +159,7 @@ class FlightResultScreen extends StatelessWidget {
                                         color: Colors.grey,
                                       )),
                                   Flexible(
-                                      child: Text(destination,
+                                      child: Text(widget.destination,
                                           style: const TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.bold,
@@ -188,7 +171,7 @@ class FlightResultScreen extends StatelessWidget {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    originCode,
+                                    widget.originCode,
                                     style: const TextStyle(
                                       fontSize: 24,
                                       fontWeight: FontWeight.bold,
@@ -211,7 +194,7 @@ class FlightResultScreen extends StatelessWidget {
                                     ),
                                   ),
                                   Text(
-                                    destinationCode,
+                                    widget.destinationCode,
                                     style: const TextStyle(
                                       fontSize: 24,
                                       fontWeight: FontWeight.bold,
@@ -349,7 +332,7 @@ class FlightResultScreen extends StatelessWidget {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          "${AppLocalizations.of(context)!.passengers}: $passengers",
+                                          "${AppLocalizations.of(context)!.passengers}: ${widget.passengers}",
                                           style: const TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.bold,
@@ -376,10 +359,10 @@ class FlightResultScreen extends StatelessWidget {
                                     onPressed: () => launchBookingSite(
                                         offer.carrier,
                                         offer.flightNumber,
-                                        originCode,
-                                        destinationCode,
-                                        date,
-                                        passengers),
+                                        widget.originCode,
+                                        widget.destinationCode,
+                                        widget.date,
+                                        widget.passengers),
                                   )
                                 ])
                           ])));

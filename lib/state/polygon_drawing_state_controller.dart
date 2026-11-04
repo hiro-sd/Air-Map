@@ -41,7 +41,6 @@ class PolygonDrawingStateController extends _$PolygonDrawingStateController {
 
   // 触った部分の座標をもとに Polyline インスタンスを生成し、_polylineSet に追加する
   Future<void> onPanUpdate(DragUpdateDetails details, WidgetRef ref) async {
-    final polygonSet = ref.read(polygonSetProvider.notifier);
     double? x, y;
 
     // Androidの場合、描画距離が明らかに短い
@@ -86,7 +85,7 @@ class PolygonDrawingStateController extends _$PolygonDrawingStateController {
         // // 新しいポイントをリストに追加する
         latLngList = [...latLngList, latLng];
 
-        final polylineSet = ref.read(polylineSetProvider.notifier).state;
+        final polylineSet = HashSet<Polyline>.of(ref.read(polylineSetProvider));
         // ポリラインのセットを初期化
         polylineSet.removeWhere(
             (polyline) => polyline.polylineId.value == 'user_polyline');
@@ -97,12 +96,12 @@ class PolygonDrawingStateController extends _$PolygonDrawingStateController {
             polylineId: const PolylineId('user_polyline'),
             points: latLngList,
             width: 3,
-            color: Colors.blue.withValues(alpha: (255 * 0.2)),
+            color: Colors.blue.withValues(alpha: 0.2),
           ),
         );
 
         // なぞっている間ポリラインが描画され続ける
-        polygonSet.state = {...polygonSet.state};
+        ref.read(polylineSetProvider.notifier).state = polylineSet;
       } catch (e) {
         debugPrint("Error in onPanUpdate: $e");
       }
@@ -115,23 +114,23 @@ class PolygonDrawingStateController extends _$PolygonDrawingStateController {
     // 最後にキャッシュされた座標をリセット
     lastXCoordinate = null;
     lastYCoordinate = null;
+    if (latLngList.length < 3) return;
 
     // ポリゴンのセットを初期化
-    polygonSet.state
-        .removeWhere((polygon) => polygon.polygonId.value == 'user_polygon');
-    // 新しいポリゴンの追加
-    polygonSet.state.add(
+    polygonSet.state = {
+      ...polygonSet.state
+          .where((polygon) => polygon.polygonId.value != 'user_polygon'),
       Polygon(
         polygonId: const PolygonId('user_polygon'),
         points: latLngList,
         strokeWidth: 3,
-        strokeColor: Colors.blue.withValues(alpha: (255 * 0.2)),
-        fillColor: Colors.blue.withValues(alpha: (255 * 0.8)),
+        strokeColor: Colors.blue.withValues(alpha: 0.2),
+        fillColor: Colors.blue.withValues(alpha: 0.8),
       ),
-    );
+    };
 
     // ユーザーが描画したポリゴンのポイントを取得
-    final polygonPoints = ref.read(polygonSetProvider).first.points;
+    final polygonPoints = latLngList;
 
     // 空港データの中からポリゴン内部のマーカーを取得
     final markersInsidePolygon = // マーカーのリストを保持
@@ -190,7 +189,7 @@ class PolygonDrawingStateController extends _$PolygonDrawingStateController {
   //「なぞる」の切り替えを行う関数
   void toggleDrawing(WidgetRef ref) {
     clearPolygons(ref);
-    ref.read(circleProvider.notifier).state.clear();
+    ref.read(circleProvider.notifier).state = {};
     ref.read(drawPolygonEnabledProvider.notifier).state =
         !ref.read(drawPolygonEnabledProvider);
     ref.read(mapStateControllerProvider.notifier).clearMarkers();
@@ -200,8 +199,10 @@ class PolygonDrawingStateController extends _$PolygonDrawingStateController {
   void clearPolygons(WidgetRef ref) {
     final polygonSet = ref.read(polygonSetProvider.notifier);
     final polylineSet = ref.read(polylineSetProvider.notifier);
-    polygonSet.state.clear();
+    polygonSet.state = {};
     latLngList.clear();
-    polylineSet.state.clear();
+    polylineSet.state = HashSet<Polyline>();
+    lastXCoordinate = null;
+    lastYCoordinate = null;
   }
 }

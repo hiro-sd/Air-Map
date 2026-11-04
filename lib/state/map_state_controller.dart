@@ -29,7 +29,6 @@ class MapStateController extends _$MapStateController {
     );
   }
 
-  Position? currentPosition;
   GoogleMapController? mapController;
   bool isFirstLoad = true;
   String apiKey = Env.googleMapsApiKey;
@@ -92,15 +91,14 @@ class MapStateController extends _$MapStateController {
   }
 
   // 現在地の取得
-  Future<void> getCurrentLocation() async {
+  Future<Position?> getCurrentLocation() async {
     bool serviceEnabled;
     LocationPermission permission;
 
     // 位置情報サービスが有効か確認
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      //print('位置情報サービスが無効です。');
-      return;
+      return null;
     }
 
     // 位置情報のパーミッションを確認
@@ -108,43 +106,41 @@ class MapStateController extends _$MapStateController {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        //print('位置情報のパーミッションが拒否されました。');
-        return;
+        return null;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      //print('位置情報のパーミッションが永久に拒否されています。');
-      return;
+      return null;
     }
 
     try {
-      currentPosition = await Geolocator.getCurrentPosition();
-      if (currentPosition != null && mapController != null) {
+      final position = await Geolocator.getCurrentPosition();
+      if (mapController != null) {
         final newCameraPosition = CameraPosition(
-          target: LatLng(currentPosition!.latitude, currentPosition!.longitude),
+          target: LatLng(position.latitude, position.longitude),
           zoom: 9,
         );
         mapController!
             .animateCamera(CameraUpdate.newCameraPosition(newCameraPosition));
       }
+      return position;
     } catch (e) {
       debugPrint("Error getting location: $e");
+      return null;
     }
   }
 
   // 指定半径内の空港データの取得
-  void fetchAirports(BuildContext context, WidgetRef ref, int searchRadius) {
-    if (currentPosition == null) return;
-
-    double lat = currentPosition!.latitude;
-    double lng = currentPosition!.longitude;
-
+  void fetchAirports(LatLng center, double searchRadiusKm) {
     switchAirports(
         generateMarkers(airportData.where((airport) {
-          double distance = Geolocator.distanceBetween(lat, lng,
-              airport['position'].latitude, airport['position'].longitude);
-          return distance <= (searchRadius * 1000);
+          double distance = Geolocator.distanceBetween(
+              center.latitude,
+              center.longitude,
+              airport['position'].latitude,
+              airport['position'].longitude);
+          return distance <= (searchRadiusKm * 1000);
         }).toList()),
         false);
   }

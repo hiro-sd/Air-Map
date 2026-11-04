@@ -95,7 +95,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get no_airport => '指定されたエリア内に空港が存在しません。';
 
   @override
-  String get no_flight => 'フライトが見つかりませんでした。';
+  String get no_flight => '現在のデータでは、この条件の便を確認できませんでした。';
+
+  @override
+  String get flight_search_failed => 'フライト情報を取得できませんでした。時間をおいて再試行してください。';
+
+  @override
+  String get retry => '再試行';
+
+  @override
+  String get location_unavailable => '現在地を取得できませんでした。位置情報の設定を確認してください。';
 
   @override
   String get failed_to_load_image => '画像のロードに失敗しました。';
@@ -151,6 +160,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get fill_all_fields => '全ての欄を埋めてください。';
+
+  @override
+  String get same_airport => '出発地と目的地に同じ空港は指定できません。';
+
+  @override
+  String get past_date => '過去の日付は指定できません。';
 
   @override
   String get terminal => 'ターミナル';

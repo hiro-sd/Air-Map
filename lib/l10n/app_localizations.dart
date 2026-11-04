@@ -269,8 +269,26 @@ abstract class AppLocalizations {
   /// No description provided for @no_flight.
   ///
   /// In en, this message translates to:
-  /// **'No flights found.'**
+  /// **'No flights could be confirmed for this search with the current data.'**
   String get no_flight;
+
+  /// No description provided for @flight_search_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Flight information could not be loaded. Please try again later.'**
+  String get flight_search_failed;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @location_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not get your location. Check location settings.'**
+  String get location_unavailable;
 
   /// No description provided for @failed_to_load_image.
   ///
@@ -373,6 +391,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please fill in the all fields.'**
   String get fill_all_fields;
+
+  /// No description provided for @same_airport.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose different departure and arrival airports.'**
+  String get same_airport;
+
+  /// No description provided for @past_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose today or a future date.'**
+  String get past_date;
 
   /// No description provided for @terminal.
   ///
