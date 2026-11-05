@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ticket_app/functions/geo_data_scan.dart';
 import 'package:ticket_app/screen/map_screen.dart';
+import 'package:ticket_app/screen/airport_candidates_sheet.dart';
 import 'package:ticket_app/screen/search_flight_screen.dart';
 import 'package:ticket_app/l10n/app_localizations.dart';
 import 'package:ticket_app/screen/settings_screen.dart';
@@ -39,10 +40,12 @@ class Root extends ConsumerWidget {
     );
 
     // 画面たち
-    const pages = [
-      MapScreen(),
-      SearchFlightScreen(),
-      SettingsScreen(),
+    final pages = [
+      MapScreen(onSearchRequested: () {
+        ref.read(indexProvider.notifier).state = 1;
+      }),
+      const SearchFlightScreen(),
+      const SettingsScreen(),
     ];
 
     // タイトルたち
@@ -67,6 +70,7 @@ class Root extends ConsumerWidget {
                 icon: Icon(Icons.menu,
                     color: Theme.of(context).colorScheme.primary),
                 onPressed: () {
+                  final rootContext = context;
                   showModalBottomSheet(
                     context: context,
                     isScrollControlled: true,
@@ -167,29 +171,29 @@ class Root extends ConsumerWidget {
                                       width: 100,
                                       height: 45,
                                       child: ElevatedButton(
-                                        onPressed: () {
+                                        onPressed: () async {
                                           // 選択された地方に基づいてポリゴンを描画
-                                          loadAndDisplayAreaPolygon(
-                                              areas[selectedIndex]['key']!,
-                                              ref,
-                                              context);
                                           Navigator.of(context)
                                               .pop(); // モーダルを閉じる
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              duration:
-                                                  const Duration(seconds: 2),
-                                              content: Text(
-                                                AppLocalizations.of(context)!
-                                                    .show_polygon_and_area(
-                                                        areas[selectedIndex]
-                                                            ['name']!),
-                                                style: const TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ),
+                                          ref
+                                              .read(destinationPointProvider
+                                                  .notifier)
+                                              .state = null;
+                                          final area =
+                                              await loadAndDisplayAreaPolygon(
+                                            areas[selectedIndex]['key']!,
+                                            ref,
+                                          );
+                                          if (!rootContext.mounted) return;
+                                          showAirportCandidatesSheet(
+                                            context: rootContext,
+                                            ref: ref,
+                                            area: area,
+                                            onSearchRequested: () {
+                                              ref
+                                                  .read(indexProvider.notifier)
+                                                  .state = 1;
+                                            },
                                           );
                                         },
                                         child: Text(

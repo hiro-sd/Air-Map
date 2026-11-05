@@ -5,10 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:ticket_app/airport_list.dart';
-import 'package:ticket_app/functions/generate_markers.dart';
-import 'package:ticket_app/l10n/app_localizations.dart';
-import 'package:ticket_app/functions/get_markers_inside_polygon.dart';
+import 'package:ticket_app/model/airport_candidate.dart';
 import 'package:ticket_app/state/map_state_controller.dart';
 import 'polygon_drawing_state.dart';
 
@@ -109,12 +106,12 @@ class PolygonDrawingStateController extends _$PolygonDrawingStateController {
   }
 
   // なぞり終えた際に Polygon インスタンスを生成し、_polygonSet に追加する
-  void onPanEnd(DragEndDetails details, BuildContext context, WidgetRef ref) {
+  AirportSearchArea? onPanEnd(WidgetRef ref) {
     final polygonSet = ref.read(polygonSetProvider.notifier);
     // 最後にキャッシュされた座標をリセット
     lastXCoordinate = null;
     lastYCoordinate = null;
-    if (latLngList.length < 3) return;
+    if (latLngList.length < 3) return null;
 
     // ポリゴンのセットを初期化
     polygonSet.state = {
@@ -129,61 +126,11 @@ class PolygonDrawingStateController extends _$PolygonDrawingStateController {
       ),
     };
 
-    // ユーザーが描画したポリゴンのポイントを取得
-    final polygonPoints = latLngList;
-
-    // 空港データの中からポリゴン内部のマーカーを取得
-    final markersInsidePolygon = // マーカーのリストを保持
-        getMarkersInsidePolygon(polygonPoints, airportData);
-
-    if (markersInsidePolygon.isEmpty) {
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text(AppLocalizations.of(context)!.search_result,
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
-              content: Text(AppLocalizations.of(context)!.no_airport),
-              actions: [
-                TextButton(
-                  child: Text(AppLocalizations.of(context)!.close),
-                  onPressed: () {
-                    Navigator.of(context).pop(); // ダイアログを閉じる
-                  },
-                ),
-              ],
-            );
-          });
-    } else {
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text(AppLocalizations.of(context)!.search_result,
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
-              content: Text(AppLocalizations.of(context)!.airport_in_the_area(
-                      markersInsidePolygon.length.toString()) +
-                  AppLocalizations.of(context)!.tap_marker),
-              actions: [
-                TextButton(
-                  child: Text(AppLocalizations.of(context)!.close),
-                  onPressed: () {
-                    Navigator.of(context).pop(); // ダイアログを閉じる
-                  },
-                ),
-              ],
-            );
-          });
-    }
-
-    // マーカーをGoogleMap上に反映
-    ref
-        .read(mapStateControllerProvider.notifier)
-        .updateMarkers(generateMarkers(markersInsidePolygon));
+    ref.read(polylineSetProvider.notifier).state = HashSet<Polyline>();
 
     // 描画状態を終了
-    ref.read(drawPolygonEnabledProvider.notifier).state =
-        !ref.read(drawPolygonEnabledProvider);
+    ref.read(drawPolygonEnabledProvider.notifier).state = false;
+    return AirportSearchArea.fromPolygon(latLngList);
   }
 
   //「なぞる」の切り替えを行う関数

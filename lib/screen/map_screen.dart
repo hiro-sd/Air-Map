@@ -8,10 +8,16 @@ import 'package:ticket_app/airport_list.dart';
 import 'package:ticket_app/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ticket_app/state/polygon_drawing_state_controller.dart';
+import 'package:ticket_app/model/airport_candidate.dart';
+import 'package:ticket_app/screen/airport_candidates_sheet.dart';
+
+final destinationPointProvider = StateProvider<LatLng?>((ref) => null);
 
 // mapを表示するScreen
 class MapScreen extends ConsumerStatefulWidget {
-  const MapScreen({super.key});
+  final VoidCallback onSearchRequested;
+
+  const MapScreen({super.key, required this.onSearchRequested});
 
   @override
   MapScreenState createState() => MapScreenState();
@@ -31,6 +37,7 @@ class MapScreenState extends ConsumerState<MapScreen> {
     final state = ref.watch(mapStateControllerProvider);
     final drawPolygonEnabled = ref.watch(drawPolygonEnabledProvider);
     final circles = ref.watch(circleProvider);
+    final destinationPin = ref.watch(destinationPointProvider);
     void onCameraMove(CameraPosition position) {
       if (!mounted) return; // 画面が破棄されていたら処理しない
       _cameraDebounce?.cancel();
@@ -80,9 +87,19 @@ class MapScreenState extends ConsumerState<MapScreen> {
                     .onPanUpdate(details, ref)
                 : null, // ドラッグ操作で位置が変化したときにコール
             onPanEnd: (drawPolygonEnabled)
-                ? (details) => ref
-                    .read(polygonDrawingStateControllerProvider.notifier)
-                    .onPanEnd(details, context, ref)
+                ? (_) {
+                    final area = ref
+                        .read(polygonDrawingStateControllerProvider.notifier)
+                        .onPanEnd(ref);
+                    if (area == null) return;
+                    ref.read(destinationPointProvider.notifier).state = null;
+                    showAirportCandidatesSheet(
+                      context: context,
+                      ref: ref,
+                      area: area,
+                      onSearchRequested: widget.onSearchRequested,
+                    );
+                  }
                 : null,
             //ドラッグ操作やピンチ操作などを付与する
             child: GoogleMap(
@@ -96,7 +113,31 @@ class MapScreenState extends ConsumerState<MapScreen> {
               circles: circles,
               zoomGesturesEnabled: true,
               zoomControlsEnabled: false,
-              markers: state.markers,
+              markers: {
+                ...state.markers,
+                if (destinationPin != null)
+                  Marker(
+                    markerId: const MarkerId('selected_destination_point'),
+                    position: destinationPin,
+                    icon: BitmapDescriptor.defaultMarkerWithHue(
+                        BitmapDescriptor.hueViolet),
+                  ),
+              },
+              onLongPress: drawPolygonEnabled
+                  ? null
+                  : (point) {
+                      ref
+                          .read(polygonDrawingStateControllerProvider.notifier)
+                          .clearPolygons(ref);
+                      ref.read(circleProvider.notifier).state = {};
+                      ref.read(destinationPointProvider.notifier).state = point;
+                      showAirportCandidatesSheet(
+                        context: context,
+                        ref: ref,
+                        area: AirportSearchArea.point(point),
+                        onSearchRequested: widget.onSearchRequested,
+                      );
+                    },
               onCameraMove: (position) {
                 onCameraMove(position);
               },
@@ -114,6 +155,22 @@ class MapScreenState extends ConsumerState<MapScreen> {
             ), // ドラッグ操作が終了したときにコール
           ),
           Positioned(
+            top: 12,
+            left: 12,
+            right: 12,
+            child: IgnorePointer(
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Text(
+                    AppLocalizations.of(context)!.map_destination_hint,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
               bottom: 160,
               right: 15,
               child: FloatingActionButton(
@@ -122,6 +179,7 @@ class MapScreenState extends ConsumerState<MapScreen> {
                   shape: const CircleBorder(),
                   onPressed: () {
                     showPolygonDrawingDialog(context);
+                    ref.read(destinationPointProvider.notifier).state = null;
                     ref
                         .read(polygonDrawingStateControllerProvider.notifier)
                         .toggleDrawing(ref);
@@ -139,6 +197,7 @@ class MapScreenState extends ConsumerState<MapScreen> {
               heroTag: null, // Heroアニメーションを無効にする
               shape: const CircleBorder(),
               onPressed: () {
+                ref.read(destinationPointProvider.notifier).state = null;
                 ref.read(polygonSetProvider.notifier).state = {};
                 ref.read(polylineSetProvider.notifier).state =
                     HashSet<Polyline>();

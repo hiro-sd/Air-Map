@@ -133,7 +133,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get polygon_drawing_description =>
-      'Automatically searches for airports in the drawn area.';
+      'Draw an area to find airports inside and nearby.';
+
+  @override
+  String get map_destination_hint =>
+      'Long-press a destination or draw an area on the map';
+
+  @override
+  String get airport_candidates => 'Candidate airports';
+
+  @override
+  String get candidate_distance_note =>
+      'Distances are straight-line estimates. Flights and local travel times are not included yet.';
+
+  @override
+  String get airports_in_area => 'Inside the selected area';
+
+  @override
+  String get airports_near_area => 'Nearby airports';
+
+  @override
+  String get straight_line_from_point =>
+      'Straight-line distance from selected point';
+
+  @override
+  String get straight_line_from_area_center =>
+      'Straight-line distance from area center';
+
+  @override
+  String get route_status_unchecked =>
+      'Flight routes: Not checked (search after selecting)';
+
+  @override
+  String get no_airport_candidates => 'No nearby candidate airports found.';
 
   @override
   String get select_area => 'Specify region.';

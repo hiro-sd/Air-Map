@@ -5,10 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:ticket_app/functions/generate_markers.dart';
-import 'package:ticket_app/functions/get_markers_inside_polygon.dart';
+import 'package:ticket_app/model/airport_candidate.dart';
 import 'package:ticket_app/state/map_state_controller.dart';
-import 'package:ticket_app/airport_list.dart';
 import 'package:ticket_app/state/polygon_drawing_state_controller.dart';
 
 // GeoJSONファイルを読み込む
@@ -54,12 +52,13 @@ const List<Map<String, dynamic>> centerLatLngs = [
 ];
 
 // 読み込んだ座標をもとにポリゴンを描画する
-Future<void> loadAndDisplayAreaPolygon(
-    String area, WidgetRef ref, BuildContext context) async {
+Future<AirportSearchArea> loadAndDisplayAreaPolygon(
+    String area, WidgetRef ref) async {
   // 既存データをクリア
   ref.read(polygonSetProvider.notifier).state = {};
   ref.read(polylineSetProvider.notifier).state = HashSet<Polyline>();
   ref.read(circleProvider.notifier).state = {};
+  ref.read(drawPolygonEnabledProvider.notifier).state = false;
 
   // GeoJSONファイルを読み込む
   final polygons = await loadAreaGeoJson(area);
@@ -77,16 +76,6 @@ Future<void> loadAndDisplayAreaPolygon(
   };
   ref.read(polygonSetProvider.notifier).state = polygonSet;
 
-  // マーカーをセットする
-  final markersInsidePolygon = polygons
-      .expand(
-        (polygonPoints) => getMarkersInsidePolygon(polygonPoints, airportData),
-      )
-      .toList();
-  ref
-      .read(mapStateControllerProvider.notifier)
-      .updateMarkers(generateMarkers(markersInsidePolygon));
-
   // 地図の中心座標とズームレベルをセットする
   final Map<String, dynamic> centerData = centerLatLngs.firstWhere(
     (element) => element.containsKey(area),
@@ -102,4 +91,5 @@ Future<void> loadAndDisplayAreaPolygon(
       ),
     ));
   }
+  return AirportSearchArea.region(centerData[area] as LatLng, polygons);
 }

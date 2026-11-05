@@ -125,7 +125,34 @@ class AppLocalizationsJa extends AppLocalizations {
   String get cancel_polygon_drawing => '描画モードを終了しました。';
 
   @override
-  String get polygon_drawing_description => '描画されたエリア内の空港を自動検索します。';
+  String get polygon_drawing_description => '地図をなぞると、エリア内と周辺の空港を探します。';
+
+  @override
+  String get map_destination_hint => '行きたい地点を長押し、または描画ボタンで地域を囲んでください';
+
+  @override
+  String get airport_candidates => '利用候補の空港';
+
+  @override
+  String get candidate_distance_note => '距離は直線の目安です。就航便や現地への移動時間はまだ反映していません。';
+
+  @override
+  String get airports_in_area => '選択範囲内';
+
+  @override
+  String get airports_near_area => '周辺の空港';
+
+  @override
+  String get straight_line_from_point => '選択地点からの直線距離';
+
+  @override
+  String get straight_line_from_area_center => '選択範囲の中心からの直線距離';
+
+  @override
+  String get route_status_unchecked => '就航情報: 未確認（空港選択後に便を検索）';
+
+  @override
+  String get no_airport_candidates => '近くに候補の空港が見つかりませんでした。';
 
   @override
   String get select_area => '地方を指定する';

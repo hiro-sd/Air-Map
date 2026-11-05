@@ -23,9 +23,9 @@
 
 先に四国を対象に代表的な出発地、地方空港、週末の日付を含む検証ケースを作る。候補ごとに、就航便の検出率、航空会社の網羅性、価格の一致、予約先へ進めるか、応答時間、契約条件、費用を記録する。
 
-第一候補は Skyscanner 提携 API。探索画面には Indicative Prices の概算価格、利用者が空港と日付を決めた後には Live Prices と予約リンクを用いる。提携審査と予約への送客が前提であり、Live Prices の大量自動照会を設計に含めない。概算価格には「参考」「取得時点」を表示する。
+Skyscanner Travel API は商用提携向けで、公式の申請条件では非商用の個人開発者を対象外としている。現段階の第一候補には置かない。将来、利用条件を満たせる場合に再検討する。
 
-路線・時刻表の補完候補は NAVITIME のフライト情報 API。時刻表データは別途契約が必要で、運賃・空席の情報源にはならない。Duffel と Amadeus 本番環境は、国内の必要な路線で実際の取得結果を比較してから採用を判断する。いずれかの契約が成立しなくても、就航情報と外部の予約検索導線で地域探索を提供する。価格を推測して埋めない。
+現実的には、路線・時刻表と、現在の価格・空席を分けて調達する。路線・時刻表の候補は NAVITIME のフライト情報 API。ただし時刻表データのオプション契約が必要で、運賃・空席の情報源にはならない。Amadeus 本番環境と Duffel は、国内の必要な路線・航空会社で実際の取得結果を比較してから採用を判断する。契約が成立しない情報は「未確認」と表示し、外部の予約検索導線につなぐ。価格を推測して埋めない。
 
 完了条件: 採用データ源、取得できない航空会社・路線、価格表示条件、予約導線が検証表で説明できる。
 
@@ -38,7 +38,7 @@
 
 完了条件: 位置情報の許可・拒否の両方で操作が行き詰まらず、API エラーが「便なし」に化けない。入力検証と検索結果の各状態をテストで確認する。
 
-### 3. 地域から探す画面を最小構成で作る
+### 3. 地域から探す画面を最小構成で作る（実装済み）
 
 1. 旅行先を地図のピンまたは囲みで指定する。囲みは現在の描画機能を利用する。
 2. 候補空港を「範囲内」と「周辺」の二群で提示する。最初は地理的距離で候補を絞り、地上交通の所要時間が得られたら順位付けに使う。
@@ -46,6 +46,8 @@
 4. 候補から空港を選ぶと、現在の便検索画面へ出発地・到着地を引き継ぐ。
 
 完了条件: 四国の任意の地点または囲みから、範囲外も含む候補空港を確認し、便検索へ進める。地図を動かすだけでは有料の運賃検索を実行しない。
+
+地図の長押し、手描きの囲み、地方メニューから候補一覧を表示する。選択範囲内の空港と、地点または範囲の境界から直線150km以内の周辺空港を表示する。表示する距離は地点または範囲の概略中心からの直線距離であり、地上移動の便利さを示すものではない。就航情報はデータ源未接続のため「未確認」とする。空港を選ぶと到着空港コードを既存の便検索画面へ引き継ぐ。
 
 ### 4. データ源を交換できる構成にする
 
@@ -73,5 +75,6 @@
 - [Flutter 多言語化コードの移行](https://docs.flutter.dev/release/breaking-changes/flutter-generate-i10n-source)
 - [Amadeus Self-Service FAQ](https://admin.developers.amadeus.com/self-service/apis-docs/guides/developer-guides/faq/)
 - [Skyscanner Indicative Prices](https://developers.skyscanner.net/docs/flights-indicative-prices/overview)
+- [Skyscanner Travel API の申請条件](https://www.partners.skyscanner.net/contact/travel-api)
 - [Skyscanner Live Prices の利用指針](https://developers.skyscanner.net/docs/getting-started/usage-guidelines)
 - [NAVITIME フライト情報 API](https://api-sdk.navitime.co.jp/api/specs/api_guide/flight.html)

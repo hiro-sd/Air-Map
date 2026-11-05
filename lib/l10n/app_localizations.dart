@@ -329,8 +329,62 @@ abstract class AppLocalizations {
   /// No description provided for @polygon_drawing_description.
   ///
   /// In en, this message translates to:
-  /// **'Automatically searches for airports in the drawn area.'**
+  /// **'Draw an area to find airports inside and nearby.'**
   String get polygon_drawing_description;
+
+  /// No description provided for @map_destination_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Long-press a destination or draw an area on the map'**
+  String get map_destination_hint;
+
+  /// No description provided for @airport_candidates.
+  ///
+  /// In en, this message translates to:
+  /// **'Candidate airports'**
+  String get airport_candidates;
+
+  /// No description provided for @candidate_distance_note.
+  ///
+  /// In en, this message translates to:
+  /// **'Distances are straight-line estimates. Flights and local travel times are not included yet.'**
+  String get candidate_distance_note;
+
+  /// No description provided for @airports_in_area.
+  ///
+  /// In en, this message translates to:
+  /// **'Inside the selected area'**
+  String get airports_in_area;
+
+  /// No description provided for @airports_near_area.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearby airports'**
+  String get airports_near_area;
+
+  /// No description provided for @straight_line_from_point.
+  ///
+  /// In en, this message translates to:
+  /// **'Straight-line distance from selected point'**
+  String get straight_line_from_point;
+
+  /// No description provided for @straight_line_from_area_center.
+  ///
+  /// In en, this message translates to:
+  /// **'Straight-line distance from area center'**
+  String get straight_line_from_area_center;
+
+  /// No description provided for @route_status_unchecked.
+  ///
+  /// In en, this message translates to:
+  /// **'Flight routes: Not checked (search after selecting)'**
+  String get route_status_unchecked;
+
+  /// No description provided for @no_airport_candidates.
+  ///
+  /// In en, this message translates to:
+  /// **'No nearby candidate airports found.'**
+  String get no_airport_candidates;
 
   /// No description provided for @select_area.
   ///
