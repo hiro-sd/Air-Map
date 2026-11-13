@@ -60,7 +60,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recommendation_near_saved => 'Near a saved place';
 
   @override
-  String get recommendation_shared_theme => 'A theme you like';
+  String get recommendation_favorite_theme => 'A theme from your favorites';
+
+  @override
+  String get recommendation_want_theme => 'A theme you want to explore';
+
+  @override
+  String get recommendation_shared_theme =>
+      'A theme from a place you\'ve visited';
 
   @override
   String get recommendation_surprise => 'A little surprise';

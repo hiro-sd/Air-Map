@@ -60,7 +60,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get recommendation_near_saved => '保存場所の近く';
 
   @override
-  String get recommendation_shared_theme => '保存場所と同じテーマ';
+  String get recommendation_favorite_theme => 'お気に入りに近いテーマ';
+
+  @override
+  String get recommendation_want_theme => '行きたい場所と同じテーマ';
+
+  @override
+  String get recommendation_shared_theme => '行った場所と同じテーマ';
 
   @override
   String get recommendation_surprise => '少し意外な場所も';

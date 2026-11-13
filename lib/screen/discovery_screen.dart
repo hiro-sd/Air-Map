@@ -125,6 +125,9 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
           AppLocalizations l10n, RecommendationReason reason) =>
       switch (reason) {
         RecommendationReason.nearSaved => l10n.recommendation_near_saved,
+        RecommendationReason.favoriteTheme =>
+          l10n.recommendation_favorite_theme,
+        RecommendationReason.wantToGoTheme => l10n.recommendation_want_theme,
         RecommendationReason.sharedTheme => l10n.recommendation_shared_theme,
         RecommendationReason.surprise => l10n.recommendation_surprise,
         RecommendationReason.featured => l10n.recommendation_featured,

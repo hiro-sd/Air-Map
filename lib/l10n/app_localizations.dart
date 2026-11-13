@@ -200,10 +200,22 @@ abstract class AppLocalizations {
   /// **'Near a saved place'**
   String get recommendation_near_saved;
 
+  /// No description provided for @recommendation_favorite_theme.
+  ///
+  /// In en, this message translates to:
+  /// **'A theme from your favorites'**
+  String get recommendation_favorite_theme;
+
+  /// No description provided for @recommendation_want_theme.
+  ///
+  /// In en, this message translates to:
+  /// **'A theme you want to explore'**
+  String get recommendation_want_theme;
+
   /// No description provided for @recommendation_shared_theme.
   ///
   /// In en, this message translates to:
-  /// **'A theme you like'**
+  /// **'A theme from a place you\'ve visited'**
   String get recommendation_shared_theme;
 
   /// No description provided for @recommendation_surprise.

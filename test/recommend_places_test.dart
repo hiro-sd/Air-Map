@@ -79,6 +79,30 @@ const _catalog = <TravelPlace>[
   ),
 ];
 
+TravelPlace _place(
+  String id,
+  PlaceTheme theme, {
+  LatLng position = const LatLng(10, 10),
+  TravelRegion region = _testRegion,
+  bool unexpected = false,
+}) =>
+    TravelPlace(
+      id: id,
+      region: region,
+      position: position,
+      nameJa: id,
+      nameEn: id,
+      teaserJa: id,
+      teaserEn: id,
+      descriptionJa: id,
+      descriptionEn: id,
+      theme: theme,
+      isUnexpected: unexpected,
+      sourceName: 'Test source',
+      sourceUrl: 'https://example.com',
+      reviewedOn: '2026-11-13',
+    );
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late TravelCatalog catalog;
@@ -125,7 +149,7 @@ void main() {
       recommendations
           .singleWhere((item) => item.place.id == 'same_theme_far')
           .reason,
-      RecommendationReason.sharedTheme,
+      RecommendationReason.favoriteTheme,
     );
     expect(
       recommendations
@@ -178,5 +202,98 @@ void main() {
       result.singleWhere((item) => item.place.id == 'near_culture').reason,
       RecommendationReason.nearSaved,
     );
+  });
+
+  test('お気に入り・行きたい・行ったの順に好みを反映し、理由を示す', () {
+    final savedFavorite = _place('saved_favorite', PlaceTheme.town,
+        position: const LatLng(35, 139));
+    final savedWant = _place('saved_want', PlaceTheme.nature,
+        position: const LatLng(35, 139));
+    final savedVisited = _place('saved_visited', PlaceTheme.culture,
+        position: const LatLng(35, 139));
+    final places = [
+      savedFavorite,
+      savedWant,
+      savedVisited,
+      _place('favorite_candidate', PlaceTheme.town),
+      _place('want_candidate', PlaceTheme.nature),
+      _place('visited_candidate', PlaceTheme.culture),
+    ];
+    final saved = {
+      savedFavorite.id:
+          SavedPlace.fromCurated(savedFavorite).copyWith(isFavorite: true),
+      savedWant.id: SavedPlace.fromCurated(savedWant)
+          .copyWith(status: VisitStatus.wantToGo),
+      savedVisited.id: SavedPlace.fromCurated(savedVisited)
+          .copyWith(status: VisitStatus.visited),
+    };
+
+    final favoriteFirst = recommendPlaces(
+      catalog: places,
+      savedPlaces: saved,
+      limit: 1,
+    ).single;
+    expect(favoriteFirst.place.id, 'favorite_candidate');
+    expect(favoriteFirst.reason, RecommendationReason.favoriteTheme);
+
+    saved[savedFavorite.id] = SavedPlace.fromCurated(savedFavorite);
+    final wantFirst = recommendPlaces(
+      catalog: places,
+      savedPlaces: saved,
+      limit: 1,
+    ).single;
+    expect(wantFirst.place.id, 'want_candidate');
+    expect(wantFirst.reason, RecommendationReason.wantToGoTheme);
+
+    saved[savedWant.id] = SavedPlace.fromCurated(savedWant);
+    final visitedFirst = recommendPlaces(
+      catalog: places,
+      savedPlaces: saved,
+      limit: 1,
+    ).single;
+    expect(visitedFirst.place.id, 'visited_candidate');
+    expect(visitedFirst.reason, RecommendationReason.sharedTheme);
+  });
+
+  test('同じ地域・テーマへの偏りを避けて別地域の関連候補も選ぶ', () {
+    const kyoto = TravelRegion(
+      id: 'jp-kyoto',
+      countryCode: 'JP',
+      nameJa: '京都府',
+      nameEn: 'Kyoto',
+    );
+    final favorite =
+        _place('favorite', PlaceTheme.nature, position: const LatLng(35, 139));
+    final secondFavorite = _place('second_favorite', PlaceTheme.nature,
+        position: const LatLng(35, 139));
+    final want =
+        _place('want', PlaceTheme.culture, position: const LatLng(35, 139));
+    final places = [
+      favorite,
+      secondFavorite,
+      want,
+      _place('tokyo_nature_1', PlaceTheme.nature,
+          position: const LatLng(35.1, 139.1)),
+      _place('tokyo_nature_2', PlaceTheme.nature,
+          position: const LatLng(35.2, 139.2)),
+      _place('kyoto_culture', PlaceTheme.culture,
+          position: const LatLng(35, 135), region: kyoto),
+    ];
+    final result = recommendPlaces(
+      catalog: places,
+      savedPlaces: {
+        favorite.id:
+            SavedPlace.fromCurated(favorite).copyWith(isFavorite: true),
+        secondFavorite.id:
+            SavedPlace.fromCurated(secondFavorite).copyWith(isFavorite: true),
+        want.id:
+            SavedPlace.fromCurated(want).copyWith(status: VisitStatus.wantToGo),
+      },
+      limit: 2,
+    );
+
+    expect(result.first.place.id, 'tokyo_nature_1');
+    expect(result.last.place.id, 'kyoto_culture');
+    expect(result.last.reason, RecommendationReason.wantToGoTheme);
   });
 }
