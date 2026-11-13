@@ -24,6 +24,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get my_map => 'マイマップ';
 
   @override
+  String get all_saved_places => 'すべて';
+
+  @override
+  String get fit_saved_places => '表示中の場所を地図に収める';
+
+  @override
+  String get my_map_filter_empty => 'この条件で保存した場所はまだありません。';
+
+  @override
   String get airports => '空港';
 
   @override

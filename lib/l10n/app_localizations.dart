@@ -128,6 +128,24 @@ abstract class AppLocalizations {
   /// **'My Map'**
   String get my_map;
 
+  /// No description provided for @all_saved_places.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all_saved_places;
+
+  /// No description provided for @fit_saved_places.
+  ///
+  /// In en, this message translates to:
+  /// **'Fit visible places on the map'**
+  String get fit_saved_places;
+
+  /// No description provided for @my_map_filter_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved places match this filter yet.'**
+  String get my_map_filter_empty;
+
   /// No description provided for @airports.
   ///
   /// In en, this message translates to:

@@ -24,6 +24,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get my_map => 'My Map';
 
   @override
+  String get all_saved_places => 'All';
+
+  @override
+  String get fit_saved_places => 'Fit visible places on the map';
+
+  @override
+  String get my_map_filter_empty => 'No saved places match this filter yet.';
+
+  @override
   String get airports => 'Airports';
 
   @override
