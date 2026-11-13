@@ -266,6 +266,24 @@ abstract class AppLocalizations {
   /// **'Favorite'**
   String get favorite;
 
+  /// No description provided for @place_source.
+  ///
+  /// In en, this message translates to:
+  /// **'Place information'**
+  String get place_source;
+
+  /// No description provided for @source_checked_on.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked on'**
+  String get source_checked_on;
+
+  /// No description provided for @source_open_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the place information page.'**
+  String get source_open_failed;
+
   /// No description provided for @personal_note.
   ///
   /// In en, this message translates to:

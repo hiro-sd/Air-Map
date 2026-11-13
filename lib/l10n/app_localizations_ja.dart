@@ -93,6 +93,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get favorite => 'お気に入り';
 
   @override
+  String get place_source => '掲載情報の確認先';
+
+  @override
+  String get source_checked_on => '確認日';
+
+  @override
+  String get source_open_failed => '確認先を開けませんでした。';
+
+  @override
   String get personal_note => '自分だけのメモ';
 
   @override

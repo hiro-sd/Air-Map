@@ -3,13 +3,15 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hive/hive.dart';
-import 'package:ticket_app/data/curated_places.dart';
+import 'package:ticket_app/data/travel_catalog.dart';
 import 'package:ticket_app/functions/select_visible_places.dart';
 import 'package:ticket_app/model/saved_place.dart';
 import 'package:ticket_app/state/saved_places_controller.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  late TravelCatalog catalog;
+  setUpAll(() async => catalog = await loadTravelCatalog());
 
   test('表示範囲から最大5件を選び、有名な場所と意外な場所を混ぜる', () {
     final bounds = LatLngBounds(
@@ -17,7 +19,7 @@ void main() {
       northeast: const LatLng(35.85, 139.90),
     );
     final selected = selectVisiblePlaces(
-      curatedPlaces,
+      catalog.places,
       bounds,
       const LatLng(35.70, 139.73),
     );
@@ -29,7 +31,7 @@ void main() {
     expect(selected.any((place) => place.isUnexpected), isTrue);
     expect(selected.any((place) => !place.isUnexpected), isTrue);
     expect(
-        selectVisiblePlaces(curatedPlaces, bounds, const LatLng(35.70, 139.73),
+        selectVisiblePlaces(catalog.places, bounds, const LatLng(35.70, 139.73),
                 limit: 1)
             .length,
         1);
@@ -42,7 +44,7 @@ void main() {
     var box = await Hive.openBox<dynamic>('savedPlacesTest');
     try {
       final controller = SavedPlacesController(box);
-      final curated = SavedPlace.fromCurated(curatedPlaces.first);
+      final curated = SavedPlace.fromCurated(catalog.places.first);
       await controller.setStatus(curated, VisitStatus.wantToGo);
       await controller.toggleFavorite(curated);
       await controller.updateNote(curated, '次の週末に行きたい');

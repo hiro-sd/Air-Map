@@ -65,6 +65,7 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
+    - assets/data/travel_places.json
     - assets/geodata/prefectures.geojson
     - assets/geodata/hokkaido.geojson
     - assets/geodata/tohoku.geojson

@@ -1,20 +1,14 @@
-# 掲載場所の確認先
+# 紹介場所カタログの編集方法
 
-追加した12件の位置は、以下の公開地図・施設情報で確認した概略地点です（2026-11-13）。紹介文はアプリ用に新規作成しました。広い公園や散策路は施設全体ではなく、地図で見つけやすい代表点にピンを置いています。営業時間・料金・現地への経路は掲載していません。
+紹介場所の唯一の編集元は [`assets/data/travel_places.json`](../assets/data/travel_places.json) です。地域、日英の名称・紹介文、テーマ、定番／意外の区分、掲載情報の確認先と確認日を場所ごとに管理します。アプリは起動時にこのファイルを読み込み、「見つける」「おすすめ」「マイマップ」で同じデータを使います。紹介文はアプリ用に独自に書いた短文で、参照先の記事を転載したものではありません。
 
-| 場所 | 位置の確認先 |
-| --- | --- |
-| 上野恩賜公園 | [Ueno Park](https://en.wikipedia.org/wiki/Ueno_Park) |
-| 浜離宮恩賜庭園 | [Hama-rikyū Gardens](https://en.wikipedia.org/wiki/Hama-riky%C5%AB_Gardens) |
-| モエレ沼公園 | [Moerenuma Park](https://en.wikipedia.org/wiki/Moerenuma_Park) |
-| 美瑛の青い池 | [Blue Pond](https://en.wikipedia.org/wiki/Blue_Pond_%28Biei%29) |
-| 伏見稲荷大社 | [Fushimi Inari-taisha](https://en.wikipedia.org/wiki/Fushimi_Inari-taisha) |
-| 哲学の道 | [Philosopher's Walk](https://en.wikipedia.org/wiki/Philosopher%27s_Walk) |
-| 太宰府天満宮 | [Dazaifu Tenmangū](https://en.wikipedia.org/wiki/Dazaifu_Tenmang%C5%AB) |
-| 金鱗湖 | [Lake Kinrin / OpenStreetMap](https://mapcarta.com/W162781794) |
-| 台北101 | [Taipei 101](https://en.wikipedia.org/wiki/Taipei_101) |
-| 象山の展望スポット | [Elephant Mountain Viewpoint](https://lokali.travel/explore/en/taipei/elephant-mountain-viewpoint.html) |
-| ガーデンズ・バイ・ザ・ベイ | [Gardens by the Bay](https://en.wikipedia.org/wiki/Gardens_by_the_Bay) |
-| ハウパーヴィラ | [Haw Par Villa](https://en.wikipedia.org/wiki/Haw_Par_Villa) |
+## 場所を追加する
 
-選定では各地域で定番と少し意外な場所を混ぜ、自然・文化・街・アートのテーマを付けています。新しい場所を追加するときは、名称、位置、紹介文、テーマ、選定理由、確認先を同時に記録してください。
+1. `regions` に該当地域がなければ、国コード、地域ID、日英名を追加します。既存の地域ならそのIDを使います。
+2. `places` に場所を1件追加します。`id` は英小文字・数字・アンダースコアだけで一意にし、公開後は変更しないでください。保存済みの場所はこのIDでカタログと結び付いています。
+3. 緯度・経度は現地の代表点を指定します。広い公園や散策路では施設全体を表す点を選びます。
+4. `name`、`teaser`、`description` の `ja` と `en` を両方書き、`theme` は `nature`、`culture`、`town`、`art` から選びます。定番と少し意外な場所を地域内で混ぜ、後者は `isUnexpected` を `true` にします。
+5. `source.name` と `source.url` に、その場所を直接説明する公式施設・自治体・観光団体などのページを優先して記録します。`reviewedOn` はその参照先を確認した日付（`YYYY-MM-DD`）です。営業時間・料金など変わりやすい情報は紹介文に固定しないでください。
+6. `flutter test test/travel_catalog_test.dart` と `flutter analyze` を実行します。重複ID、未定義の地域・テーマ、不正な座標、参照先の欠落は読み込み時に検出されます。
+
+参照先のページは詳細画面から開けます。リンク先の営業時間・料金・公開状況は利用時に改めて確認してください。現在の22件の参照先はJSON内に全件記録されています。カタログ自体は端末に同梱され、場所の紹介と保存のために外部の場所検索APIは呼びません。

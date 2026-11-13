@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ticket_app/l10n/app_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:ticket_app/data/travel_catalog.dart';
 import 'package:ticket_app/screen/root_screen.dart';
 import 'package:ticket_app/state/saved_places_controller.dart';
 
@@ -19,8 +20,12 @@ void main() async {
   await Hive.initFlutter();
   box = await Hive.openBox('cacheBox');
   final savedPlacesBox = await Hive.openBox<dynamic>('savedPlaces');
+  final travelCatalog = await loadTravelCatalog();
   runApp(ProviderScope(
-    overrides: [savedPlacesBoxProvider.overrideWithValue(savedPlacesBox)],
+    overrides: [
+      savedPlacesBoxProvider.overrideWithValue(savedPlacesBox),
+      travelCatalogProvider.overrideWithValue(travelCatalog),
+    ],
     child: const MyApp(),
   ));
 }

@@ -5,6 +5,7 @@ import 'package:ticket_app/model/saved_place.dart';
 import 'package:ticket_app/model/travel_place.dart';
 import 'package:ticket_app/screen/place_dialogs.dart';
 import 'package:ticket_app/state/saved_places_controller.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 Future<void> showTravelPlaceSheet(
   BuildContext context, {
@@ -73,6 +74,9 @@ class _TravelPlaceSheet extends ConsumerWidget {
                               : l10n.familiar_place,
                           style: TextStyle(color: colors.primary),
                         ),
+                      if (curated != null)
+                        Text(curated!.region.name(context),
+                            style: Theme.of(context).textTheme.bodySmall),
                     ],
                   ),
                 ),
@@ -87,6 +91,14 @@ class _TravelPlaceSheet extends ConsumerWidget {
                       ?.copyWith(fontWeight: FontWeight.w600)),
               const SizedBox(height: 8),
               Text(curated!.description(context)),
+              const SizedBox(height: 8),
+              TextButton.icon(
+                onPressed: () => _openSource(context, curated!),
+                icon: const Icon(Icons.open_in_new, size: 18),
+                label: Text('${l10n.place_source}: ${curated!.sourceName}'),
+              ),
+              Text('${l10n.source_checked_on}: ${curated!.reviewedOn}',
+                  style: Theme.of(context).textTheme.bodySmall),
             ],
             const SizedBox(height: 22),
             Wrap(
@@ -183,6 +195,23 @@ class _TravelPlaceSheet extends ConsumerWidget {
     if (note != null && context.mounted) {
       await _runSave(context,
           () => ref.read(savedPlacesProvider.notifier).updateNote(place, note));
+    }
+  }
+
+  Future<void> _openSource(BuildContext context, TravelPlace place) async {
+    try {
+      if (await launchUrl(Uri.parse(place.sourceUrl),
+          mode: LaunchMode.externalApplication)) {
+        return;
+      }
+    } catch (_) {
+      // リンクを開けない場合は、保存操作と同様に画面内で知らせる。
+    }
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(AppLocalizations.of(context)!.source_open_failed)),
+      );
     }
   }
 

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:ticket_app/data/curated_places.dart';
+import 'package:ticket_app/data/travel_catalog.dart';
 import 'package:ticket_app/functions/place_marker_icons.dart';
 import 'package:ticket_app/functions/recommend_places.dart';
 import 'package:ticket_app/functions/select_visible_places.dart';
@@ -73,7 +73,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
       setState(() {
         _bounds = bounds;
         _visiblePlaces = selectVisiblePlaces(
-          curatedPlaces,
+          ref.read(travelCatalogProvider).places,
           bounds,
           _camera.target,
         );
@@ -134,8 +134,9 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final saved = ref.watch(savedPlacesProvider);
+    final catalog = ref.watch(travelCatalogProvider);
     final recommendations = recommendPlaces(
-      catalog: curatedPlaces,
+      catalog: catalog.places,
       savedPlaces: saved,
       rotation: DateTime.now().difference(DateTime(2020)).inDays,
     );

@@ -1,13 +1,21 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:ticket_app/data/curated_places.dart';
+import 'package:ticket_app/data/travel_catalog.dart';
 import 'package:ticket_app/functions/recommend_places.dart';
 import 'package:ticket_app/model/saved_place.dart';
 import 'package:ticket_app/model/travel_place.dart';
 
+const _testRegion = TravelRegion(
+  id: 'jp-tokyo',
+  countryCode: 'JP',
+  nameJa: '東京都',
+  nameEn: 'Tokyo',
+);
+
 const _catalog = <TravelPlace>[
   TravelPlace(
     id: 'saved_nature',
+    region: _testRegion,
     position: LatLng(35, 139),
     nameJa: '保存済み',
     nameEn: 'Saved',
@@ -17,9 +25,13 @@ const _catalog = <TravelPlace>[
     descriptionEn: '',
     theme: PlaceTheme.nature,
     isUnexpected: false,
+    sourceName: 'Test source',
+    sourceUrl: 'https://example.com',
+    reviewedOn: '2026-11-13',
   ),
   TravelPlace(
     id: 'near_culture',
+    region: _testRegion,
     position: LatLng(35.01, 139.01),
     nameJa: '近く',
     nameEn: 'Nearby',
@@ -29,9 +41,13 @@ const _catalog = <TravelPlace>[
     descriptionEn: '',
     theme: PlaceTheme.culture,
     isUnexpected: true,
+    sourceName: 'Test source',
+    sourceUrl: 'https://example.com',
+    reviewedOn: '2026-11-13',
   ),
   TravelPlace(
     id: 'same_theme_far',
+    region: _testRegion,
     position: LatLng(34, 135),
     nameJa: '同じテーマ',
     nameEn: 'Same theme',
@@ -41,9 +57,13 @@ const _catalog = <TravelPlace>[
     descriptionEn: '',
     theme: PlaceTheme.nature,
     isUnexpected: false,
+    sourceName: 'Test source',
+    sourceUrl: 'https://example.com',
+    reviewedOn: '2026-11-13',
   ),
   TravelPlace(
     id: 'surprise_far',
+    region: _testRegion,
     position: LatLng(1.28, 103.78),
     nameJa: '意外',
     nameEn: 'Surprise',
@@ -53,12 +73,20 @@ const _catalog = <TravelPlace>[
     descriptionEn: '',
     theme: PlaceTheme.town,
     isUnexpected: true,
+    sourceName: 'Test source',
+    sourceUrl: 'https://example.com',
+    reviewedOn: '2026-11-13',
   ),
 ];
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  late TravelCatalog catalog;
+  setUpAll(() async => catalog = await loadTravelCatalog());
+
   test('掲載データのIDと座標が妥当で、国内外の候補がある', () {
-    expect(curatedPlaces.length, 22);
+    final curatedPlaces = catalog.places;
+    expect(curatedPlaces.length, greaterThanOrEqualTo(22));
     expect(curatedPlaces.map((place) => place.id).toSet().length,
         curatedPlaces.length);
     expect(
@@ -109,12 +137,12 @@ void main() {
 
   test('保存履歴がなくても候補を返し、全件保存済みなら空にする', () {
     final first = recommendPlaces(
-      catalog: curatedPlaces,
+      catalog: catalog.places,
       savedPlaces: const {},
       rotation: 0,
     );
     final next = recommendPlaces(
-      catalog: curatedPlaces,
+      catalog: catalog.places,
       savedPlaces: const {},
       rotation: 1,
     );
@@ -125,10 +153,11 @@ void main() {
         isNot(next.map((item) => item.place.id).toList()));
 
     final allSaved = {
-      for (final place in curatedPlaces) place.id: SavedPlace.fromCurated(place)
+      for (final place in catalog.places)
+        place.id: SavedPlace.fromCurated(place)
     };
     expect(
-      recommendPlaces(catalog: curatedPlaces, savedPlaces: allSaved),
+      recommendPlaces(catalog: catalog.places, savedPlaces: allSaved),
       isEmpty,
     );
   });

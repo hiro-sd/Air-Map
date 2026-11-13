@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:ticket_app/data/curated_places.dart';
+import 'package:ticket_app/data/travel_catalog.dart';
 import 'package:ticket_app/functions/my_map_places.dart';
 import 'package:ticket_app/l10n/app_localizations.dart';
 import 'package:ticket_app/model/saved_place.dart';
@@ -74,7 +74,7 @@ class _MyMapScreenState extends ConsumerState<MyMapScreen> {
   }
 
   void _openPlace(BuildContext context, SavedPlace place) {
-    final curated = curatedPlaceById(place.id);
+    final curated = ref.read(travelCatalogProvider).byId(place.id);
     showTravelPlaceSheet(context,
         curated: curated, custom: curated == null ? place : null);
   }
@@ -82,6 +82,7 @@ class _MyMapScreenState extends ConsumerState<MyMapScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final catalog = ref.watch(travelCatalogProvider);
     ref.listen(savedPlacesProvider, (before, after) {
       if (!_sameVisibleLocations(before, after)) _scheduleFitPlaces();
     });
@@ -215,7 +216,7 @@ class _MyMapScreenState extends ConsumerState<MyMapScreen> {
               itemCount: places.length,
               itemBuilder: (context, index) {
                 final place = places[index];
-                final curated = curatedPlaceById(place.id);
+                final curated = catalog.byId(place.id);
                 final title = curated?.name(context) ?? place.title;
                 final status = switch (place.status) {
                   VisitStatus.wantToGo => l10n.want_to_go,

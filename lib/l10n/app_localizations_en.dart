@@ -95,6 +95,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get favorite => 'Favorite';
 
   @override
+  String get place_source => 'Place information';
+
+  @override
+  String get source_checked_on => 'Checked on';
+
+  @override
+  String get source_open_failed => 'Could not open the place information page.';
+
+  @override
   String get personal_note => 'Private note';
 
   @override

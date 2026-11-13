@@ -1,0 +1,653 @@
+{
+  "schemaVersion": 1,
+  "regions": [
+    {
+      "id": "jp-tokyo",
+      "countryCode": "JP",
+      "name": {
+        "ja": "東京都",
+        "en": "Tokyo"
+      }
+    },
+    {
+      "id": "jp-kagawa",
+      "countryCode": "JP",
+      "name": {
+        "ja": "香川県",
+        "en": "Kagawa"
+      }
+    },
+    {
+      "id": "jp-tokushima",
+      "countryCode": "JP",
+      "name": {
+        "ja": "徳島県",
+        "en": "Tokushima"
+      }
+    },
+    {
+      "id": "jp-hokkaido",
+      "countryCode": "JP",
+      "name": {
+        "ja": "北海道",
+        "en": "Hokkaido"
+      }
+    },
+    {
+      "id": "jp-kyoto",
+      "countryCode": "JP",
+      "name": {
+        "ja": "京都府",
+        "en": "Kyoto"
+      }
+    },
+    {
+      "id": "jp-fukuoka",
+      "countryCode": "JP",
+      "name": {
+        "ja": "福岡県",
+        "en": "Fukuoka"
+      }
+    },
+    {
+      "id": "jp-oita",
+      "countryCode": "JP",
+      "name": {
+        "ja": "大分県",
+        "en": "Oita"
+      }
+    },
+    {
+      "id": "tw-new-taipei",
+      "countryCode": "TW",
+      "name": {
+        "ja": "台湾・新北市",
+        "en": "New Taipei City, Taiwan"
+      }
+    },
+    {
+      "id": "tw-taipei",
+      "countryCode": "TW",
+      "name": {
+        "ja": "台湾・台北市",
+        "en": "Taipei, Taiwan"
+      }
+    },
+    {
+      "id": "it-veneto",
+      "countryCode": "IT",
+      "name": {
+        "ja": "イタリア・ヴェネト州",
+        "en": "Veneto, Italy"
+      }
+    },
+    {
+      "id": "is-reykjavik",
+      "countryCode": "IS",
+      "name": {
+        "ja": "アイスランド・レイキャビク",
+        "en": "Reykjavík, Iceland"
+      }
+    },
+    {
+      "id": "sg-singapore",
+      "countryCode": "SG",
+      "name": {
+        "ja": "シンガポール",
+        "en": "Singapore"
+      }
+    }
+  ],
+  "places": [
+    {
+      "id": "sensoji",
+      "regionId": "jp-tokyo",
+      "latitude": 35.7148,
+      "longitude": 139.7967,
+      "name": {
+        "ja": "浅草寺",
+        "en": "Sensō-ji"
+      },
+      "teaser": {
+        "ja": "東京のにぎわいを歩く",
+        "en": "A lively walk through old Tokyo"
+      },
+      "description": {
+        "ja": "門をくぐって、仲見世のにぎわいと街の空気をゆっくり楽しむ。",
+        "en": "Walk through the gate and take your time with the lively streets."
+      },
+      "theme": "culture",
+      "isUnexpected": false,
+      "source": {
+        "name": "浅草寺",
+        "url": "https://www.senso-ji.jp/"
+      },
+      "reviewedOn": "2026-11-13"
+    },
+    {
+      "id": "nezu_shrine",
+      "regionId": "jp-tokyo",
+      "latitude": 35.7203,
+      "longitude": 139.7608,
+      "name": {
+        "ja": "根津神社",
+        "en": "Nezu Shrine"
+      },
+      "teaser": {
+        "ja": "街角から静かな境内へ",
+        "en": "A quiet shrine tucked into the city"
+      },
+      "description": {
+        "ja": "下町を散歩する途中で、木々に囲まれた境内に寄り道。",
+        "en": "Pause among the trees during a walk through the neighborhood."
+      },
+      "theme": "culture",
+      "isUnexpected": true,
+      "source": {
+        "name": "根津神社",
+        "url": "https://nedujinja.or.jp/about/"
+      },
+      "reviewedOn": "2026-11-13"
+    },
+    {
+      "id": "kiyosumi_garden",
+      "regionId": "jp-tokyo",
+      "latitude": 35.67954,
+      "longitude": 139.7968,
+      "name": {
+        "ja": "清澄庭園",
+        "en": "Kiyosumi Gardens"
+      },
+      "teaser": {
+        "ja": "水辺をぐるりと一周",
+        "en": "Follow a peaceful path by the pond"
+      },
+      "description": {
+        "ja": "池の周りを歩いて、都会の中の静かな時間を見つける。",
+        "en": "Circle the pond and find a calm moment in the city."
+      },
+      "theme": "nature",
+      "isUnexpected": true,
+      "source": {
+        "name": "東京都公園協会",
+        "url": "https://www.tokyo-park.or.jp/park/kiyosumi/"
+      },
+      "reviewedOn": "2026-11-13"
+    },
+    {
+      "id": "inokashira_park",
+      "regionId": "jp-tokyo",
+      "latitude": 35.7008,
+      "longitude": 139.5742,
+      "name": {
+        "ja": "井の頭恩賜公園",
+        "en": "Inokashira Park"
+      },
+      "teaser": {
+        "ja": "池のほとりでひと休み",
+        "en": "A pause by the pond"
+      },
+      "description": {
+        "ja": "吉祥寺を歩いたら、池と緑のそばで少しのんびり。",
+        "en": "After exploring Kichijoji, slow down beside the pond and trees."
+      },
+      "theme": "nature",
+      "isUnexpected": false,
+      "source": {
+        "name": "東京都公園協会",
+        "url": "https://www.tokyo-park.or.jp/park/inokashira/"
+      },
+      "reviewedOn": "2026-11-13"
+    },
+    {
+      "id": "ritsurin_garden",
+      "regionId": "jp-kagawa",
+      "latitude": 34.3296,
+      "longitude": 134.044,
+      "name": {
+        "ja": "栗林公園",
+        "en": "Ritsurin Garden"
+      },
+      "teaser": {
+        "ja": "高松で庭園さんぽ",
+        "en": "A garden stroll in Takamatsu"
+      },
+      "description": {
+        "ja": "池や橋を眺めながら、歩くたびに景色が変わる庭園へ。",
+        "en": "Wander past ponds and bridges as the scenery changes along the path."
+      },
+      "theme": "nature",
+      "isUnexpected": false,
+      "source": {
+        "name": "香川県観光協会",
+        "url": "https://www.my-kagawa.jp/ritsuringarden"
+      },
+      "reviewedOn": "2026-11-13"
+    },
+    {
+      "id": "chichibugahama",
+      "regionId": "jp-kagawa",
+      "latitude": 34.189,
+      "longitude": 133.649,
+      "name": {
+        "ja": "父母ヶ浜",
+        "en": "Chichibugahama Beach"
+      },
+      "teaser": {
+        "ja": "瀬戸内の夕暮れを見に",
+        "en": "Watch the Seto Inland Sea at dusk"
+      },
+      "description": {
+        "ja": "砂浜に座って、空と海の色が変わる時間を待ってみる。",
+        "en": "Sit by the shore and watch the colors of the sky and sea change."
+      },
+      "theme": "nature",
+      "isUnexpected": true,
+      "source": {
+        "name": "三豊市観光交流局",
+        "url": "https://www.mitoyo-kanko.com/chichibugahama/"
+      },
+      "reviewedOn": "2026-11-13"
+    },
+    {
+      "id": "iya_vine_bridge",
+      "regionId": "jp-tokushima",
+      "latitude": 33.8753,
+      "longitude": 133.8353,
+      "name": {
+        "ja": "祖谷のかずら橋",
+        "en": "Iya Vine Bridge"
+      },
+      "teaser": {
+        "ja": "山あいの橋を渡る",
+        "en": "Cross a bridge in the mountains"
+      },
+      "description": {
+        "ja": "山の奥へ足を延ばして、谷の景色と橋の揺れを体験する。",
+        "en": "Head into the mountains for a bridge and a view of the valley."
+      },
+      "theme": "nature",
+      "isUnexpected": true,
+      "source": {
+        "name": "三好市観光協会",
+        "url": "https://miyoshi-tourism.jp/spot/46/"
+      },
+      "reviewedOn": "2026-11-13"
+    },
+    {
+      "id": "jiufen",
+      "regionId": "tw-new-taipei",
+      "latitude": 25.1096,
+      "longitude": 121.8442,
+      "name": {
+        "ja": "九份",
+        "en": "Jiufen"
+      },
+      "teaser": {
+        "ja": "坂道の先に海が見える街",
+        "en": "A hillside town overlooking the sea"
+      },
+      "description": {
+        "ja": "路地と坂道を歩きながら、山と海に囲まれた街を眺める。",
+        "en": "Explore the lanes and slopes of this town between hills and sea."
+      },
+      "theme": "town",
+      "isUnexpected": false,
+      "source": {
+        "name": "New Taipei City Travel",
+        "url": "https://newtaipei.travel/en/Attractions/Detail/112939"
+      },
+      "reviewedOn": "2026-11-13"
+    },
+    {
+      "id": "burano",
+      "regionId": "it-veneto",
+      "latitude": 45.485,
+      "longitude": 12.4167,
+      "name": {
+        "ja": "ブラーノ島",
+        "en": "Burano"
+      },
+      "teaser": {
+        "ja": "色とりどりの島を歩く",
+        "en": "Wander an island full of color"
+      },
+      "description": {
+        "ja": "水辺を曲がるたび、違う色の家並みが現れる小さな島。",
+        "en": "Turn a corner by the canals to find another colorful street."
+      },
+      "theme": "town",
+      "isUnexpected": true,
+      "source": {
+        "name": "Venezia Unica",
+        "url": "https://www.veneziaunica.it/en/things-to-do-in-venice/venice-areas/islands/burano"
+      },
+      "reviewedOn": "2026-11-13"
+    },
+    {
+      "id": "hallgrimskirkja",
+      "regionId": "is-reykjavik",
+      "latitude": 64.1417,
+      "longitude": -21.9266,
+      "name": {
+        "ja": "ハットルグリムス教会",
+        "en": "Hallgrímskirkja"
+      },
+      "teaser": {
+        "ja": "街の輪郭を見上げる",
+        "en": "Look up at Reykjavík’s skyline"
+      },
+      "description": {
+        "ja": "レイキャビクの街歩きで、空に伸びる建物を目印に。",
+        "en": "Use this landmark as a starting point for a walk around Reykjavík."
+      },
+      "theme": "culture",
+      "isUnexpected": false,
+      "source": {
+        "name": "Visit Reykjavík",
+        "url": "https://visitreykjavik.is/service/hallgrimskirkja-church"
+      },
+      "reviewedOn": "2026-11-13"
+    },
+    {
+      "id": "ueno_park",
+      "regionId": "jp-tokyo",
+      "latitude": 35.71222,
+      "longitude": 139.77111,
+      "name": {
+        "ja": "上野恩賜公園",
+        "en": "Ueno Park"
+      },
+      "teaser": {
+        "ja": "街の中で緑を歩く",
+        "en": "Walk among trees in the heart of the city"
+      },
+      "description": {
+        "ja": "広い園内を気ままに歩き、気になる建物や木陰を見つける。",
+        "en": "Wander through the park and follow whatever catches your eye."
+      },
+      "theme": "nature",
+      "isUnexpected": false,
+      "source": {
+        "name": "東京都公園協会",
+        "url": "https://www.tokyo-park.or.jp/park/ueno/"
+      },
+      "reviewedOn": "2026-11-13"
+    },
+    {
+      "id": "hamarikyu_gardens",
+      "regionId": "jp-tokyo",
+      "latitude": 35.66,
+      "longitude": 139.762,
+      "name": {
+        "ja": "浜離宮恩賜庭園",
+        "en": "Hama-rikyū Gardens"
+      },
+      "teaser": {
+        "ja": "高層ビルのそばに庭園がある",
+        "en": "A garden beside the city skyline"
+      },
+      "description": {
+        "ja": "都心の景色と庭園の静けさを、同じ散歩の中で味わう。",
+        "en": "Enjoy a quiet garden walk with the city skyline nearby."
+      },
+      "theme": "nature",
+      "isUnexpected": true,
+      "source": {
+        "name": "東京都公園協会",
+        "url": "https://www.tokyo-park.or.jp/park/hama-rikyu/"
+      },
+      "reviewedOn": "2026-11-13"
+    },
+    {
+      "id": "moerenuma_park",
+      "regionId": "jp-hokkaido",
+      "latitude": 43.124,
+      "longitude": 141.43,
+      "name": {
+        "ja": "モエレ沼公園",
+        "en": "Moerenuma Park"
+      },
+      "teaser": {
+        "ja": "公園の中に大きなアート",
+        "en": "A park shaped by art"
+      },
+      "description": {
+        "ja": "広い空の下で、地形そのものを楽しむように歩いてみる。",
+        "en": "Explore wide open space where the landscape is part of the art."
+      },
+      "theme": "art",
+      "isUnexpected": true,
+      "source": {
+        "name": "モエレ沼公園",
+        "url": "https://moerenumapark.jp/about/"
+      },
+      "reviewedOn": "2026-11-13"
+    },
+    {
+      "id": "blue_pond_biei",
+      "regionId": "jp-hokkaido",
+      "latitude": 43.49358,
+      "longitude": 142.61403,
+      "name": {
+        "ja": "美瑛の青い池",
+        "en": "Blue Pond, Biei"
+      },
+      "teaser": {
+        "ja": "水面の色を見に行く",
+        "en": "Pause beside the blue water"
+      },
+      "description": {
+        "ja": "森のそばの池を眺め、季節や光で変わる色を楽しむ。",
+        "en": "Watch how the water looks different with the light and season."
+      },
+      "theme": "nature",
+      "isUnexpected": false,
+      "source": {
+        "name": "美瑛町観光協会",
+        "url": "https://www.biei-hokkaido.jp/ja/facility/shirogane-blue-pond"
+      },
+      "reviewedOn": "2026-11-13"
+    },
+    {
+      "id": "fushimi_inari",
+      "regionId": "jp-kyoto",
+      "latitude": 34.96722,
+      "longitude": 135.77278,
+      "name": {
+        "ja": "伏見稲荷大社",
+        "en": "Fushimi Inari Taisha"
+      },
+      "teaser": {
+        "ja": "鳥居の道を歩く",
+        "en": "Follow a path of red gates"
+      },
+      "description": {
+        "ja": "鳥居をくぐりながら、街から山へと景色が変わる道を歩く。",
+        "en": "Walk through the gates as the city gives way to the hillside."
+      },
+      "theme": "culture",
+      "isUnexpected": false,
+      "source": {
+        "name": "伏見稲荷大社",
+        "url": "https://inari.jp/"
+      },
+      "reviewedOn": "2026-11-13"
+    },
+    {
+      "id": "philosophers_path",
+      "regionId": "jp-kyoto",
+      "latitude": 35.02513,
+      "longitude": 135.79617,
+      "name": {
+        "ja": "哲学の道",
+        "en": "Philosopher's Path"
+      },
+      "teaser": {
+        "ja": "水路に沿って京都を散歩",
+        "en": "A canal-side stroll in Kyoto"
+      },
+      "description": {
+        "ja": "急がずに水路沿いを歩き、途中で気になる路地へ寄り道する。",
+        "en": "Take an unhurried walk beside the canal and explore a side street."
+      },
+      "theme": "nature",
+      "isUnexpected": true,
+      "source": {
+        "name": "京都観光Navi",
+        "url": "https://ja.kyoto.travel/tourism/single01.php?category_id=8&tourism_id=2684"
+      },
+      "reviewedOn": "2026-11-13"
+    },
+    {
+      "id": "dazaifu_tenmangu",
+      "regionId": "jp-fukuoka",
+      "latitude": 33.52139,
+      "longitude": 130.535,
+      "name": {
+        "ja": "太宰府天満宮",
+        "en": "Dazaifu Tenmangū"
+      },
+      "teaser": {
+        "ja": "参道から境内へ",
+        "en": "Follow the approach to the shrine"
+      },
+      "description": {
+        "ja": "参道を歩き、少しずつ空気が変わるのを感じながら境内へ。",
+        "en": "Walk the approach and slow down as you enter the shrine grounds."
+      },
+      "theme": "culture",
+      "isUnexpected": false,
+      "source": {
+        "name": "太宰府天満宮",
+        "url": "https://www.dazaifutenmangu.or.jp/"
+      },
+      "reviewedOn": "2026-11-13"
+    },
+    {
+      "id": "lake_kinrin",
+      "regionId": "jp-oita",
+      "latitude": 33.26671,
+      "longitude": 131.36911,
+      "name": {
+        "ja": "金鱗湖",
+        "en": "Lake Kinrin"
+      },
+      "teaser": {
+        "ja": "湯布院の水辺でひと休み",
+        "en": "A lakeside pause in Yufuin"
+      },
+      "description": {
+        "ja": "町歩きの途中で小さな湖のほとりに立ち、景色を眺める。",
+        "en": "Pause by the lake while exploring the streets of Yufuin."
+      },
+      "theme": "nature",
+      "isUnexpected": true,
+      "source": {
+        "name": "大分県観光情報公式サイト",
+        "url": "https://www.visit-oita.jp/spots/detail/4362"
+      },
+      "reviewedOn": "2026-11-13"
+    },
+    {
+      "id": "taipei_101",
+      "regionId": "tw-taipei",
+      "latitude": 25.0336,
+      "longitude": 121.5647,
+      "name": {
+        "ja": "台北101",
+        "en": "Taipei 101"
+      },
+      "teaser": {
+        "ja": "台北の目印を見上げる",
+        "en": "Look up at a Taipei landmark"
+      },
+      "description": {
+        "ja": "街を歩きながら、遠くからも見える建物を旅の目印にする。",
+        "en": "Use this skyline landmark as a reference while wandering Taipei."
+      },
+      "theme": "town",
+      "isUnexpected": false,
+      "source": {
+        "name": "Taipei 101",
+        "url": "https://www.taipei-101.com.tw/tw"
+      },
+      "reviewedOn": "2026-11-13"
+    },
+    {
+      "id": "xiangshan_viewpoint",
+      "regionId": "tw-taipei",
+      "latitude": 25.026,
+      "longitude": 121.5705,
+      "name": {
+        "ja": "象山の展望スポット",
+        "en": "Xiangshan Viewpoint"
+      },
+      "teaser": {
+        "ja": "台北の街を少し上から",
+        "en": "See Taipei from above"
+      },
+      "description": {
+        "ja": "街中から小さな山へ足を延ばし、台北の広がりを眺める。",
+        "en": "Head up from the city for a different view of Taipei."
+      },
+      "theme": "nature",
+      "isUnexpected": true,
+      "source": {
+        "name": "Taipei Travel",
+        "url": "https://www.travel.taipei/en/attraction/details/564"
+      },
+      "reviewedOn": "2026-11-13"
+    },
+    {
+      "id": "gardens_by_the_bay",
+      "regionId": "sg-singapore",
+      "latitude": 1.28472,
+      "longitude": 103.865,
+      "name": {
+        "ja": "ガーデンズ・バイ・ザ・ベイ",
+        "en": "Gardens by the Bay"
+      },
+      "teaser": {
+        "ja": "街のそばで緑と未来を歩く",
+        "en": "A green walk beside the city"
+      },
+      "description": {
+        "ja": "水辺の庭園を歩き、街並みと植物の景色を一緒に楽しむ。",
+        "en": "Walk through the waterfront gardens with the city close by."
+      },
+      "theme": "nature",
+      "isUnexpected": false,
+      "source": {
+        "name": "Gardens by the Bay",
+        "url": "https://www.gardensbythebay.com.sg/en.html"
+      },
+      "reviewedOn": "2026-11-13"
+    },
+    {
+      "id": "haw_par_villa",
+      "regionId": "sg-singapore",
+      "latitude": 1.28417,
+      "longitude": 103.78222,
+      "name": {
+        "ja": "ハウパーヴィラ",
+        "en": "Haw Par Villa"
+      },
+      "teaser": {
+        "ja": "不思議な彫像に出会う庭園",
+        "en": "A garden full of curious sculptures"
+      },
+      "description": {
+        "ja": "いつもの街歩きから少し外れて、独特な世界観の庭園を巡る。",
+        "en": "Step off the usual city route and explore a very different garden."
+      },
+      "theme": "culture",
+      "isUnexpected": true,
+      "source": {
+        "name": "Haw Par Villa",
+        "url": "https://www.hawparvilla.sg/about-us/"
+      },
+      "reviewedOn": "2026-11-13"
+    }
+  ]
+}
