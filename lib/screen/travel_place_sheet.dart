@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ticket_app/l10n/app_localizations.dart';
 import 'package:ticket_app/model/saved_place.dart';
 import 'package:ticket_app/model/travel_place.dart';
+import 'package:ticket_app/screen/place_dialogs.dart';
 import 'package:ticket_app/state/saved_places_controller.dart';
 
 Future<void> showTravelPlaceSheet(
@@ -178,32 +179,7 @@ class _TravelPlaceSheet extends ConsumerWidget {
 
   Future<void> _editNote(
       BuildContext context, WidgetRef ref, SavedPlace place) async {
-    final l10n = AppLocalizations.of(context)!;
-    final controller = TextEditingController(text: place.note);
-    final note = await showDialog<String>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.personal_note),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          maxLines: 4,
-          maxLength: 300,
-          decoration: InputDecoration(hintText: l10n.write_note),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(dialogContext).pop(controller.text),
-            child: Text(l10n.save_note),
-          ),
-        ],
-      ),
-    );
-    controller.dispose();
+    final note = await showEditNoteDialog(context, place.note);
     if (note != null && context.mounted) {
       await _runSave(context,
           () => ref.read(savedPlacesProvider.notifier).updateNote(place, note));

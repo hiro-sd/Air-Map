@@ -9,6 +9,7 @@ import 'package:ticket_app/functions/select_visible_places.dart';
 import 'package:ticket_app/l10n/app_localizations.dart';
 import 'package:ticket_app/model/saved_place.dart';
 import 'package:ticket_app/model/travel_place.dart';
+import 'package:ticket_app/screen/place_dialogs.dart';
 import 'package:ticket_app/screen/travel_place_sheet.dart';
 import 'package:ticket_app/state/saved_places_controller.dart';
 
@@ -83,40 +84,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
 
   Future<void> _addPersonalPlace(LatLng position) async {
     final l10n = AppLocalizations.of(context)!;
-    final nameController = TextEditingController();
-    final formKey = GlobalKey<FormState>();
-    final name = await showDialog<String>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.add_place),
-        content: Form(
-          key: formKey,
-          child: TextFormField(
-            controller: nameController,
-            autofocus: true,
-            maxLength: 60,
-            decoration: InputDecoration(labelText: l10n.place_name),
-            validator: (value) =>
-                value == null || value.trim().isEmpty ? l10n.place_name : null,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () {
-              if (formKey.currentState!.validate()) {
-                Navigator.of(dialogContext).pop(nameController.text.trim());
-              }
-            },
-            child: Text(l10n.add_place),
-          ),
-        ],
-      ),
-    );
-    nameController.dispose();
+    final name = await showAddPlaceDialog(context);
     if (name == null || !mounted) return;
 
     final place = SavedPlace(
