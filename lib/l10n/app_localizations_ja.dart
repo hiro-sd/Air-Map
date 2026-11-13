@@ -36,6 +36,33 @@ class AppLocalizationsJa extends AppLocalizations {
   String get nearby_places => 'この辺りの旅の種';
 
   @override
+  String get recommended_places => 'あなたへの旅の種';
+
+  @override
+  String get today_discoveries => '今日の旅の種';
+
+  @override
+  String get show_recommendations => 'おすすめ';
+
+  @override
+  String get show_nearby_places => 'この辺り';
+
+  @override
+  String get recommendation_near_saved => '保存場所の近く';
+
+  @override
+  String get recommendation_shared_theme => '保存場所と同じテーマ';
+
+  @override
+  String get recommendation_surprise => '少し意外な場所も';
+
+  @override
+  String get recommendation_featured => '今日の発見';
+
+  @override
+  String get no_recommendations => '新しい候補はまだありません。';
+
+  @override
   String get no_curated_places => 'この辺りの紹介スポットは準備中。長押しで自分の場所を追加できます。';
 
   @override

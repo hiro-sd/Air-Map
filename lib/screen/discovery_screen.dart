@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ticket_app/data/curated_places.dart';
 import 'package:ticket_app/functions/place_marker_icons.dart';
+import 'package:ticket_app/functions/recommend_places.dart';
 import 'package:ticket_app/functions/select_visible_places.dart';
 import 'package:ticket_app/l10n/app_localizations.dart';
 import 'package:ticket_app/model/saved_place.dart';
@@ -31,6 +32,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
   LatLngBounds? _bounds;
   List<TravelPlace> _visiblePlaces = const [];
   Map<PlaceTheme, BitmapDescriptor> _icons = const {};
+  bool _showRecommendations = false;
 
   static const _mapStyle = '''[
     {"featureType":"poi","stylers":[{"visibility":"off"}]},
@@ -107,10 +109,38 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
     }
   }
 
+  Future<void> _openRecommendation(TravelPlace place) async {
+    setState(() => _showRecommendations = false);
+    try {
+      await _controller?.animateCamera(
+        CameraUpdate.newLatLngZoom(place.position, 10.5),
+      );
+    } catch (_) {
+      // 地図の再生成中でも場所の紹介は開けるようにする。
+    }
+    if (mounted) await showTravelPlaceSheet(context, curated: place);
+  }
+
+  String _recommendationLabel(
+          AppLocalizations l10n, RecommendationReason reason) =>
+      switch (reason) {
+        RecommendationReason.nearSaved => l10n.recommendation_near_saved,
+        RecommendationReason.sharedTheme => l10n.recommendation_shared_theme,
+        RecommendationReason.surprise => l10n.recommendation_surprise,
+        RecommendationReason.featured => l10n.recommendation_featured,
+      };
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final saved = ref.watch(savedPlacesProvider);
+    final recommendations = recommendPlaces(
+      catalog: curatedPlaces,
+      savedPlaces: saved,
+      rotation: DateTime.now().difference(DateTime(2020)).inDays,
+    );
+    final cardCount =
+        _showRecommendations ? recommendations.length : _visiblePlaces.length;
     final colors = Theme.of(context).colorScheme;
     final customMarkers = saved.values
         .where((place) => place.isCustom)
@@ -202,33 +232,61 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                   Row(
                     children: [
                       Expanded(
-                        child: Text(l10n.nearby_places,
+                        child: Text(
+                            _showRecommendations
+                                ? saved.isEmpty
+                                    ? l10n.today_discoveries
+                                    : l10n.recommended_places
+                                : l10n.nearby_places,
                             style: Theme.of(context)
                                 .textTheme
                                 .titleMedium
                                 ?.copyWith(fontWeight: FontWeight.bold)),
                       ),
-                      TextButton.icon(
+                      TextButton(
+                        onPressed: () => setState(
+                            () => _showRecommendations = !_showRecommendations),
+                        child: Text(_showRecommendations
+                            ? l10n.show_nearby_places
+                            : l10n.show_recommendations),
+                      ),
+                      IconButton(
+                        tooltip: l10n.my_map,
                         onPressed: widget.onMyMapRequested,
-                        icon: const Icon(Icons.bookmark_outline, size: 18),
-                        label: Text(l10n.my_map),
+                        icon: const Icon(Icons.bookmark_outline),
                       ),
                     ],
                   ),
-                  if (_visiblePlaces.isEmpty)
+                  if (cardCount == 0)
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: Text(l10n.no_curated_places),
+                      child: Text(_showRecommendations
+                          ? l10n.no_recommendations
+                          : l10n.no_curated_places),
                     )
                   else
                     SizedBox(
                       height: 118,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
-                        itemCount: _visiblePlaces.length,
+                        itemCount: cardCount,
                         separatorBuilder: (_, __) => const SizedBox(width: 9),
-                        itemBuilder: (context, index) =>
-                            _PlaceCard(place: _visiblePlaces[index]),
+                        itemBuilder: (context, index) {
+                          if (_showRecommendations) {
+                            final item = recommendations[index];
+                            return _PlaceCard(
+                              place: item.place,
+                              reason: _recommendationLabel(l10n, item.reason),
+                              onTap: () => _openRecommendation(item.place),
+                            );
+                          }
+                          final place = _visiblePlaces[index];
+                          return _PlaceCard(
+                            place: place,
+                            onTap: () =>
+                                showTravelPlaceSheet(context, curated: place),
+                          );
+                        },
                       ),
                     ),
                   const SizedBox(height: 5),
@@ -245,9 +303,11 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
 }
 
 class _PlaceCard extends StatelessWidget {
-  const _PlaceCard({required this.place});
+  const _PlaceCard({required this.place, required this.onTap, this.reason});
 
   final TravelPlace place;
+  final VoidCallback onTap;
+  final String? reason;
 
   @override
   Widget build(BuildContext context) {
@@ -262,7 +322,7 @@ class _PlaceCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         child: InkWell(
           borderRadius: BorderRadius.circular(18),
-          onTap: () => showTravelPlaceSheet(context, curated: place),
+          onTap: onTap,
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -277,11 +337,16 @@ class _PlaceCard extends StatelessWidget {
                         size: 18,
                         color: colors.primary),
                     const SizedBox(width: 5),
-                    Text(
-                      place.isUnexpected
-                          ? l10n.unexpected_place
-                          : l10n.familiar_place,
-                      style: Theme.of(context).textTheme.labelSmall,
+                    Expanded(
+                      child: Text(
+                        reason ??
+                            (place.isUnexpected
+                                ? l10n.unexpected_place
+                                : l10n.familiar_place),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
                     ),
                   ],
                 ),

@@ -152,6 +152,60 @@ abstract class AppLocalizations {
   /// **'Ideas around here'**
   String get nearby_places;
 
+  /// No description provided for @recommended_places.
+  ///
+  /// In en, this message translates to:
+  /// **'Ideas for you'**
+  String get recommended_places;
+
+  /// No description provided for @today_discoveries.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s discoveries'**
+  String get today_discoveries;
+
+  /// No description provided for @show_recommendations.
+  ///
+  /// In en, this message translates to:
+  /// **'For you'**
+  String get show_recommendations;
+
+  /// No description provided for @show_nearby_places.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearby'**
+  String get show_nearby_places;
+
+  /// No description provided for @recommendation_near_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Near a saved place'**
+  String get recommendation_near_saved;
+
+  /// No description provided for @recommendation_shared_theme.
+  ///
+  /// In en, this message translates to:
+  /// **'A theme you like'**
+  String get recommendation_shared_theme;
+
+  /// No description provided for @recommendation_surprise.
+  ///
+  /// In en, this message translates to:
+  /// **'A little surprise'**
+  String get recommendation_surprise;
+
+  /// No description provided for @recommendation_featured.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s find'**
+  String get recommendation_featured;
+
+  /// No description provided for @no_recommendations.
+  ///
+  /// In en, this message translates to:
+  /// **'No new places to suggest yet.'**
+  String get no_recommendations;
+
   /// No description provided for @no_curated_places.
   ///
   /// In en, this message translates to:

@@ -36,6 +36,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nearby_places => 'Ideas around here';
 
   @override
+  String get recommended_places => 'Ideas for you';
+
+  @override
+  String get today_discoveries => 'Today\'s discoveries';
+
+  @override
+  String get show_recommendations => 'For you';
+
+  @override
+  String get show_nearby_places => 'Nearby';
+
+  @override
+  String get recommendation_near_saved => 'Near a saved place';
+
+  @override
+  String get recommendation_shared_theme => 'A theme you like';
+
+  @override
+  String get recommendation_surprise => 'A little surprise';
+
+  @override
+  String get recommendation_featured => 'Today\'s find';
+
+  @override
+  String get no_recommendations => 'No new places to suggest yet.';
+
+  @override
   String get no_curated_places =>
       'No featured places here yet. Long-press to add your own place.';
 
