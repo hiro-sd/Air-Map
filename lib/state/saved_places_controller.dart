@@ -78,6 +78,20 @@ class SavedPlacesController extends StateNotifier<Map<String, SavedPlace>> {
 
   Future<void> addCustom(SavedPlace place) => _save(place);
 
+  Future<int> importPlaces(Iterable<SavedPlace> places,
+      {bool overwriteExisting = false}) async {
+    final imported = {
+      for (final place in places)
+        if (overwriteExisting || !state.containsKey(place.id)) place.id: place,
+    };
+    if (imported.isEmpty) return 0;
+    await _box.putAll({
+      for (final entry in imported.entries) entry.key: entry.value.toJson(),
+    });
+    state = {...state, ...imported};
+    return imported.length;
+  }
+
   Future<void> remove(String id) async {
     await _box.delete(id);
     state = {...state}..remove(id);

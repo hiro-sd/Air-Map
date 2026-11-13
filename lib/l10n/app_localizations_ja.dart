@@ -132,13 +132,64 @@ class AppLocalizationsJa extends AppLocalizations {
   String get remove_place => 'この場所を削除';
 
   @override
-  String get local_only_note => '保存内容はこの端末だけに記録されます';
+  String get local_only_note => '自動同期はされません。設定から書き出せます。';
 
   @override
   String get save_failed => '保存できませんでした。もう一度お試しください。';
 
   @override
   String get settings => '設定';
+
+  @override
+  String get backup_section_title => 'マイマップのバックアップ';
+
+  @override
+  String get backup_description => '保存した場所・分類・お気に入り・メモをファイルに保管できます。';
+
+  @override
+  String get backup_export_action => 'マイマップを書き出す';
+
+  @override
+  String get backup_export_hint => 'JSONファイルを「ファイル」や共有先に保存';
+
+  @override
+  String get backup_import_action => 'バックアップを読み込む';
+
+  @override
+  String get backup_import_hint => '保存済みのJSONファイルから場所を追加';
+
+  @override
+  String get backup_import_title => 'マイマップに追加しますか？';
+
+  @override
+  String backup_import_summary(int newCount, int duplicateCount) {
+    return '$newCount件を追加します。既にある$duplicateCount件は変更しません。';
+  }
+
+  @override
+  String backup_import_replace_summary(int count) {
+    return 'ファイル内の$count件を読み込み、同じ場所の記録はバックアップの内容に戻します。';
+  }
+
+  @override
+  String get backup_replace_existing => '既存の記録も復元する';
+
+  @override
+  String get backup_replace_warning => '同じ場所の分類・お気に入り・メモはファイル内の内容に置き換わります。';
+
+  @override
+  String backup_import_success(int count) {
+    return '$count件を読み込みました。';
+  }
+
+  @override
+  String get backup_invalid_file => 'このバックアップファイルは読み込めません。形式や内容を確認してください。';
+
+  @override
+  String get backup_export_failed => '書き出しに失敗しました。もう一度お試しください。';
+
+  @override
+  String get backup_import_failed => '読み込みに失敗しました。もう一度お試しください。';
 
   @override
   String get contact_us => 'お問い合わせ';

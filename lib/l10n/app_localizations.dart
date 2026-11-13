@@ -347,7 +347,7 @@ abstract class AppLocalizations {
   /// No description provided for @local_only_note.
   ///
   /// In en, this message translates to:
-  /// **'Your places stay on this device'**
+  /// **'Places do not sync automatically. Export a backup in Settings.'**
   String get local_only_note;
 
   /// No description provided for @save_failed.
@@ -361,6 +361,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Settings'**
   String get settings;
+
+  /// No description provided for @backup_section_title.
+  ///
+  /// In en, this message translates to:
+  /// **'My Map backup'**
+  String get backup_section_title;
+
+  /// No description provided for @backup_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Save your places, statuses, favorites, and notes to a file.'**
+  String get backup_description;
+
+  /// No description provided for @backup_export_action.
+  ///
+  /// In en, this message translates to:
+  /// **'Export My Map'**
+  String get backup_export_action;
+
+  /// No description provided for @backup_export_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Save a JSON file to Files or another app'**
+  String get backup_export_hint;
+
+  /// No description provided for @backup_import_action.
+  ///
+  /// In en, this message translates to:
+  /// **'Import backup'**
+  String get backup_import_action;
+
+  /// No description provided for @backup_import_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add places from a saved JSON file'**
+  String get backup_import_hint;
+
+  /// No description provided for @backup_import_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add these places to My Map?'**
+  String get backup_import_title;
+
+  /// No description provided for @backup_import_summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Add {newCount} places. Keep {duplicateCount} existing places unchanged.'**
+  String backup_import_summary(int newCount, int duplicateCount);
+
+  /// No description provided for @backup_import_replace_summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Import {count} places and restore matching places from the backup.'**
+  String backup_import_replace_summary(int count);
+
+  /// No description provided for @backup_replace_existing.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore existing places too'**
+  String get backup_replace_existing;
+
+  /// No description provided for @backup_replace_warning.
+  ///
+  /// In en, this message translates to:
+  /// **'Statuses, favorites, and notes for matching places will be replaced.'**
+  String get backup_replace_warning;
+
+  /// No description provided for @backup_import_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported {count} places.'**
+  String backup_import_success(int count);
+
+  /// No description provided for @backup_invalid_file.
+  ///
+  /// In en, this message translates to:
+  /// **'This backup cannot be imported. Check its format and contents.'**
+  String get backup_invalid_file;
+
+  /// No description provided for @backup_export_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not export your map. Please try again.'**
+  String get backup_export_failed;
+
+  /// No description provided for @backup_import_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not import your map. Please try again.'**
+  String get backup_import_failed;
 
   /// No description provided for @contact_us.
   ///

@@ -135,13 +135,70 @@ class AppLocalizationsEn extends AppLocalizations {
   String get remove_place => 'Remove this place';
 
   @override
-  String get local_only_note => 'Your places stay on this device';
+  String get local_only_note =>
+      'Places do not sync automatically. Export a backup in Settings.';
 
   @override
   String get save_failed => 'Could not save. Please try again.';
 
   @override
   String get settings => 'Settings';
+
+  @override
+  String get backup_section_title => 'My Map backup';
+
+  @override
+  String get backup_description =>
+      'Save your places, statuses, favorites, and notes to a file.';
+
+  @override
+  String get backup_export_action => 'Export My Map';
+
+  @override
+  String get backup_export_hint => 'Save a JSON file to Files or another app';
+
+  @override
+  String get backup_import_action => 'Import backup';
+
+  @override
+  String get backup_import_hint => 'Add places from a saved JSON file';
+
+  @override
+  String get backup_import_title => 'Add these places to My Map?';
+
+  @override
+  String backup_import_summary(int newCount, int duplicateCount) {
+    return 'Add $newCount places. Keep $duplicateCount existing places unchanged.';
+  }
+
+  @override
+  String backup_import_replace_summary(int count) {
+    return 'Import $count places and restore matching places from the backup.';
+  }
+
+  @override
+  String get backup_replace_existing => 'Restore existing places too';
+
+  @override
+  String get backup_replace_warning =>
+      'Statuses, favorites, and notes for matching places will be replaced.';
+
+  @override
+  String backup_import_success(int count) {
+    return 'Imported $count places.';
+  }
+
+  @override
+  String get backup_invalid_file =>
+      'This backup cannot be imported. Check its format and contents.';
+
+  @override
+  String get backup_export_failed =>
+      'Could not export your map. Please try again.';
+
+  @override
+  String get backup_import_failed =>
+      'Could not import your map. Please try again.';
 
   @override
   String get contact_us => 'Contact us';
