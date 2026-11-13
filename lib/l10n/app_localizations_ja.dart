@@ -18,6 +18,81 @@ class AppLocalizationsJa extends AppLocalizations {
   String get map => 'マップ';
 
   @override
+  String get discover => '見つける';
+
+  @override
+  String get my_map => 'マイマップ';
+
+  @override
+  String get airports => '空港';
+
+  @override
+  String get flights => '便検索';
+
+  @override
+  String get discover_hint => '地図を動かして、旅の種を見つけよう';
+
+  @override
+  String get nearby_places => 'この辺りの旅の種';
+
+  @override
+  String get no_curated_places => 'この辺りの紹介スポットは準備中。長押しで自分の場所を追加できます。';
+
+  @override
+  String get curated_note => '最初の試作では一部の地域だけを紹介しています';
+
+  @override
+  String get unexpected_place => 'ちょっと意外';
+
+  @override
+  String get familiar_place => '定番';
+
+  @override
+  String get want_to_go => '行きたい';
+
+  @override
+  String get visited => '行った';
+
+  @override
+  String get favorite => 'お気に入り';
+
+  @override
+  String get personal_note => '自分だけのメモ';
+
+  @override
+  String get write_note => '感想やメモを書く';
+
+  @override
+  String get save_note => 'メモを保存';
+
+  @override
+  String get add_place => 'この場所を追加';
+
+  @override
+  String get place_name => '場所の名前';
+
+  @override
+  String get place_saved => 'マイマップに保存しました';
+
+  @override
+  String get my_map_empty => 'あなたの地図はこれから';
+
+  @override
+  String get my_map_empty_hint => '気になる場所を保存すると、ここに並びます。';
+
+  @override
+  String get explore_places => '場所を見つける';
+
+  @override
+  String get remove_place => 'この場所を削除';
+
+  @override
+  String get local_only_note => '保存内容はこの端末だけに記録されます';
+
+  @override
+  String get save_failed => '保存できませんでした。もう一度お試しください。';
+
+  @override
   String get settings => '設定';
 
   @override

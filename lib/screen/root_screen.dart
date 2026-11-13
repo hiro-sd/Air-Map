@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ticket_app/functions/geo_data_scan.dart';
 import 'package:ticket_app/screen/map_screen.dart';
+import 'package:ticket_app/screen/discovery_screen.dart';
+import 'package:ticket_app/screen/my_map_screen.dart';
 import 'package:ticket_app/screen/airport_candidates_sheet.dart';
 import 'package:ticket_app/screen/search_flight_screen.dart';
 import 'package:ticket_app/l10n/app_localizations.dart';
@@ -20,8 +22,19 @@ class Root extends ConsumerWidget {
 
     // アイテムたち
     final items = [
-      {'icon': Icons.map, 'label': AppLocalizations.of(context)!.map},
-      {'icon': Icons.search, 'label': AppLocalizations.of(context)!.search},
+      {
+        'icon': Icons.explore_outlined,
+        'label': AppLocalizations.of(context)!.discover
+      },
+      {
+        'icon': Icons.bookmark_outline,
+        'label': AppLocalizations.of(context)!.my_map
+      },
+      {
+        'icon': Icons.flight_takeoff_outlined,
+        'label': AppLocalizations.of(context)!.airports
+      },
+      {'icon': Icons.search, 'label': AppLocalizations.of(context)!.flights},
       {'icon': Icons.settings, 'label': AppLocalizations.of(context)!.settings},
     ]
         .map((item) => BottomNavigationBarItem(
@@ -32,6 +45,9 @@ class Root extends ConsumerWidget {
 
     final bar = BottomNavigationBar(
       items: items, // アイテムたち
+      type: BottomNavigationBarType.fixed,
+      selectedFontSize: 11,
+      unselectedFontSize: 10,
       selectedItemColor: Theme.of(context).colorScheme.primary,
       currentIndex: index, // インデックス
       onTap: (index) {
@@ -41,8 +57,14 @@ class Root extends ConsumerWidget {
 
     // 画面たち
     final pages = [
-      MapScreen(onSearchRequested: () {
+      DiscoveryScreen(onMyMapRequested: () {
         ref.read(indexProvider.notifier).state = 1;
+      }),
+      MyMapScreen(onExploreRequested: () {
+        ref.read(indexProvider.notifier).state = 0;
+      }),
+      MapScreen(onSearchRequested: () {
+        ref.read(indexProvider.notifier).state = 3;
       }),
       const SearchFlightScreen(),
       const SettingsScreen(),
@@ -50,8 +72,10 @@ class Root extends ConsumerWidget {
 
     // タイトルたち
     final titles = [
+      AppLocalizations.of(context)!.discover,
+      AppLocalizations.of(context)!.my_map,
       AppLocalizations.of(context)!.title,
-      AppLocalizations.of(context)!.search,
+      AppLocalizations.of(context)!.flights,
       AppLocalizations.of(context)!.settings
     ];
 
@@ -65,7 +89,7 @@ class Root extends ConsumerWidget {
             color: Theme.of(context).colorScheme.primary,
           ),
         ),
-        leading: index == 0
+        leading: index == 2
             ? IconButton(
                 icon: Icon(Icons.menu,
                     color: Theme.of(context).colorScheme.primary),
@@ -192,7 +216,7 @@ class Root extends ConsumerWidget {
                                             onSearchRequested: () {
                                               ref
                                                   .read(indexProvider.notifier)
-                                                  .state = 1;
+                                                  .state = 3;
                                             },
                                           );
                                         },

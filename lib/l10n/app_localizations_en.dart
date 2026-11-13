@@ -18,6 +18,84 @@ class AppLocalizationsEn extends AppLocalizations {
   String get map => 'Map';
 
   @override
+  String get discover => 'Explore';
+
+  @override
+  String get my_map => 'My Map';
+
+  @override
+  String get airports => 'Airports';
+
+  @override
+  String get flights => 'Flights';
+
+  @override
+  String get discover_hint => 'Move the map to find your next little adventure';
+
+  @override
+  String get nearby_places => 'Ideas around here';
+
+  @override
+  String get no_curated_places =>
+      'No featured places here yet. Long-press to add your own place.';
+
+  @override
+  String get curated_note =>
+      'This early preview features a few selected regions';
+
+  @override
+  String get unexpected_place => 'A little surprise';
+
+  @override
+  String get familiar_place => 'A favorite';
+
+  @override
+  String get want_to_go => 'Want to go';
+
+  @override
+  String get visited => 'Visited';
+
+  @override
+  String get favorite => 'Favorite';
+
+  @override
+  String get personal_note => 'Private note';
+
+  @override
+  String get write_note => 'Write a memory or note';
+
+  @override
+  String get save_note => 'Save note';
+
+  @override
+  String get add_place => 'Add this place';
+
+  @override
+  String get place_name => 'Place name';
+
+  @override
+  String get place_saved => 'Saved to My Map';
+
+  @override
+  String get my_map_empty => 'Your map starts here';
+
+  @override
+  String get my_map_empty_hint =>
+      'Save a place you like and it will appear here.';
+
+  @override
+  String get explore_places => 'Explore places';
+
+  @override
+  String get remove_place => 'Remove this place';
+
+  @override
+  String get local_only_note => 'Your places stay on this device';
+
+  @override
+  String get save_failed => 'Could not save. Please try again.';
+
+  @override
   String get settings => 'Settings';
 
   @override

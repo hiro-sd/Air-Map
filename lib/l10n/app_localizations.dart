@@ -116,6 +116,156 @@ abstract class AppLocalizations {
   /// **'Map'**
   String get map;
 
+  /// No description provided for @discover.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore'**
+  String get discover;
+
+  /// No description provided for @my_map.
+  ///
+  /// In en, this message translates to:
+  /// **'My Map'**
+  String get my_map;
+
+  /// No description provided for @airports.
+  ///
+  /// In en, this message translates to:
+  /// **'Airports'**
+  String get airports;
+
+  /// No description provided for @flights.
+  ///
+  /// In en, this message translates to:
+  /// **'Flights'**
+  String get flights;
+
+  /// No description provided for @discover_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Move the map to find your next little adventure'**
+  String get discover_hint;
+
+  /// No description provided for @nearby_places.
+  ///
+  /// In en, this message translates to:
+  /// **'Ideas around here'**
+  String get nearby_places;
+
+  /// No description provided for @no_curated_places.
+  ///
+  /// In en, this message translates to:
+  /// **'No featured places here yet. Long-press to add your own place.'**
+  String get no_curated_places;
+
+  /// No description provided for @curated_note.
+  ///
+  /// In en, this message translates to:
+  /// **'This early preview features a few selected regions'**
+  String get curated_note;
+
+  /// No description provided for @unexpected_place.
+  ///
+  /// In en, this message translates to:
+  /// **'A little surprise'**
+  String get unexpected_place;
+
+  /// No description provided for @familiar_place.
+  ///
+  /// In en, this message translates to:
+  /// **'A favorite'**
+  String get familiar_place;
+
+  /// No description provided for @want_to_go.
+  ///
+  /// In en, this message translates to:
+  /// **'Want to go'**
+  String get want_to_go;
+
+  /// No description provided for @visited.
+  ///
+  /// In en, this message translates to:
+  /// **'Visited'**
+  String get visited;
+
+  /// No description provided for @favorite.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorite'**
+  String get favorite;
+
+  /// No description provided for @personal_note.
+  ///
+  /// In en, this message translates to:
+  /// **'Private note'**
+  String get personal_note;
+
+  /// No description provided for @write_note.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a memory or note'**
+  String get write_note;
+
+  /// No description provided for @save_note.
+  ///
+  /// In en, this message translates to:
+  /// **'Save note'**
+  String get save_note;
+
+  /// No description provided for @add_place.
+  ///
+  /// In en, this message translates to:
+  /// **'Add this place'**
+  String get add_place;
+
+  /// No description provided for @place_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Place name'**
+  String get place_name;
+
+  /// No description provided for @place_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved to My Map'**
+  String get place_saved;
+
+  /// No description provided for @my_map_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Your map starts here'**
+  String get my_map_empty;
+
+  /// No description provided for @my_map_empty_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Save a place you like and it will appear here.'**
+  String get my_map_empty_hint;
+
+  /// No description provided for @explore_places.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore places'**
+  String get explore_places;
+
+  /// No description provided for @remove_place.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this place'**
+  String get remove_place;
+
+  /// No description provided for @local_only_note.
+  ///
+  /// In en, this message translates to:
+  /// **'Your places stay on this device'**
+  String get local_only_note;
+
+  /// No description provided for @save_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save. Please try again.'**
+  String get save_failed;
+
   /// No description provided for @settings.
   ///
   /// In en, this message translates to:

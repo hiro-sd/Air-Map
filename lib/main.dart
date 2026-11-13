@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ticket_app/l10n/app_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:ticket_app/screen/root_screen.dart';
+import 'package:ticket_app/state/saved_places_controller.dart';
 
 final GlobalKey<NavigatorState> globalNavigatorKey =
     GlobalKey<NavigatorState>();
@@ -14,9 +15,14 @@ final globalNavigatorKeyProvider = Provider<GlobalKey<NavigatorState>>((ref) {
 late Box box;
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   box = await Hive.openBox('cacheBox');
-  runApp(const ProviderScope(child: MyApp()));
+  final savedPlacesBox = await Hive.openBox<dynamic>('savedPlaces');
+  runApp(ProviderScope(
+    overrides: [savedPlacesBoxProvider.overrideWithValue(savedPlacesBox)],
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -29,16 +35,16 @@ class MyApp extends StatelessWidget {
       navigatorKey: globalNavigatorKey,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      title: 'Air Map',
+      title: '旅の地図',
       theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.blue,
+            seedColor: const Color(0xFF79A889),
             brightness: Brightness.light,
           ),
           useMaterial3: true),
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
+          seedColor: const Color(0xFF79A889),
           brightness: Brightness.dark,
         ),
         useMaterial3: true,
